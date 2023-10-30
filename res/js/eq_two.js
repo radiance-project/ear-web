@@ -11,7 +11,7 @@ var chart;
 //---------------------------------------------------------------------------------//
 
 //VALUES FOR CUSTOM EQ (IDK WHAT YOU NEED BUT MY SCALE GOERS FROM 0-10), goes like this: [Bass, Treble, Medium]
-var custom_values = eel.getCustomEQ();
+var custom_values = [0, 0, 0];
 
 //TYPE OF SELECTED EQ (0 = Balanced, 1 = More Bass, 2 = More Treble, 3 = More Voice, 4 = Custom) 
 var current_eq;
@@ -35,11 +35,11 @@ function updateIndicator(){
 }
 
 function EQButtonPress(level) {
-    eel.setEQ(level);
+    setEQ(level);
     if (level == 5) {
-        eel.getCustomEQ();
-        updateIndicator();
+        getCustomEQ();
         document.getElementById("custom_eq_indicator").style.display = "grid";
+        updateIndicator();
     }else document.getElementById("custom_eq_indicator").style.display = "none";
     setEQfromRead(level);
 }
@@ -51,6 +51,7 @@ function setCustomEQ(array) {
 }
 
 function setEQfromRead(level) {
+    console.log("eqlevel: " + level);
     if (level == 0) {
         setBalanced(document.getElementById("buttonEQBalanced"));
     } else if (level == 1) {
@@ -60,6 +61,7 @@ function setEQfromRead(level) {
     } else if (level == 3) {
         setBass(document.getElementById("buttonEQBass"));
     } else if (level == 5) {
+        getCustomEQ();
         document.getElementById("custom_eq_indicator").style.display = "grid";
         setCustom(document.getElementById("buttonEQCustom"));
         updateIndicator();
@@ -131,9 +133,9 @@ function setBalanced(e) {
     resetOptions();
     drawChart(data);
     clearButtons()
-    var buttons = document.getElementsByTagName('button')
-    buttons[1].style.backgroundColor = "#ffffff";
-    buttons[1].style.color = "#000000";
+    var buttons = document.getElementsByClassName("eq-button")
+    buttons[0].style.backgroundColor = "#ffffff";
+    buttons[0].style.color = "#000000";
     current_eq = 0;
 }
 
@@ -152,9 +154,9 @@ function setBass(e) {
     resetOptions();
     drawChart(data);
     clearButtons()
-    var buttons = document.getElementsByTagName('button')
-    buttons[2].style.backgroundColor = "#ffffff";
-    buttons[2].style.color = "#000000";
+    var buttons = document.getElementsByClassName("eq-button")
+    buttons[1].style.backgroundColor = "#ffffff";
+    buttons[1].style.color = "#000000";
     current_eq = 1;
 }
 
@@ -172,9 +174,9 @@ function setTreble(e) {
     resetOptions();
     drawChart(data);
     clearButtons()
-    var buttons = document.getElementsByTagName('button')
-    buttons[3].style.backgroundColor = "#ffffff";
-    buttons[3].style.color = "#000000";
+    var buttons = document.getElementsByClassName("eq-button")
+    buttons[2].style.backgroundColor = "#ffffff";
+    buttons[2].style.color = "#000000";
     current_eq = 2;
 }
 function setVoice(e) {
@@ -191,9 +193,9 @@ function setVoice(e) {
     resetOptions();
     drawChart(data);
     clearButtons()
-    var buttons = document.getElementsByTagName('button')
-    buttons[4].style.backgroundColor = "#ffffff";
-    buttons[4].style.color = "#000000";
+    var buttons = document.getElementsByClassName("eq-button")
+    buttons[3].style.backgroundColor = "#ffffff";
+    buttons[3].style.color = "#000000";
     current_eq = 3;
 }
 
@@ -270,7 +272,7 @@ function setCustom(e) {
             custom_values = chart.data.datasets[0].data;
             //round all values in custom_values to 1 decimal place
             custom_values = [Math.round(custom_values[0]), Math.round(custom_values[1]), Math.round(custom_values[2])]
-            eel.setCustomEQ([custom_values[1], custom_values[2], custom_values[0]]);
+            setCustomEQ_BT([custom_values[1], custom_values[2], custom_values[0]]);
             updateIndicator();
         },
         hover: {
@@ -284,9 +286,9 @@ function setCustom(e) {
     }
     drawChart(data);
     clearButtons()
-    var buttons = document.getElementsByTagName('button')
-    buttons[5].style.backgroundColor = "#ffffff";
-    buttons[5].style.color = "#000000";
+    var buttons = document.getElementsByClassName("eq-button");
+    buttons[4].style.backgroundColor = "#ffffff";
+    buttons[4].style.color = "#000000";
     current_eq = 4;
 }
 
@@ -307,7 +309,7 @@ async function drawChart(data) {
 }
 
 function clearButtons() {
-    var buttons = document.getElementsByTagName('button');
+    var buttons = document.getElementsByClassName("eq-button");
     for (let i = 0; i < buttons.length; i++) {
         let button = buttons[i];
         button.style.backgroundColor = "#000000";

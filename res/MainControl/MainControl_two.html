@@ -9,16 +9,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@1.1.3/dist/chartjs-plugin-dragdata.min.js"></script>
     <link href="../global.css" rel="stylesheet" />
-    <script type="text/javascript" src="http://localhost:17079/eel.js"></script>
+
 
 </head>
 
-<body style="width: 800px; height: 710px;">
+<body style="width: 100%; height: 100%;">
     <div id="container_one"
          class=" w-fit bg-black/75 text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+         style="font-family: NothingNormal2; height: 100%; width: 100%; ">
         <div id="container_two" class=" w-fit bg-black/50 backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2;  height: 710px; width: 800px; margin-top: -20px; ">
+             style="font-family: NothingNormal2; height: 100%; width: 100%; margin-top: -20px; ">
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
                 <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
                 <div id="popup_content" class="z-[-10]">
@@ -115,12 +115,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" class="relative">
+                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" style="width:50%; margin-left:auto; margin-right:auto" class="relative">
                         <div id="pages_container" class="ease-in-out duration-300" style="opacity: 100; width: 305px;">
                             <div id="eq_container" class="mt-12 bg-[#1B1D1F] ease-in-out duration-300 rounded-xl pt-2 pb-2 " style="height: 290px;">
                                 <div id="eq_container_t" class="relative">
                                     <!-- PAGE 1 -->
                                     <div id="page_1_container" class="ease-in-out duration-300">
+                                        <button id="sppconn" onclick="connectSPP()">Connect</button>
                                         <div class="w-fit flex m-auto text-md mb-5 mt-2">
                                             NOISE CONTROL
                                         </div>
@@ -171,19 +172,19 @@
                                                     </div>
                                                 </div>
                                                 <div id="stage_three"
-                                                class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
-                                                onclick="setANC(5)">
-                                               <div id="stage_three_button"
-                                                    class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full ">
-                                               </div>
-                                           </div>
-                                           <div id="stage_four"
-                                           class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
-                                           onclick="setANC(6)">
-                                          <div id="stage_four_button"
-                                               class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full">
-                                          </div>
-                                      </div>
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setANC(5)">
+                                                    <div id="stage_three_button"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full ">
+                                                    </div>
+                                                </div>
+                                                <div id="stage_four"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setANC(6)">
+                                                    <div id="stage_four_button"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full">
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="grid grid-cols-4 grid-rows-1 ease-out duration-200 m-auto text-[10px] opacity-100" style="margin-left: 45px; width: 190px; gap: 40px;">
                                                 <div id="desc_one" class="p-2 text-center ">HIGH</div>
@@ -191,25 +192,25 @@
                                                 <div id="desc_two" class="p-2 text-center " style="margin-left: 3px;">LOW</div>
                                                 <div id="desc_two" class="p-2 text-left" style="margin-left: -13px">ADAPTIVE</div>
                                             </div>
-                                           
+
                                         </div>
-                                        <div id="personalised_ANC" >
+                                        <div id="personalised_ANC">
                                             <div class="settings-switch-container overflow-hidde grid grid-cols-2 grid-rows-1 mt-4">
                                                 <div style="width: 240px;">
-                                                <div class="settings-switch-label">PERSONALISED ANC</div>
-                                                <div id="settings-switch-label-desc" class="settings-switch-label text-gray-500">
-                                                    Noice cancellation calibrated to your unique hearing sensitivity.
-                                                </div>
+                                                    <div class="settings-switch-label">PERSONALISED ANC</div>
+                                                    <div id="settings-switch-label-desc" class="settings-switch-label text-gray-500">
+                                                        Noice cancellation calibrated to your unique hearing sensitivity.
+                                                    </div>
                                                 </div>
                                                 <div>
-                                                <div id="personalizedANCSwitch" class="settings-switch-button">
-                                                    <div id="personalizedANCSwitchIndicator" class="settings-switch-indicator">
-                                                        <input type="checkbox" id="personalizedANC" class="settings-switch-checkbox" onclick="setPersonalAnc()"
-                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -265px" />
+                                                    <div id="personalizedANCSwitch" class="settings-switch-button">
+                                                        <div id="personalizedANCSwitchIndicator" class="settings-switch-indicator">
+                                                            <input type="checkbox" id="personalizedANC" class="settings-switch-checkbox" onclick="setPersonalAnc()"
+                                                                   style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -265px" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
                                         </div>
                                     </div>
                                     <!-- END PAGE 1 -->
@@ -254,26 +255,28 @@
                                                 <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
                                                     1.0.0
                                                 </div>
-                                                <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
+                                                <!--<div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
                                                     Bluetooth Adress
                                                 </div>
                                                 <div id="settings_subtitle_mac" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
                                                     00:00:00:00:00:00
+                                                </div>-->
+                                                <br />
+                                                <div class="rounded-xl mt-1 grid grid-cols-2 grid-rows-1 -ml-16" id="case_ear">
+                                                    <div id="setting_title" class="text-sm ml-5 text-gray-200">
+                                                        <img id="case-img" src="../assets/ear_one_white_case.png" class='mr-2 h-20 -mt-5 -mb-5 float-right' />
+                                                    </div>
+                                                    <div id="settings_info" class="text-sm ml-5 text-white flex items-center">
+                                                        <div id="battery-c" class='mr-2 text-center'>
+                                                            NONE% CASE
+                                                        </div>
+                                                        <div id="battery-bar" class='w-20 h-2 rounded-md bg-gray-600'>
+                                                            <div id="battery_bar_fill_c" class="bg-white h-full rounded-md" style="width: 50%;"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="rounded-xl pt-5 pb-5 mt-1 grid grid-cols-2 grid-rows-1 -ml-16" id="case_ear">
-                                                <div id="setting_title" class=" text-sm ml-5 text-gray-200">
-                                                    <img id="case-img" src="../assets/ear_one_white_case.png" class='mr-2 h-20 -mt-5 -mb-5 float-right' />
-                                                </div>
-                                                <div id="settings_subtitle" class="text-sm ml-5 text-white">
-                                                    <div id="battery-c" class='text-center'>
-                                                        40% CASE
-                                                    </div>
-                                                    <div id="battery_bar" class='w-20 m-auto mt-2 rounded-md bg-gray-600'>
-                                                        <div id="battery_bar_fill_c" class="bg-white h-2 w-1/2 rounded-md"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                         </div>
                                     </div>
                                     <!-- END PAGE 2 -->
@@ -318,9 +321,9 @@
                                         </svg>
                                 </div>
                             </div>
-                          
+
                         </div>
-                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300"
+                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300" style="width:305px; margin-left:100px"
                              id="pages_container_two">
                             <div id="settings_title" class="w-fit flex m-auto text-md">
                                 EQUALIZER
@@ -335,25 +338,25 @@
                                     <canvas id="myChart"></canvas>
                                 </div>
                                 <div class="grid grid-rows-2 grid-cols-2 gap-4">
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(0)"
                                             style="background-color: white; color: black;">
                                         Balanced
                                     </button>
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(3)">
                                         More Bass
                                     </button>
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(2)">
                                         More Treble
                                     </button>
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(1)">
                                         Voice
                                     </button>
                                 </div>
-                                <button class="p-2 pl-4 mt-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                <button class="eq-button p-2 pl-4 mt-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                         onclick="EQButtonPress(5)">
                                     Custom
                                 </button>
@@ -364,16 +367,17 @@
                 <div id="settings_subtitle" class="text-[8px] text-center mt-5 text-gray-500">
                     This app is an unofficial app for Nothing(R) Ear Products, Nothing Technology Limited is not responsible for the content of this app or any of its features.<br /> This app is not endorsed by Nothing Technology Limited and is not affiliated with Nothing Technology Limited in any way.
                 </div>
-                
+
             </div>
         </div>
     </div>
     <script src="../js/transitions.js"></script>
-    <script src="../js/two.js"></script>
     <script src="../js/eq_two.js"></script>
-    <script type="text/javascript" src="http://localhost:17079/js/control.js"></script>
+    <script type="text/javascript" src="../js/control.js"></script>
+    <script src="../js/two.js"></script>
+    <script src="../js/bluetooth_socket.js"></script>
     <script type="text/javascript">
-        eel.expose(updateBattery);
+        /*eel.expose(updateBattery);
         eel.expose(getDevicesForList);
         eel.expose(connectDeviceFromList);
         eel.expose(showErrorPopup);
@@ -393,9 +397,10 @@
         eel.expose(setCustomEQ);
         eel.expose(setPersonalAncCheckbox);
         eel.expose(earTipStateStatus);
-        eel.expose(closeElectronInstance);
+        eel.expose(closeElectronInstance);*/
         window.addEventListener('load', () => {
-            eel.initData();
+            //eel.initData();
+            updateBudsInfo();
         });
     </script>
 </body>

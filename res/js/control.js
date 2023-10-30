@@ -29,7 +29,12 @@ function getImageForModel(modelID) {
     return modelInfo.rightImg;
 }
 
-function updateBudsInfo(modelID) {
+function updateBudsInfo() {
+    //get GET parameter from URL
+    var modelID = window.location.search.substring(1).split("=")[1];
+    //cut to 6 characters
+    modelID = modelID.substring(0, 6);
+    console.log(modelID);
     var modelInfo = getModelInfo(modelID);
     var leftBudImg = document.querySelector("#left_ear_peace");
     var caseImg = document.querySelector("#case-img");
@@ -127,9 +132,9 @@ function setInEarCheckbox(status) {
 
 function setInEar() {
     if (document.getElementById("in_ear").checked) {
-        eel.setInEar(1);
+        setInEar_BT(1);
     } else {
-        eel.setInEar(0);
+        setInEar_BT(0);
     }
 }
 
@@ -145,9 +150,9 @@ function setLatencyModeCheckbox(status) {
 //set latency mode
 function setLatencyMode() {
     if (document.getElementById("low_latency").checked) {
-        eel.setLatency(1);
+        setLatency(1);
     } else {
-        eel.setLatency(0);
+        setLatency(0);
     }
 }
 
@@ -173,7 +178,15 @@ function showErrorPopup(message) {
     }, 10000);
 }
 
-
+function switchViewFromModelID(modelID) {
+    if (modelID == "31d53d" || modelID == "624011") {
+        window.location.href = "MainControl_one.html";
+    } else if (modelID == "1016dd") {
+        window.location.href = "MainControl_sticks.html";
+    } else if (modelID == "dee8c0" || modelID == "acc520") {
+        window.location.href = "MainControl_two.html";
+    }
+}
 
 function toggleConnectionOverlay(show, model, isTray) {
     var tray;

@@ -10,7 +10,7 @@ let rightStateEarTipTest = undefined
 //---------------------------------------------------------------------------------//
 
 //CURRENTLY SELLECTED BUD ON THE SETTINGS PAGE
-var current_site;
+var current_side;
 
 //VARS FOR GESTURE SETTINGS, OVERWRITING THHESE WITH EEL WILL MAKE THE TEXT APRPEAR IN THE SETTINGS PAGE ON INITIAL LOAD.
 //IF YOU CLICK A BUTTON, IT WILL OVERWRITE THIS VARS AGAIN AND YOU CAN READ THE CONTEXT WITH EEL. YOU JUST NEED TO CHECK 
@@ -28,6 +28,10 @@ var right_double_pinch_and_hold_current = double_pinch_and_hold[0];
 var left_double_pinch_and_hold_current = double_pinch_and_hold[0];
 var right_double_pinch_current = double_pinch[0];
 var left_double_pinch_current = double_pinch[0];
+var anc_selector_pinch_double_l = anc_selector_pinch_double[0];
+var anc_selector_pinch_double_r = anc_selector_pinch_double[0];
+var anc_selector_pinch_l = anc_selector_pinch[0];
+var anc_selector_pinch_r = anc_selector_pinch[0];
 
 // 0 = On, 1 = transparent, 2 = Off
 var ANC_type = 1;
@@ -42,13 +46,13 @@ async function ringBudLeft(e) {
         document.getElementById("ring_button-l").style.backgroundColor = ""
         document.getElementById("ring_button-l").style.color = ""
         document.getElementById("ring_button-l").innerText = "Ring"
-        eel.ringBuds(0, true)
+        ringBuds(0, true)
     } else {
         e.add("ringing-l")
         document.getElementById("ring_button-l").style.backgroundColor = "#7f1d1d"
         document.getElementById("ring_button-l").style.color = "#ffffff"
         document.getElementById("ring_button-l").innerText = "STOP"
-        eel.ringBuds(1, true)
+        ringBuds(1, true)
     }
 }
 
@@ -59,21 +63,21 @@ async function ringBudRight(e) {
         document.getElementById("ring_button-r").style.backgroundColor = ""
         document.getElementById("ring_button-r").style.color = ""
         document.getElementById("ring_button-r").innerText = "Ring"
-        eel.ringBuds(0, false)
+        ringBuds(0, false)
     } else {
         e.add("ringing-l")
         document.getElementById("ring_button-r").style.backgroundColor = "#7f1d1d"
         document.getElementById("ring_button-r").style.color = "#ffffff"
         document.getElementById("ring_button-r").innerText = "STOP"
-        eel.ringBuds(1, false)
+        ringBuds(1, false)
     }
 }
 
 function setPersonalAnc() {
     if (document.getElementById("personalizedANC").checked) {
-        eel.setPersonalizedANC(1);
+        setPersonalizedANC(1);
     } else {
-        eel.setPersonalizedANC(0);
+        setPersonalizedANC(0);
     }
 }
 
@@ -103,7 +107,7 @@ ringButton = document.getElementById("ring_button")
 var intro_timeout;
 var intro_timeout2;
 
-intro_timeout = setTimeout(() => {
+/*intro_timeout = setTimeout(() => {
     leftEarPeace.style.marginTop = "0px"
     rightEarPeace.style.marginTop = "0px"
 
@@ -115,7 +119,7 @@ intro_timeout = setTimeout(() => {
         // settings_icon.style.opacity = "100"
     }, 2000)
 }, 500)
-
+*/
 function showEarTipTestDialog() {
     document.getElementById("popup_container").style.opacity = "100"
     document.getElementById("popup_container").style.zIndex = "1000"
@@ -210,7 +214,7 @@ function showEarTipTestDialog() {
     document.getElementById("again").onclick = function () {
         leftStateEarTipTest = "launch"
         rightStateEarTipTest = "launch"
-        eel.launchEarFitTest()
+        launchEarFitTest()
         showEarTipTestDialog()
     }
     document.getElementById("doneTestTip").onclick = function () {
@@ -371,7 +375,7 @@ function getANCtoggleFunction(ancList) {
 
 function loadCurrentGestures(side, refresh = true) {
     if (refresh) {
-        eel.sendGetGesture();
+        sendGetGesture();
     }
     current_side = side
     //LOAD ALL VALUES BASED ON CURRENT SIDE
@@ -409,7 +413,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(2, 2, operation)
+                sendGestures(2, 2, operation)
             }
             if (current_site == "r") {
                 right_double_pinch_current = document.getElementById("list_container").value;
@@ -418,7 +422,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(3, 2, operation)
+                sendGestures(3, 2, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
             closePopUp()
@@ -442,7 +446,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(2, 3, operation)
+                sendGestures(2, 3, operation)
             }
             if (current_site == "r") {
                 right_triple_pinch_current = document.getElementById("list_container").value;
@@ -451,7 +455,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(3, 3, operation)
+                sendGestures(3, 3, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
             closePopUp()
@@ -495,7 +499,7 @@ function changeGesture(type) {
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
                 else if (index == 4) operation = 1;
-                eel.sendGestures(2, 9, operation)
+                sendGestures(2, 9, operation)
             }
             if (current_site == "r") {
                 right_double_pinch_and_hold_current = document.getElementById("list_container").value;
@@ -506,7 +510,7 @@ function changeGesture(type) {
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
                 else if (index == 4) operation = 1;
-                eel.sendGestures(3, 9, operation)
+                sendGestures(3, 9, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
             if (document.getElementById("list_container").value != "Noise control") closePopUp()
@@ -549,7 +553,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
-                eel.sendGestures(2, 7, operation)
+                sendGestures(2, 7, operation)
             }
             if (current_site == "r") {
                 right_pinch_and_hold_current = document.getElementById("list_container").value;
@@ -559,7 +563,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
-                eel.sendGestures(3, 7, operation)
+                sendGestures(3, 7, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
             if (document.getElementById("list_container").value != "Noise control") closePopUp()
@@ -582,13 +586,13 @@ function checkboxCheck(evt, selected_gesture) {
         if (selected_gesture == "anc_selector_pinch") {
             var index = Array.prototype.indexOf.call(checkboxes, evt.target);
             anc_selector_pinch[index] = anc_selector_pinch[index] == 1 ? 0 : 1;
-            eel.sendGestures(2, 7, getANCtoggleFunction(anc_selector_pinch))
-            eel.sendGestures(3, 7, getANCtoggleFunction(anc_selector_pinch))
+            sendGestures(2, 7, getANCtoggleFunction(anc_selector_pinch))
+            sendGestures(3, 7, getANCtoggleFunction(anc_selector_pinch))
         } else if (selected_gesture == "anc_selector_pinch_double") {
             var index = Array.prototype.indexOf.call(checkboxes, evt.target);
             anc_selector_pinch_double[index] = anc_selector_pinch_double[index] == 1 ? 0 : 1;
-            eel.sendGestures(2, 9, getANCtoggleFunction(anc_selector_pinch_double_l))
-            eel.sendGestures(3, 9, getANCtoggleFunction(anc_selector_pinch_double_r))
+            sendGestures(2, 9, getANCtoggleFunction(anc_selector_pinch_double_l))
+            sendGestures(3, 9, getANCtoggleFunction(anc_selector_pinch_double_r))
         }
     }
 }
@@ -626,8 +630,8 @@ function setANC(typeANC) {
             type = 6;
         }
     }
-    eel.setANCDisplay(type);
-    eel.setANC(type);
+    setANCDisplay(type);
+    setANC_BT(type);
 }
 
 function setAncToNC() {
@@ -708,6 +712,9 @@ function setAncStrengthAdaptive() {
 
 
 function setBattery(side, percentage) {
+    if (percentage === undefined) {
+        percentage = "DISCONNECTED"
+    }
     if (side == "l") {
         document.getElementById("left_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
         document.getElementById("left_ear").style.zIndex = percentage == "DISCONNECTED" ? "-1" : "1";
