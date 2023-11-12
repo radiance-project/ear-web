@@ -9,16 +9,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@1.1.3/dist/chartjs-plugin-dragdata.min.js"></script>
     <link href="../global.css" rel="stylesheet" />
-    <script type="text/javascript" src="http://localhost:17079/eel.js"></script>
 
 </head>
 
-<body style="width: 800px; height: 710px;">
+<body style="width: 100%; height: 100%;">
     <div id="container_one"
-         class=" w-fit bg-black/75 text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+         class=" w-fit bg-black/75 text-white overflow-hidden float-right ease-in-out duration-300"
+         style="font-family: NothingNormal2; height: 100%; width: 100%; ">
         <div id="container_two" class=" w-fit bg-black/50 backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2;  height: 710px; width: 800px; margin-top: -20px; ">
+             style="font-family: NothingNormal2; height: 100%; width: 100%; margin-top: -20px; ">
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
                 <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
                 <div id="popup_content" class="z-[-10]">
@@ -28,8 +27,6 @@
 
             <section class="w-full h-8 absolute" style="z-index: 300;">
                 <div id="draggable" class="w-[750px] h-8 absolute"></div>
-                <div style="font-family: Ndot-55; float: right; margin-right: 20px; margin-top: 5px; cursor: pointer; z-index: 400;"
-                     onclick="window.close()">_</div>
             </section>
             <section onclick="transBackToLeft('MainControl')"
                      style="z-index: 100; opacity: 0; position: absolute; top: 20px; cursor: pointer;" id="back">
@@ -115,13 +112,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" class="relative">
+                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" class="relative" style="justify-content: space-between;display: flex;width: 70%;margin-left:auto;margin-right:auto;">
                         <div id="pages_container" class="ease-in-out duration-300" style="opacity: 100; width: 305px; ">
                             <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 h-60 h-auto">
                                 <div id="settings_title" class="w-fit flex m-auto text-md mb-5">
                                     QUICK SETTINGS
                                 </div>
                                 <div class="p-5 -mt-5">
+                                    <button id="sppconn" onclick="connectSPP()">Connect</button>
                                     <div class="settings-switch-container">
                                         <div id="inearswitchbutton" class="settings-switch-button">
                                             <div id="inearswitchindicator" class="settings-switch-indicator">
@@ -151,12 +149,13 @@
                                         <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
                                             1.0.0
                                         </div>
+                                        <!--
                                         <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
                                             Bluetooth Adress
                                         </div>
                                         <div id="settings_subtitle_mac" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
                                             00:00:00:00:00:00
-                                        </div>
+                                        </div>-->
                                     </div>
                                 </div>
                             </div>
@@ -174,7 +173,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300"
+                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300" style="width:305px"
                              id="pages_container_two">
                             <div id="settings_title" class="w-fit flex m-auto text-md">
                                 EQUALIZER
@@ -189,25 +188,25 @@
                                     <canvas id="myChart"></canvas>
                                 </div>
                                 <div class="grid grid-rows-2 grid-cols-2 gap-4">
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(0)"
                                             style="background-color: white; color: black;">
                                         Balanced
                                     </button>
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(3)">
                                         More Bass
                                     </button>
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(2)">
                                         More Treble
                                     </button>
-                                    <button class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(1)">
                                         Voice
                                     </button>
                                 </div>
-                                <button class="p-2 pl-4 mt-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                <button class="eq-button p-2 pl-4 mt-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                         onclick="EQButtonPress(5)">
                                     Custom
                                 </button>
@@ -224,9 +223,10 @@
     <script src="../js/transitions.js"></script>
     <script src="../js/sticks.js"></script>
     <script src="../js/eq_sticks.js"></script>
-    <script type="text/javascript" src="http://localhost:17079/js/control.js"></script>
+    <script type="text/javascript" src="../js/control.js"></script>
+    <script src="../js/bluetooth_socket.js"></script>
     <script type="text/javascript">
-        eel.expose(updateBattery);
+        /*eel.expose(updateBattery);
         eel.expose(getDevicesForList);
         eel.expose(connectDeviceFromList);
         eel.expose(showErrorPopup);
@@ -243,9 +243,10 @@
         eel.expose(setMacAdressText);
         eel.expose(setEQfromRead);
         eel.expose(updateGesturesFromArray);
-        eel.expose(setCustomEQ);
+        eel.expose(setCustomEQ);*/
         window.addEventListener('load', () => {
-            eel.initData();
+            //eel.initData();
+            updateBudsInfo();
         });
     </script>
 </body>

@@ -7,7 +7,7 @@ var double_pinch_and_hold = ["No action", "Volume UP", "Volume Down", "Voice Ass
 //---------------------------------------------------------------------------------//
 
 //CURRENTLY SELLECTED BUD ON THE SETTINGS PAGE
-var current_site;
+var current_side;
 
 //VARS FOR GESTURE SETTINGS, OVERWRITING THHESE WITH EEL WILL MAKE THE TEXT APRPEAR IN THE SETTINGS PAGE ON INITIAL LOAD.
 //IF YOU CLICK A BUTTON, IT WILL OVERWRITE THIS VARS AGAIN AND YOU CAN READ THE CONTEXT WITH EEL. YOU JUST NEED TO CHECK 
@@ -35,13 +35,13 @@ async function ringBudLeft(e) {
         document.getElementById("ring_button-l").style.backgroundColor = ""
         document.getElementById("ring_button-l").style.color = ""
         document.getElementById("ring_button-l").innerText = "Ring"
-        eel.ringBuds(0, true)
+        ringBuds(0, true)
     } else {
         e.add("ringing-l")
         document.getElementById("ring_button-l").style.backgroundColor = "#7f1d1d"
         document.getElementById("ring_button-l").style.color = "#ffffff"
         document.getElementById("ring_button-l").innerText = "STOP"
-        eel.ringBuds(1, true)
+        ringBuds(1, true)
     }
 }
 
@@ -52,13 +52,13 @@ async function ringBudRight(e) {
         document.getElementById("ring_button-r").style.backgroundColor = ""
         document.getElementById("ring_button-r").style.color = ""
         document.getElementById("ring_button-r").innerText = "Ring"
-        eel.ringBuds(0, false)
+        ringBuds(0, false)
     } else {
         e.add("ringing-l")
         document.getElementById("ring_button-r").style.backgroundColor = "#7f1d1d"
         document.getElementById("ring_button-r").style.color = "#ffffff"
         document.getElementById("ring_button-r").innerText = "STOP"
-        eel.ringBuds(1, false)
+        ringBuds(1, false)
     }
 }
 
@@ -178,7 +178,7 @@ function updateGesturesFromArray(array) {
 }
 
 function loadCurrentGestures(side) {
-    eel.sendGetGesture()
+    sendGetGesture()
     current_side = side
     //LOAD ALL VALUES BASED ON CURRENT SIDE
     if (side == "l") {
@@ -218,7 +218,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(2, 2, operation)
+                sendGestures(2, 2, operation)
             }
             if (current_site == "r") {
                 right_double_pinch_current = document.getElementById("list_container").value;
@@ -227,7 +227,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(3, 2, operation)
+                sendGestures(3, 2, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => {})
             closePopUp()
@@ -254,7 +254,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(2, 3, operation)
+                sendGestures(2, 3, operation)
             }
             if (current_site == "r") {
                 right_triple_pinch_current = document.getElementById("list_container").value;
@@ -263,7 +263,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(3, 3, operation)
+                sendGestures(3, 3, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
             closePopUp()
@@ -291,7 +291,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
-                eel.sendGestures(2, 9, operation)
+                sendGestures(2, 9, operation)
             }
             if (current_site == "r") {
                 right_double_pinch_and_hold_current = document.getElementById("list_container").value;
@@ -301,7 +301,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
-                eel.sendGestures(3, 9, operation)
+                sendGestures(3, 9, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
             closePopUp()
@@ -328,7 +328,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 18;
                 else if (index == 1) operation = 19;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(2, 7, operation)
+                sendGestures(2, 7, operation)
             }
             if (current_site == "r") {
                 right_pinch_and_hold_current = document.getElementById("list_container").value;
@@ -337,7 +337,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 18;
                 else if (index == 1) operation = 19;
                 else if (index == 2) operation = 11;
-                eel.sendGestures(3, 7, operation)
+                sendGestures(3, 7, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
             closePopUp()
