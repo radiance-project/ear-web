@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<script type="text/javascript" src="http://localhost:17079/eel.js"></script>
 <script src="../js/one.js"></script>
 <html lang="en">
 
@@ -7,17 +6,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ear (1)</title>
+    <title>Ear (PC)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <link href="../global.css" rel="stylesheet" />
 </head>
 
-<body style="width: 800px; height: 710px;">
+<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
     <div id="container_one"
-         class=" w-fit bg-black/75 text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
+         class=" w-fit  text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
          style="font-family: NothingNormal2; height: 710px; width: 800px;">
 
-        <div id="container_two" class=" w-fit bg-black/50 backdrop-blur-2xl text-white ease-in-out duration-300"
+        <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
              style="font-family: NothingNormal2;  height: 710px; width: 800px; margin-top: -20px; ">
 
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
@@ -27,11 +26,7 @@
                 </div>
             </div>
 
-            <section class="w-full h-8 absolute" style="z-index: 300;">
-                <div id="draggable" class="w-[750px] h-8 absolute"></div>
-                <div style="font-family: Ndot-55; float: right; margin-right: 20px; margin-top: 5px; cursor: pointer; z-index: 400;"
-                     onclick="window.close()">_</div>
-            </section>
+
             <section onclick="transBackToLeft('MainControl')"
                      style="z-index: 100; opacity: 0; position: absolute; top: 20px; cursor: pointer;" id="back">
                 <svg width="30" height="30" class="ml-8 mb-5">
@@ -101,11 +96,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="ring_button" class="text-center m-auto w-fit -mb-8 mt-3 ease-in-out duration-300" onclick="ringBuds()">
+                        <div id="ring_button" class="text-center m-auto w-fit -mb-8 mt-3 ease-in-out duration-300" onclick="ringBuds_UI()">
                             <div id="ring_button-c" class="p-1 pl-7 -mr-32 pr-7 border-red-900 border-[2px] text-red-900 cursor-pointer font-bold  rounded-full mr-3 text-sm hover:bg-red-900 hover:text-white ease-in-out duration-300">Ring</div>
                         </div>
                     </div>
-
+                    <button id="sppconn" onclick="connectSPP()">Connect</button>
                     <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 mt-0 -mb-3" style="margin-bottom: 60px;">
                         <div id="pages_container" class="ease-in-out duration-300" style="opacity: 100; width: 305px; height: 270px;">
                             <div id="eq_container" class="mt-12 bg-[#1B1D1F] ease-in-out duration-300 rounded-xl pt-2 pb-2 " style="height: 210px;">
@@ -204,12 +199,13 @@
                                                 <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
                                                     1.0.0
                                                 </div>
+                                                <!--
                                                 <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
                                                     Bluetooth Adress
                                                 </div>
                                                 <div id="settings_subtitle_mac" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
                                                     00:00:00:00:00:00
-                                                </div>
+                                                </div>-->
                                             </div>
                                         </div>
                                     </div>
@@ -257,7 +253,7 @@
                             </div>
                             <div class="rounded-xl pt-5 pb-5 mt-1 grid grid-cols-2 grid-rows-1 -ml-16" id="case_ear">
                                 <div id="setting_title" class=" text-sm ml-5 text-gray-200">
-                                    <img id="case-img" src="../assets/ear_one_white_case.png" class='mr-2 h-20 -mt-5 -mb-5 float-right' onclick="selectCaseColorPopup()"/>
+                                    <img id="case-img" src="../assets/ear_one_white_case.png" class='mr-2 h-20 -mt-5 -mb-5 float-right' onclick="selectCaseColorPopup()" />
                                 </div>
                                 <div id="settings_subtitle" class="text-sm ml-5 text-white">
                                     <div id="battery-c" class='text-center'>
@@ -279,20 +275,20 @@
                                     <canvas id="myChart"></canvas>
                                 </div>
                                 <div class="grid grid-rows-2 grid-cols-2 gap-4 -mb-3">
-                                    <button id="buttonEQBalanced" class="p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button id="buttonEQBalanced" class="eq-button p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(0)"
                                             style="background-color: white; color: black;">
                                         Balanced
                                     </button>
-                                    <button id="buttonEQBass" class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button id="buttonEQBass" class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(3)">
                                         More Bass
                                     </button>
-                                    <button id="buttonEQTreble" class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button id="buttonEQTreble" class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(2)">
                                         More Treble
                                     </button>
-                                    <button id="buttonEQVoice" class="p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button id="buttonEQVoice" class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(1)">
                                         Voice
                                     </button>
@@ -310,8 +306,10 @@
     <script src="../js/transitions.js"></script>
     <script src="../js/one.js"></script>
     <script src="../js/eq_one.js"></script>
-    <script type="text/javascript" src="http://localhost:17079/js/control.js"></script>
+    <script type="text/javascript" src="../js/control.js"></script>
+    <script src="../js/bluetooth_socket.js"></script>
     <script type="text/javascript">
+        /*
         eel.expose(updateBattery);
         eel.expose(getDevicesForList);
         eel.expose(connectDeviceFromList);
@@ -334,9 +332,10 @@
         eel.expose(setFirmwareText);
         eel.expose(setMacAdressText);
         eel.expose(updateGesturesFromArray);
-        eel.expose(getCaseColor);
+        eel.expose(getCaseColor);*/
         window.addEventListener('load', () => {
-            eel.initData();
+            //eel.initData();
+            updateBudsInfo();
         });
     </script>
 </body>

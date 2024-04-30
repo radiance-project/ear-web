@@ -12,12 +12,12 @@
 
 </head>
 
-<body style="width: 100%; height: 100%;">
+<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
     <div id="container_one"
-         class=" w-fit bg-black/75 text-white overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 100%; width: 100%; ">
-        <div id="container_two" class=" w-fit bg-black/50 backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2; height: 100%; width: 100%; margin-top: -20px; ">
+         class=" w-fit text-white overflow-hidden float-right ease-in-out duration-300"
+         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+        <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
+             style="font-family: NothingNormal2; height: 710px; width: 800px; margin-top: -20px; ">
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
                 <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
                 <div id="popup_content" class="z-[-10]">
@@ -112,14 +112,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" class="relative" style="justify-content: space-between;display: flex;width: 70%;margin-left:auto;margin-right:auto;">
+
+                    <button id="sppconn" onclick="connectSPP()">Connect</button>
+                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" class="relative">
                         <div id="pages_container" class="ease-in-out duration-300" style="opacity: 100; width: 305px; ">
                             <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 h-60 h-auto">
                                 <div id="settings_title" class="w-fit flex m-auto text-md mb-5">
                                     QUICK SETTINGS
                                 </div>
                                 <div class="p-5 -mt-5">
-                                    <button id="sppconn" onclick="connectSPP()">Connect</button>
                                     <div class="settings-switch-container">
                                         <div id="inearswitchbutton" class="settings-switch-button">
                                             <div id="inearswitchindicator" class="settings-switch-indicator">
@@ -150,12 +151,12 @@
                                             1.0.0
                                         </div>
                                         <!--
-                                        <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
-                                            Bluetooth Adress
-                                        </div>
-                                        <div id="settings_subtitle_mac" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
-                                            00:00:00:00:00:00
-                                        </div>-->
+                        <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
+                            Bluetooth Adress
+                        </div>
+                        <div id="settings_subtitle_mac" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
+                            00:00:00:00:00:00
+                        </div>-->
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +174,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300" style="width:305px"
+                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300"
                              id="pages_container_two">
                             <div id="settings_title" class="w-fit flex m-auto text-md">
                                 EQUALIZER

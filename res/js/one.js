@@ -4,7 +4,7 @@ var tap_and_hold = ["Change ANC type", "No action"];
 //---------------------------------------------------------------------------------//
 
 //CURRENTLY SELLECTED BUD ON THE SETTINGS PAGE
-var current_site;
+var current_side;
 
 //VARS FOR GESTURE SETTINGS, OVERWRITING THHESE WITH EEL WILL MAKE THE TEXT APRPEAR IN THE SETTINGS PAGE ON INITIAL LOAD.
 //IF YOU CLICK A BUTTON, IT WILL OVERWRITE THIS VARS AGAIN AND YOU CAN READ THE CONTEXT WITH EEL. YOU JUST NEED TO CHECK 
@@ -27,19 +27,19 @@ var ANC_strength = 0;
 var colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
 
-async function ringBuds(){
+async function ringBuds_UI(){
    //TOOGLE RINGING
    var e = document.getElementById("ring_button-c").classList
    if(e.contains("ringing")){
        e.remove("ringing")
        document.getElementById("ring_button-c").style = ""
        document.getElementById("ring_button-c").innerText = "Ring"
-       eel.ringBuds(0)
+       ringBuds(0)
    }else{
        e.add("ringing")
        document.getElementById("ring_button-c").style = "background-color: #7f1d1d; color: #ffffff;"
        document.getElementById("ring_button-c").innerText = "STOP"
-       eel.ringBuds(1)
+       ringBuds(1)
    }
 }
 //---------------------------------------------------------------------------------//
@@ -125,7 +125,7 @@ function updateGesturesFromArray(array) {
 }
 
 function loadCurrentGestures(side) {
-    eel.sendGetGesture()
+    sendGetGesture()
         current_side = side
         //LOAD ALL VALUES BASED ON CURRENT SIDE
         if (side == "l") {
@@ -164,7 +164,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
                 else if (index == 3) operation = 1;
-                eel.sendGestures(2, 3, operation)
+                sendGestures(2, 3, operation)
             }
             if (current_site == "r") {
                 right_triple_tap_current = document.getElementById("list_container").value;
@@ -174,9 +174,9 @@ function changeGesture(type) {
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
                 else if (index == 3) operation = 1;
-                eel.sendGestures(3, 3, operation)  
+                sendGestures(3, 3, operation)  
             }
-            document.getElementById("list_container").removeEventListener("change")
+            document.getElementById("list_container").removeEventListener("change", () => { })
             closePopUp()
         })
     } else if (type == "hold") {
@@ -203,7 +203,7 @@ function changeGesture(type) {
                         var operation = 0;
                         if (index == 0) operation = 10;
                         else if (index == 1) operation = 1;
-                        eel.sendGestures(2, 7, operation)
+                        sendGestures(2, 7, operation)
                     }
                     if (current_site == "r") {
                         right_tap_and_hold_current = document.getElementById("list_container").value;
@@ -211,9 +211,9 @@ function changeGesture(type) {
                         var operation = 0;
                         if (index == 0) operation = 10;
                         else if (index == 1) operation = 1;
-                        eel.sendGestures(3, 7, operation)
+                        sendGestures(3, 7, operation)
                     }
-                    document.getElementById("list_container").removeEventListener("change")
+                    document.getElementById("list_container").removeEventListener("change", () => {})
                     closePopUp()
                 })
     }
@@ -247,8 +247,8 @@ function setANC(typeANC) {
         type = ANC_strength === 1 ? 3 : 4;
     }
 
-    eel.setANCDisplay(type);
-    eel.setANC(type);
+    setANCDisplay(type);
+    setANC_BT(type);
 }
 
 
@@ -341,7 +341,7 @@ function getCaseColor(array) {
 }
 
 function selectCaseColorPopup() {
-    eel.getLEDCaseColor()
+    getLEDCaseColor()
     document.getElementById("popup_container").style.opacity = "100"
     document.getElementById("popup_container").style.zIndex = "1000"
     document.getElementById("popup_content").style.zIndex = "1001"
@@ -386,6 +386,6 @@ function saveCaseColor() {
         colors_converted.push([r, g, b]);
     }
     colors_converted = [colors_converted[2], colors_converted[1], colors_converted[0], colors_converted[3], colors_converted[4]];
-    eel.sendLEDCaseColor(colors_converted);
+    sendLEDCaseColor(colors_converted);
     closePopUp()
 }

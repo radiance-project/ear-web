@@ -72,7 +72,7 @@ var data = {
 drawChart(data);
 
 function EQButtonPress(level) {
-    eel.setEQ(level);
+    setEQ(level);
     setEQfromRead(level);
 }
 
@@ -180,7 +180,7 @@ async function drawChart(data) {
 }
 
 function clearButtons(){
-    var buttons = document.getElementsByTagName('button');
+    var buttons = document.getElementsByClassName("eq-button");
     for (let i = 0; i < buttons.length; i++) {
         let button = buttons[i];
         button.style.backgroundColor = "#000000";

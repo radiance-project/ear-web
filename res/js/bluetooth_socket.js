@@ -124,6 +124,9 @@ async function connectSPP() {
             if (command === 16449) {
                 readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
+            if (command === 16407) {
+                readLEDCaseColor(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+            }
             if (command === 16408) {
                 readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
@@ -350,6 +353,43 @@ function fromFormatFloatForEQ(array) {
 
 
 
+function readLEDCaseColor(hexString) {
+    if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
+        console.log("readLEDCaseColor called");
+        const hexArray = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+        const numberOfLed = hexArray[8];
+        console.log(hexArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
+
+        const ledArray = [];
+        for (let i = 0; i < numberOfLed; i++) {
+            ledArray.push([
+                hexArray[10 + (i * 4)],
+                hexArray[11 + (i * 4)],
+                hexArray[12 + (i * 4)]
+            ]);
+        }
+
+        const ledArrayString = ledArray.map(led => `#${led.map(value => value.toString(16).padStart(2, '0')).join('')}`);
+        getCaseColor([ledArrayString[2], ledArrayString[1], ledArrayString[0], ledArrayString[3], ledArrayString[4]]);
+    }
+}
+
+function sendLEDCaseColor(colorArray) {
+    console.log("sendLEDCaseColor called");
+    console.log(colorArray);
+    if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
+        let bytearray = [0x05, 0x01, 0xff, 0xff, 0xff, 0x02, 0xff, 0xff, 0xff, 0x03, 0xff, 0xff, 0xff, 0x04, 0xff, 0xff, 0xff, 0x05, 0xff, 0xff, 0xff];
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 3; j++) {
+                bytearray[2 + (i * 4) + j] = colorArray[i][j];
+            }
+        }
+        send(61453, bytearray);
+    }
+}
+
+
+
 
 
 
@@ -374,12 +414,12 @@ function readCustomEQ(hexString) {
 }
 
 function ringBuds(isRing, isLeft = false) {
-    let byteArray = [];
+    let byteArray = [0x00];
     if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
         if (isRing) {
-            byteArray.push(0x01);
+            byteArray[0] = 0x01;
         } else {
-            byteArray.push(0x00);
+            byteArray[0] = 0x00;
         }
         send(61442, byteArray);
     } else if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
@@ -400,6 +440,11 @@ function getFirmware() {
     send(49218, [], "readFirmware");
 }
 
+function getLEDCaseColor() {
+    if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
+        send(49175, [], "readLEDCaseColor");
+    }
+}
 function readFirmware(hexstring) {
     let firmwareVersion = "";
     let hexArray = new Uint8Array(hexstring.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
