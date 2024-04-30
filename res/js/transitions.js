@@ -113,7 +113,7 @@ function transBackToLeft(e) {
 var current_timeout;
 var current_timeout_fade;
 
-function switchPage(page) {
+function switchPage(page, force = false) { 
     var page_1 = document.getElementById("page_1_container");
     var page_2 = document.getElementById("page_2_container");
 
@@ -121,9 +121,9 @@ function switchPage(page) {
     current_timeout_fade ? clearTimeout(current_timeout_fade) : ""
 
     //IF PAGE IS THE LAST, GO BACK TO THE FIRST PAGE
-    if (current_page == 1 && page == 1) {
+    if (current_page == 1 && page == 1 && force == false) {
         page = 0
-    }else if(current_page == 0 && page == 0) {
+    }else if(current_page == 0 && page == 0 && force == false){
         page = 1
     }
 

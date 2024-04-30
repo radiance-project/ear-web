@@ -9,6 +9,8 @@ var double_pinch_and_hold = ["No action", "Volume UP", "Volume Down", "Voice Ass
 //CURRENTLY SELLECTED BUD ON THE SETTINGS PAGE
 var current_side;
 
+var ANC_type = 1;
+
 //VARS FOR GESTURE SETTINGS, OVERWRITING THHESE WITH EEL WILL MAKE THE TEXT APRPEAR IN THE SETTINGS PAGE ON INITIAL LOAD.
 //IF YOU CLICK A BUTTON, IT WILL OVERWRITE THIS VARS AGAIN AND YOU CAN READ THE CONTEXT WITH EEL. YOU JUST NEED TO CHECK 
 //IF THESE VARS ARE BEEING UPDATED OR NOT. IF THEY ARE, THEN YOU KNOW THAT THE USER HAS CHANGED THE SETTINGS AND YOU CAN
@@ -344,6 +346,59 @@ function changeGesture(type) {
         })
     }
 }
+
+function setAncStrengthMid(typeANC) { }
+function setAncStrengthHigh(typeANC) { }
+function setANC(typeANC) {
+    switch (typeANC) {
+        case 0:
+            setAncToNC();
+            break;
+        case 2:
+            setAncToOff();
+            break;
+        default:
+            break;
+    }
+
+    let type = 0;
+    if (typeANC === 2) type = 1;
+    else if (typeANC === 0) type = 4;
+
+    setANCDisplay(type);
+    setANC_BT(type);
+}
+
+function displayANC(display) {
+    if (display) {
+        switchPage(1, true);
+        document.querySelector("#page_selector").style.display = "grid";
+    }
+    else {
+        switchPage(0, true);
+        document.querySelector("#page_selector").style.display = "none";
+    }
+}
+
+
+function setAncToNC() {
+    document.getElementById("selector").style.marginLeft = "64px"
+    document.getElementById("ANC_on").style.fill = "black"
+    document.getElementById("anc_off").style.fill = "white"
+
+    ANC_type = 0;
+}
+
+
+function setAncToOff() {
+    document.getElementById("selector").style.marginLeft = "159px"
+    document.getElementById("anc_off").style.fill = "black"
+    document.getElementById("ANC_on").style.fill = "white"
+
+    ANC_type = 2;
+}
+
+
 
 function setBattery(side, percentage) {
     if (side == "l") {

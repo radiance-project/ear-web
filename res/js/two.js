@@ -687,6 +687,8 @@ function setAncStrengthMid() {
     ANC_strength = 2;
 }
 
+function displayANC(display) { }
+
 function setAncStrengthLow() {
     if (!document.getElementById("stage_one_button")) return;
     document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"

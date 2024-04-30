@@ -60,6 +60,8 @@ async function initDevice() {
     await new Promise(resolve => setTimeout(resolve, 100));
     sendGetGesture();
     await new Promise(resolve => setTimeout(resolve, 100));
+    sendANCread();
+    await new Promise(resolve => setTimeout(resolve, 100));
 }
 
 async function connectSPP() {
@@ -129,6 +131,9 @@ async function connectSPP() {
             }
             if (command === 16408) {
                 readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+            }
+            if (command === 16414) {
+                readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
 
             if (operationID >= 250) {
@@ -228,6 +233,10 @@ function setANCDisplay(level) {
     } else if (level === 6) {
         setANCStatus(6);
     }
+}
+
+function sendANCread() {
+    send(49182, [], "readANC");
 }
 
 function setANC_BT(level) {

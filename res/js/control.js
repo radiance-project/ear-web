@@ -116,6 +116,13 @@ function getDevicesForList(devices) {
 
 function setFirmwareText(firmware_text) {
     document.getElementById("settings_subtitle_firmware").innerHTML = firmware_text;
+    var firmware = firmware_text.split(".");
+    if (firmware[2] == "2") {
+        displayANC(true);
+    }
+    else {
+        displayANC(false);
+    }
 }
 
 function setMacAdressText(mac_adress_text) {

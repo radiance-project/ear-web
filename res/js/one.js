@@ -219,6 +219,7 @@ function changeGesture(type) {
     }
 }
 
+function displayANC(display) { }
 function setANC(typeANC) {
     switch (typeANC) {
         case 0:
