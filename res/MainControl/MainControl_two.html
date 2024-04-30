@@ -13,12 +13,12 @@
 
 </head>
 
-<body style="width: 100%; height: 100%;">
+<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
     <div id="container_one"
-         class=" w-fit bg-black/75 text-white overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 100%; width: 100%; ">
-        <div id="container_two" class=" w-fit bg-black/50 backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2; height: 100%; width: 100%; margin-top: -20px; ">
+         class=" w-fit text-white overflow-hidden float-right ease-in-out duration-300"
+         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+        <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
+             style="font-family: NothingNormal2; height: 710px; width: 800px; margin-top: -20px; ">
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
                 <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
                 <div id="popup_content" class="z-[-10]">
@@ -113,13 +113,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" style="width:50%; margin-left:auto; margin-right:auto" class="relative">
+
+                    <button id="sppconn" onclick="connectSPP()">Connect</button>
+                    <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" class="relative">
                         <div id="pages_container" class="ease-in-out duration-300" style="opacity: 100; width: 305px;">
                             <div id="eq_container" class="mt-12 bg-[#1B1D1F] ease-in-out duration-300 rounded-xl pt-2 pb-2 " style="height: 290px;">
                                 <div id="eq_container_t" class="relative">
                                     <!-- PAGE 1 -->
                                     <div id="page_1_container" class="ease-in-out duration-300">
-                                        <button id="sppconn" onclick="connectSPP()">Connect</button>
                                         <div class="w-fit flex m-auto text-md mb-5 mt-2">
                                             NOISE CONTROL
                                         </div>
@@ -197,7 +198,7 @@
                                                 <div style="width: 240px;">
                                                     <div class="settings-switch-label">PERSONALISED ANC</div>
                                                     <div id="settings-switch-label-desc" class="settings-switch-label text-gray-500">
-                                                        Noice cancellation calibrated to your unique hearing sensitivity.
+                                                        Noise cancellation calibrated to your unique hearing sensitivity.
                                                     </div>
                                                 </div>
                                                 <div>
@@ -253,34 +254,27 @@
                                                 <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
                                                     1.0.0
                                                 </div>
-                                                <!--<div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
-                                                    Bluetooth Adress
+                                            </div>
+                                            <div class="rounded-xl pt-5 pb-5 mt-1 grid grid-cols-2 grid-rows-1 -ml-16" id="case_ear">
+                                                <div id="setting_title" class=" text-sm ml-5 text-gray-200">
+                                                    <img id="case-img" src="../assets/ear_one_white_case.png" class='mr-2 h-20 -mt-5 -mb-5 float-right' />
                                                 </div>
-                                                <div id="settings_subtitle_mac" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
-                                                    00:00:00:00:00:00
-                                                </div>-->
-                                                <br />
-                                                <div class="rounded-xl mt-1 grid grid-cols-2 grid-rows-1 -ml-16" id="case_ear">
-                                                    <div id="setting_title" class="text-sm ml-5 text-gray-200">
-                                                        <img id="case-img" src="../assets/ear_one_white_case.png" class='mr-2 h-20 -mt-5 -mb-5 float-right' />
+                                                <div id="settings_subtitle" class="text-sm ml-5 text-white">
+                                                    <div id="battery-c" class='text-center'>
+                                                        40% CASE
                                                     </div>
-                                                    <div id="settings_info" class="text-sm ml-5 text-white flex items-center">
-                                                        <div id="battery-c" class='mr-2 text-center'>
-                                                            NONE% CASE
-                                                        </div>
-                                                        <div id="battery-bar" class='w-20 h-2 rounded-md bg-gray-600'>
-                                                            <div id="battery_bar_fill_c" class="bg-white h-full rounded-md" style="width: 50%;"></div>
-                                                        </div>
+                                                    <div id="battery_bar" class='w-20 m-auto mt-2 rounded-md bg-gray-600'>
+                                                        <div id="battery_bar_fill_c" class="bg-white h-2 w-1/2 rounded-md"></div>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                     <!-- END PAGE 2 -->
+                                    <!-- END PAGE 2 -->
                                 </div>
                             </div>
-                            <div id="selector" class="grid grid-cols-3 grid-rows-1 mt-1" id="page_selector">
+                            <div id="selector" class="grid grid-cols-3 grid-rows-1 mt-1 p-2" id="page_selector">
                                 <div id="left-arrow" onclick="switchPage(1)">
                                     <div>
                                         <svg class="hover:fill-[#1B1D1F] fill-white cursor-pointer z-10 relative duration-300 ease-in-out" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
@@ -321,7 +315,7 @@
                             </div>
 
                         </div>
-                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300" style="width:305px; margin-left:100px"
+                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300"
                              id="pages_container_two">
                             <div id="settings_title" class="w-fit flex m-auto text-md">
                                 EQUALIZER
