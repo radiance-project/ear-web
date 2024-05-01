@@ -256,13 +256,13 @@ function updateGesturesFromArray(array) {
                 if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
                     left_pinch_and_hold_current = pinch_and_hold[0];
                     if (array[i].gestureAction == 10) {
-                        anc_selector_pinch_l = [1, 1, 1]
+                        anc_selector_pinch = [1, 1, 1]
                     } else if (array[i].gestureAction == 20) {
-                        anc_selector_pinch_l = [0, 1, 1]
+                        anc_selector_pinch = [0, 1, 1]
                     } else if (array[i].gestureAction == 21) {
-                        anc_selector_pinch_l = [1, 0, 1]
+                        anc_selector_pinch = [1, 0, 1]
                     } else if (array[i].gestureAction == 22) {
-                        anc_selector_pinch_l = [1, 1, 0]
+                        anc_selector_pinch = [1, 1, 0]
                     }
                 } else if (array[i].gestureAction == 18) {
                     left_pinch_and_hold_current = pinch_and_hold[1];
@@ -275,13 +275,13 @@ function updateGesturesFromArray(array) {
                 if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
                     left_double_pinch_and_hold_current = double_pinch_and_hold[0];
                     if (array[i].gestureAction == 10) {
-                        anc_selector_pinch_double_l = [1, 1, 1]
+                        anc_selector_pinch_double = [1, 1, 1]
                     } else if (array[i].gestureAction == 20) {
-                        anc_selector_pinch_double_l = [0, 1, 1]
+                        anc_selector_pinch_double = [0, 1, 1]
                     } else if (array[i].gestureAction == 21) {
-                        anc_selector_pinch_double_l = [1, 0, 1]
+                        anc_selector_pinch_double = [1, 0, 1]
                     } else if (array[i].gestureAction == 22) {
-                        anc_selector_pinch_double_l = [1, 1, 0]
+                        anc_selector_pinch_double = [1, 1, 0]
                     }
                 } else if (array[i].gestureAction == 18) {
                     left_double_pinch_and_hold_current = double_pinch_and_hold[1];
@@ -317,13 +317,13 @@ function updateGesturesFromArray(array) {
                 if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
                     right_pinch_and_hold_current = pinch_and_hold[0];
                     if (array[i].gestureAction == 10) {
-                        anc_selector_pinch_r = [1, 1, 1]
+                        anc_selector_pinch = [1, 1, 1]
                     } else if (array[i].gestureAction == 20) {
-                        anc_selector_pinch_r = [0, 1, 1]
+                        anc_selector_pinch = [0, 1, 1]
                     } else if (array[i].gestureAction == 21) {
-                        anc_selector_pinch_r = [1, 0, 1]
+                        anc_selector_pinch = [1, 0, 1]
                     } else if (array[i].gestureAction == 22) {
-                        anc_selector_pinch_r = [1, 1, 0]
+                        anc_selector_pinch = [1, 1, 0]
                     }
                 } else if (array[i].gestureAction == 18) {
                     right_pinch_and_hold_current = pinch_and_hold[1];
@@ -336,13 +336,13 @@ function updateGesturesFromArray(array) {
                 if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
                     right_double_pinch_and_hold_current = double_pinch_and_hold[0];
                     if (array[i].gestureAction == 10) {
-                        anc_selector_pinch_double_r = [1, 1, 1]
+                        anc_selector_pinch_double = [1, 1, 1]
                     } else if (array[i].gestureAction == 20) {
-                        anc_selector_pinch_double_r = [0, 1, 1]
+                        anc_selector_pinch_double = [0, 1, 1]
                     } else if (array[i].gestureAction == 21) {
-                        anc_selector_pinch_double_r = [1, 0, 1]
+                        anc_selector_pinch_double = [1, 0, 1]
                     } else if (array[i].gestureAction == 22) {
-                        anc_selector_pinch_double_r = [1, 1, 0]
+                        anc_selector_pinch_double = [1, 1, 0]
                     }
                 } else if (array[i].gestureAction == 18) {
                     right_double_pinch_and_hold_current = double_pinch_and_hold[1];
@@ -494,7 +494,7 @@ function changeGesture(type) {
                 left_double_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = double_pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
-                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch_double_l);
+                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch_double);
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
@@ -505,7 +505,7 @@ function changeGesture(type) {
                 right_double_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = double_pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
-                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch_double_r);
+                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch_double);
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
@@ -549,7 +549,7 @@ function changeGesture(type) {
                 left_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
-                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch_l)
+                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch)
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
@@ -559,7 +559,7 @@ function changeGesture(type) {
                 right_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
-                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch_r)
+                if (index == 0) operation = getANCtoggleFunction(anc_selector_pinch)
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
@@ -591,8 +591,8 @@ function checkboxCheck(evt, selected_gesture) {
         } else if (selected_gesture == "anc_selector_pinch_double") {
             var index = Array.prototype.indexOf.call(checkboxes, evt.target);
             anc_selector_pinch_double[index] = anc_selector_pinch_double[index] == 1 ? 0 : 1;
-            sendGestures(2, 9, getANCtoggleFunction(anc_selector_pinch_double_l))
-            sendGestures(3, 9, getANCtoggleFunction(anc_selector_pinch_double_r))
+            sendGestures(2, 9, getANCtoggleFunction(anc_selector_pinch_double))
+            sendGestures(3, 9, getANCtoggleFunction(anc_selector_pinch_double))
         }
     }
 }
@@ -714,8 +714,8 @@ function setAncStrengthAdaptive() {
 
 
 function setBattery(side, percentage) {
-    if (percentage === undefined) {
-        percentage = "DISCONNECTED"
+    if (typeof percentage == "undefined") {
+        percentage = "DISCONNECTED";
     }
     if (side == "l") {
         document.getElementById("left_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";

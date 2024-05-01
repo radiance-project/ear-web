@@ -88,6 +88,30 @@ function getModelInfo(modelID) {
             rightImg: "../assets/ear_two_black_right.png",
             duoImg: "../assets/ear_two_black_duo.png",
             isANC: true
+        },
+        "5f8f82": {
+            name: "CMF Buds Pro",
+            leftImg: "../assets/ear_corsola_orange_left.png",
+            caseImg: "../assets/ear_corsola_orange_case.png",
+            rightImg: "../assets/ear_corsola_orange_right.png",
+            duoImg: "",
+            isANC: true
+        },
+        "add2c4": {
+            name: "CMF Buds Pro",
+            leftImg: "../assets/ear_corsola_black_left.png",
+            caseImg: "../assets/ear_corsola_black_case.png",
+            rightImg: "../assets/ear_corsola_black_right.png",
+            duoImg: "",
+            isANC: true
+        },
+        "2eb1ca": {
+            name: "CMF Buds Pro",
+            leftImg: "../assets/ear_corsola_white_left.png",
+            caseImg: "../assets/ear_corsola_white_case.png",
+            rightImg: "../assets/ear_corsola_white_right.png",
+            duoImg: "",
+            isANC: true
         }
     };
     return models[modelID];

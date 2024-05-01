@@ -305,6 +305,9 @@ function setAncStrengthHigh() {
         
 
 function setBattery(side, percentage) {
+    if (typeof percentage == "undefined") {
+        percentage = "DISCONNECTED";
+    }
     if (side == "l") {
         document.getElementById("left_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
         document.getElementById("left_ear").style.zIndex = percentage == "DISCONNECTED" ? "-1" : "1";

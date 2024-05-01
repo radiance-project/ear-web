@@ -133,7 +133,7 @@ async function connectSPP() {
                 readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
             if (command === 16414) {
-                readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                readANC_new(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
 
             if (operationID >= 250) {
@@ -214,6 +214,32 @@ function readANC(hexString) {
     } else if (ancStatus === 4) {
         level = 6;
     }
+    console.log("level " + level);
+
+    // Assuming you have a function to set ANC status in your JavaScript code
+    setANCStatus(level);
+}
+
+function readANC_new(hexString) {
+    console.log("readANC_new called");
+    let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
+    let ancStatus = hexArray[12];
+    let level = 0;
+
+    if (ancStatus === 5) {
+        level = 1;
+    } else if (ancStatus === 7) {
+        level = 2;
+    } else if (ancStatus === 3) {
+        level = 3;
+    } else if (ancStatus === 1) {
+        level = 4;
+    } else if (ancStatus === 2) {
+        level = 5;
+    } else if (ancStatus === 4) {
+        level = 6;
+    }
+    console.log("level " + level);
 
     // Assuming you have a function to set ANC status in your JavaScript code
     setANCStatus(level);
@@ -304,7 +330,7 @@ function formatFloatForEQ(f, total) {
 
 
 function setCustomEQ_BT(level) {
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
+    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
         var byteArray = [0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x44, 0xc3, 0xf5, 0x28, 0x3f, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x5a, 0x45, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x43, 0xcd, 0xcc, 0x4c, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
 
         var highestValue = 0;
@@ -330,7 +356,7 @@ function setCustomEQ_BT(level) {
 
 
 function getCustomEQ() {
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
+    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
         send(49220, [], "readCustomEQ");
     }
 }
@@ -404,7 +430,7 @@ function sendLEDCaseColor(colorArray) {
 
 function readCustomEQ(hexString) {
     console.log("readCustomEQ called");
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
+    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
         console.log(hexString);
         var level = [];
         for (var i = 0; i < 3; i++) {
@@ -431,7 +457,7 @@ function ringBuds(isRing, isLeft = false) {
             byteArray[0] = 0x00;
         }
         send(61442, byteArray);
-    } else if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
+    } else if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
         byteArray = [0x00, 0x00];
         if (isLeft) {
             byteArray[0] = 0x02;

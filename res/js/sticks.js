@@ -1,7 +1,7 @@
 var double_pinch = ["Skip Back", "Skip Forward", "Voice Assistant"];
 var triple_pinch = ["Skip Back", "Skip Forward", "Voice Assistant"];
-var pinch_and_hold = ["Volume UP", "Volume Down", "Voice Assistant"];
-var double_pinch_and_hold = ["No action", "Volume UP", "Volume Down", "Voice Assistant"];
+var pinch_and_hold = ["Volume UP", "Volume Down", "Voice Assistant", "Noise Control"];
+var double_pinch_and_hold = ["No action", "Volume UP", "Volume Down", "Voice Assistant", "Noise Control"];
 
 
 //---------------------------------------------------------------------------------//
@@ -123,6 +123,9 @@ function updateGesturesFromArray(array) {
                 } else if (array[i].gestureAction == 11) {
                     left_pinch_and_hold_current = pinch_and_hold[2];
                 }
+                else if (array[i].gestureAction == 10) {
+                    left_pinch_and_hold_current = pinch_and_hold[3];
+                }
             } else if (array[i].gestureType == 9) {
                 if (array[i].gestureAction == 1) {
                     left_double_pinch_and_hold_current = double_pinch_and_hold[0];
@@ -132,6 +135,8 @@ function updateGesturesFromArray(array) {
                     left_double_pinch_and_hold_current = double_pinch_and_hold[2];
                 } else if (array[i].gestureAction == 11) {
                     left_double_pinch_and_hold_current = double_pinch_and_hold[3];
+                } else if (array[i].gestureAction == 10) {
+                    left_double_pinch_and_hold_current = double_pinch_and_hold[4];
                 }
             }
         } else if (array[i].gestureDevice == 3) {
@@ -161,6 +166,8 @@ function updateGesturesFromArray(array) {
                     right_pinch_and_hold_current = pinch_and_hold[1];
                 } else if (array[i].gestureAction == 11) {
                     right_pinch_and_hold_current = pinch_and_hold[2];
+                } else if (array[i].gestureAction == 10) {
+                    right_pinch_and_hold_current = pinch_and_hold[3];
                 }
             } else if (array[i].gestureType == 9) {
 
@@ -172,6 +179,8 @@ function updateGesturesFromArray(array) {
                     right_double_pinch_and_hold_current = double_pinch_and_hold[2];
                 } else if (array[i].gestureAction == 11) {
                     right_double_pinch_and_hold_current = double_pinch_and_hold[3];
+                } else if (array[i].gestureAction == 10) {
+                    right_double_pinch_and_hold_current = double_pinch_and_hold[4];
                 }
             }
 
@@ -293,6 +302,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
+                else if (index == 4) operation = 10;
                 sendGestures(2, 9, operation)
             }
             if (current_site == "r") {
@@ -303,6 +313,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 18;
                 else if (index == 2) operation = 19;
                 else if (index == 3) operation = 11;
+                else if (index == 4) operation = 10;
                 sendGestures(3, 9, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
@@ -330,6 +341,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 18;
                 else if (index == 1) operation = 19;
                 else if (index == 2) operation = 11;
+                else if (index == 3) operation = 10;
                 sendGestures(2, 7, operation)
             }
             if (current_site == "r") {
@@ -339,6 +351,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 18;
                 else if (index == 1) operation = 19;
                 else if (index == 2) operation = 11;
+                else if (index == 3) operation = 10;
                 sendGestures(3, 7, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
@@ -401,6 +414,9 @@ function setAncToOff() {
 
 
 function setBattery(side, percentage) {
+    if (typeof percentage == "undefined") {
+        percentage = "DISCONNECTED";
+    }
     if (side == "l") {
         document.getElementById("left_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
         document.getElementById("left_ear").style.zIndex = percentage == "DISCONNECTED" ? "-1" : "1";
