@@ -224,6 +224,12 @@ function readANC_new(hexString) {
     console.log("readANC_new called");
     let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
     let ancStatus = hexArray[12];
+    if (modelIDGlobalRef === "1016dd") {
+        ancStatus = hexArray[9];
+        console.log("ancStatusStick " + ancStatus);
+    } else {
+        console.log("ancStatus " + ancStatus);
+    }
     let level = 0;
 
     if (ancStatus === 5) {

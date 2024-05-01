@@ -5,6 +5,8 @@ async function switchViewFromModelID(modelID) {
         window.location.href = "MainControl_sticks.html?modelID=" + modelID;
     } else if (modelID == "dee8c0" || modelID == "acc520") {
         window.location.href = "MainControl_two.html?modelID=" + modelID;
+    } else if (modelID == "5f8f82" || modelID == "add2c4" || modelID == "2eb1ca") {
+        window.location.href = "MainControl_corsola.html?modelID=" + modelID;
     }
 }
 async function loadDevicePage(device) {

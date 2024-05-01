@@ -209,13 +209,15 @@ function showErrorPopup(message) {
     }, 10000);
 }
 
-function switchViewFromModelID(modelID) {
+async function switchViewFromModelID(modelID) {
     if (modelID == "31d53d" || modelID == "624011") {
-        window.location.href = "MainControl_one.html";
+        window.location.href = "MainControl_one.html?modelID=" + modelID;
     } else if (modelID == "1016dd") {
-        window.location.href = "MainControl_sticks.html";
+        window.location.href = "MainControl_sticks.html?modelID=" + modelID;
     } else if (modelID == "dee8c0" || modelID == "acc520") {
-        window.location.href = "MainControl_two.html";
+        window.location.href = "MainControl_two.html?modelID=" + modelID;
+    } else if (modelID == "5f8f82" || modelID == "add2c4" || modelID == "2eb1ca") {
+        window.location.href = "MainControl_corsola.html?modelID=" + modelID;
     }
 }
 
