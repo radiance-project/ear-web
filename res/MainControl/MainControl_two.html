@@ -326,10 +326,13 @@
                                     <div id="eq_label_mid" style="margin-left: 32px;">0</div>
                                     <div id="eq_label_treble" style="margin-left: 57px;">-3</div>
                                 </div>
+                                <div id="advancedEQmsg" style="width: 100%; height: 100px; overflow: hidden; display: none;text-align:center">
+                                    <p>Advanced EQ is enabled.</p>
+                                </div>
                                 <div id="chart" style="width:100%; height: 100px; overflow: hidden;">
                                     <canvas id="myChart"></canvas>
                                 </div>
-                                <div class="grid grid-rows-2 grid-cols-2 gap-4">
+                                <div class="grid grid-rows-3 grid-cols-2 gap-4">
                                     <button class="eq-button p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
                                             onclick="EQButtonPress(0)"
                                             style="background-color: white; color: black;">
@@ -347,11 +350,16 @@
                                             onclick="EQButtonPress(1)">
                                         Voice
                                     </button>
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                            onclick="EQButtonPress(5)">
+                                        Custom
+                                    </button>
+                                    <button class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                            onclick="EQButtonPress(6)">
+                                        Advanced
+                                    </button>
                                 </div>
-                                <button class="eq-button p-2 pl-4 mt-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
-                                        onclick="EQButtonPress(5)">
-                                    Custom
-                                </button>
+
                             </div>
                         </div>
                     </div>

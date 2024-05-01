@@ -35,7 +35,13 @@ function updateIndicator(){
 }
 
 function EQButtonPress(level) {
-    setEQ(level);
+    if (level == 6) {
+        setAdvancedEQenabled(true);
+    }
+    else {
+        setAdvancedEQenabled(false);
+        setEQ(level);
+    }
     if (level == 5) {
         getCustomEQ();
         document.getElementById("custom_eq_indicator").style.display = "grid";
@@ -54,17 +60,31 @@ function setEQfromRead(level) {
     console.log("eqlevel: " + level);
     if (level == 0) {
         setBalanced(document.getElementById("buttonEQBalanced"));
+        document.querySelector("#chart").style.display = "grid";
+        document.querySelector("#advancedEQmsg").style.display = "none";
     } else if (level == 1) {
         setVoice(document.getElementById("buttonEQVoice"));
+        document.querySelector("#chart").style.display = "grid";
+        document.querySelector("#advancedEQmsg").style.display = "none";
     } else if (level == 2) {
         setTreble(document.getElementById("buttonEQTreble"));
+        document.querySelector("#chart").style.display = "grid";
+        document.querySelector("#advancedEQmsg").style.display = "none";
     } else if (level == 3) {
         setBass(document.getElementById("buttonEQBass"));
+        document.querySelector("#chart").style.display = "grid";
+        document.querySelector("#advancedEQmsg").style.display = "none";
     } else if (level == 5) {
         getCustomEQ();
         document.getElementById("custom_eq_indicator").style.display = "grid";
+        document.querySelector("#chart").style.display = "grid";
+        document.querySelector("#advancedEQmsg").style.display = "none";
         setCustom(document.getElementById("buttonEQCustom"));
         updateIndicator();
+    } else if (level == 6) {
+        setAdvanced(document.getElementById("buttonEQAdvanced"));
+        document.querySelector("#advancedEQmsg").style.display = "grid";
+        document.querySelector("#chart").style.display = "none";
     }
 }
 
@@ -198,6 +218,27 @@ function setVoice(e) {
     buttons[3].style.color = "#000000";
     current_eq = 3;
 }
+
+function setAdvanced(e) {
+    data = {
+        labels: ["", "", ""],
+        datasets: [{
+            backgroundColor: gradient,
+            label: '# of Votes',
+            data: [3, 10, 3],
+            borderWidth: 1,
+        },
+        ]
+    }
+    resetOptions();
+    drawChart(data);
+    clearButtons()
+    var buttons = document.getElementsByClassName("eq-button")
+    buttons[5].style.backgroundColor = "#ffffff";
+    buttons[5].style.color = "#000000";
+    current_eq = 5;
+}
+
 
 function setCustom(e) {
     data = {

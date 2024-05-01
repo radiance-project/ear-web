@@ -62,6 +62,8 @@ async function initDevice() {
     await new Promise(resolve => setTimeout(resolve, 100));
     sendANCread();
     await new Promise(resolve => setTimeout(resolve, 100));
+    getAdvancedEQ();
+    await new Promise(resolve => setTimeout(resolve, 100));
 }
 
 async function connectSPP() {
@@ -134,6 +136,9 @@ async function connectSPP() {
             }
             if (command === 16414) {
                 readANC_new(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+            }
+            if (command === 16460) {
+                read_advanced_anc_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
 
             if (operationID >= 250) {
@@ -290,6 +295,19 @@ function setANC_BT(level) {
     send(61455, byteArray, "setANC");
 }
 
+function read_advanced_anc_status(hexString)
+{
+    console.log("read_advanced_anc_status called");
+    let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
+    let advancedStatus = hexArray[8];
+    console.log("advancedANC " + advancedStatus);
+    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
+        if (advancedStatus === 1) {
+            setEQfromRead(6);
+        }
+    }
+}
+
 function getEQ() {
     send(49183, [], "readEQ");
 }
@@ -308,6 +326,19 @@ function setEQ(level) {
     let byteArray = [0x00, 0x00];
     byteArray[0] = level;
     send(61456, byteArray, "setEQ");
+}
+
+function getAdvancedEQ()
+{
+    send(49228, [], "readAdvancedEQ");
+}
+
+function setAdvancedEQenabled(enabled) {
+    let byteArray = [0x00, 0x00];
+    if (enabled) {
+        byteArray[0] = 0x01;
+    }
+    send(61519, byteArray);
 }
 
 function formatFloatForEQ(f, total) {
