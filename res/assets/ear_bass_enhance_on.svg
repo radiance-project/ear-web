@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="vector" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <clipPath id="clip_path_0"><path d="M0,0h24v24h-24z"/></clipPath>
+    </defs>
+    <g id="g_0">
+    <symbol id="load">
+        <path fill="#00000000" d="M8.5,4.75L15.5,4.75A3.25,3.25 0,0 1,18.75 8L18.75,17A3.25,3.25 0,0 1,15.5 20.25L8.5,20.25A3.25,3.25 0,0 1,5.25 17L5.25,8A3.25,3.25 0,0 1,8.5 4.75z" stroke-width="1.5" stroke-linecap="round" clip-path="url(#clip_path_0)"/>
+        <path fill="#00000000" d="M12,12.75L12,12.75A1.75,1.75 0,0 1,13.75 14.5L13.75,14.5A1.75,1.75 0,0 1,12 16.25L12,16.25A1.75,1.75 0,0 1,10.25 14.5L10.25,14.5A1.75,1.75 0,0 1,12 12.75z" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M12,8L12,8A1.5,1.5 0,0 1,13.5 9.5L13.5,9.5A1.5,1.5 0,0 1,12 11L12,11A1.5,1.5 0,0 1,10.5 9.5L10.5,9.5A1.5,1.5 0,0 1,12 8z"/>
+    </symbol>
+    </g>
+</svg>
