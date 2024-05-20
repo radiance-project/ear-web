@@ -301,7 +301,7 @@ function setCustom(e) {
             round: 0, 
             showTooltip: false,
         },
-        onDrag: function (e, datasetIndex, index, value) {
+        onDragEnd: function (e, datasetIndex, index, value) {
             const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
             // Substitute the appropriate scale IDs
             var dataY = chart.scales[Object.keys(chart.scales)[1]].getValueForPixel(canvasPosition.y)

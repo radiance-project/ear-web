@@ -7,6 +7,8 @@ async function switchViewFromModelID(modelID) {
         window.location.href = "MainControl_two.html?modelID=" + modelID;
     } else if (modelID == "5f8f82" || modelID == "add2c4" || modelID == "2eb1ca") {
         window.location.href = "MainControl_corsola.html?modelID=" + modelID;
+    } else if (modelID == "a20444" || modelID == "feb1c7") {
+        window.location.href = "MainControl_twos.html?modelID=" + modelID;
     }
 }
 async function loadDevicePage(device) {

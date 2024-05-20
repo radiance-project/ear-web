@@ -1,4 +1,3 @@
-var current_page = 0;
 
 function transToLeftGest(side) {
     current_site = side;
@@ -112,51 +111,80 @@ function transBackToLeft(e) {
 
 var current_timeout;
 var current_timeout_fade;
-
-function switchPage(page, force = false) { 
+let current_page = 0
+function switchPage(page, force=false, legacy=true) {
     var page_1 = document.getElementById("page_1_container");
     var page_2 = document.getElementById("page_2_container");
+    var page_3 = document.getElementById("page_3_container");
 
     current_timeout ? clearTimeout(current_timeout) : ""
     current_timeout_fade ? clearTimeout(current_timeout_fade) : ""
 
-    //IF PAGE IS THE LAST, GO BACK TO THE FIRST PAGE
-    if (current_page == 1 && page == 1 && force == false) {
-        page = 0
-    }else if(current_page == 0 && page == 0 && force == false){
-        page = 1
+    if (legacy) {
+        if (current_page == 1 && page == 1 && force == false) {
+            page = 0
+        } else if (current_page == 0 && page == 0 && force == false) {
+            page = 1
+        }
+        current_page = page
+    } else {
+        page == "next" ? current_page++ : current_page--
+
+        if (current_page == 3) current_page = 0
+        if (current_page == -1) current_page = 1
     }
 
-current_page = page;
-    switch (page) {
-        case 0:
+    switch (current_page) {
+        case 1:
             document.getElementById("stage_two_selector_button").style.backgroundColor = "white"
+            if (page_3 !== null) document.getElementById("stage_three_selector_button").style.backgroundColor = "#1B1D1F"
             document.getElementById("stage_one_selector_button").style.backgroundColor = "#1B1D1F"
 
             page_1.style.opacity = "0"
+            if (page_3 !== null) page_3.style.opacity = "0"
             current_timeout = setTimeout(() => {
                 page_1.style.zIndex = "-1"
+                if (page_3 !== null)  page_3.style.zIndex = "-1"
                 page_2.style.zIndex = "1"
                 current_timeout_fade = setTimeout(() => {
                 page_2.style.opacity = "100"
                 }, 100)
             }, 100)
             break
-        case 1:
+        case 0:
             document.getElementById("stage_one_selector_button").style.backgroundColor = "white"
+            if (page_3 !== null) document.getElementById("stage_three_selector_button").style.backgroundColor = "#1B1D1F"
             document.getElementById("stage_two_selector_button").style.backgroundColor = "#1B1D1F"
 
             page_2.style.opacity = "0"
+            if (page_3 !== null) page_3.style.opacity = "0"
             current_timeout = setTimeout(() => {
                 page_2.style.zIndex = "-1"
+                if (page_3 !== null)  page_3.style.zIndex = "-1"
                 page_1.style.zIndex = "1"
                 current_timeout_fade = setTimeout(() => {
                 page_1.style.opacity = "100"
                 }, 100)
             }, 100)
+            break
+        case 2:
+            document.getElementById("stage_two_selector_button").style.backgroundColor = "#1B1D1F"
+            document.getElementById("stage_one_selector_button").style.backgroundColor = "#1B1D1F"
+            if (page_3 != null) document.getElementById("stage_three_selector_button").style.backgroundColor = "white"
+
+            if (page_3 != null) page_3.style.opacity = "0"
+            page_1.style.opacity = "0"
+            current_timeout = setTimeout(() => {
+                page_1.style.zIndex = "-1"
+                page_2.style.zIndex = "-2"
+                if (page_3 != null) page_3.style.zIndex = "1"
+                current_timeout_fade = setTimeout(() => {
+                if (page_3 != null) page_3.style.opacity = "100"
+                }, 100)
+            }, 100)
+            break
     }
 }
-
 
 function displayPopUp(e) {
     document.getElementById("popup_container").style.opacity = "100"

@@ -64,6 +64,8 @@ async function initDevice() {
     await new Promise(resolve => setTimeout(resolve, 100));
     getAdvancedEQ();
     await new Promise(resolve => setTimeout(resolve, 100));
+    get_enhanced_bass();
+    await new Promise(resolve => setTimeout(resolve, 100));
 }
 
 async function connectSPP() {
@@ -139,6 +141,9 @@ async function connectSPP() {
             }
             if (command === 16460) {
                 read_advanced_anc_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+            }
+            if (command === 16462) {
+                read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
 
             if (operationID >= 250) {
@@ -328,6 +333,34 @@ function setEQ(level) {
     send(61456, byteArray, "setEQ");
 }
 
+function set_enhanced_bass(enabled, level) {
+    if (modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+        level *= 2;
+        let byteArray = [0x00, 0x00];
+        if (enabled) {
+            byteArray[0] = 0x01;
+        }
+        byteArray[1] = level;
+        send(61521, byteArray);
+    }
+}
+
+function get_enhanced_bass() {
+    if (modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+        send(49230, [], "readEnhancedBass");
+    }
+}
+
+function read_enhanced_bass(hexString) {
+    if (modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") { 
+        let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
+        let enabled = hexArray[8];
+        let level = hexArray[9];
+        setBassEnhance(enabled);
+        setBassLevel(level / 2);
+    }
+}
+
 function getAdvancedEQ()
 {
     send(49228, [], "readAdvancedEQ");
@@ -367,7 +400,7 @@ function formatFloatForEQ(f, total) {
 
 
 function setCustomEQ_BT(level) {
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
+    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
         var byteArray = [0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x44, 0xc3, 0xf5, 0x28, 0x3f, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x5a, 0x45, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x43, 0xcd, 0xcc, 0x4c, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
 
         var highestValue = 0;
@@ -393,7 +426,7 @@ function setCustomEQ_BT(level) {
 
 
 function getCustomEQ() {
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
+    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
         send(49220, [], "readCustomEQ");
     }
 }
@@ -467,7 +500,7 @@ function sendLEDCaseColor(colorArray) {
 
 function readCustomEQ(hexString) {
     console.log("readCustomEQ called");
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
+    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
         console.log(hexString);
         var level = [];
         for (var i = 0; i < 3; i++) {
@@ -494,7 +527,7 @@ function ringBuds(isRing, isLeft = false) {
             byteArray[0] = 0x00;
         }
         send(61442, byteArray);
-    } else if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca") {
+    } else if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
         byteArray = [0x00, 0x00];
         if (isLeft) {
             byteArray[0] = 0x02;
@@ -528,7 +561,7 @@ function readFirmware(hexstring) {
 }
 
 function launchEarFitTest() {
-    if (modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
+    if (modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
         send(61460, [0x01]);
     }
 }

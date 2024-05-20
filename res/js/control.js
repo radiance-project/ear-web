@@ -112,6 +112,22 @@ function getModelInfo(modelID) {
             rightImg: "../assets/ear_corsola_white_right.png",
             duoImg: "",
             isANC: true
+        },
+        "a20444": {
+            name: "Nothing Ear",
+            leftImg: "../assets/ear_twos_black_left.png",
+            caseImg: "../assets/ear_twos_black_case.png",
+            rightImg: "../assets/ear_twos_black_right.png",
+            duoImg: "",
+            isANC: true
+        },
+        "feb1c7": {
+            name: "Nothing Ear",
+            leftImg: "../assets/ear_twos_white_left.png",
+            caseImg: "../assets/ear_twos_white_case.png",
+            rightImg: "../assets/ear_twos_white_right.png",
+            duoImg: "",
+            isANC: true
         }
     };
     return models[modelID];
