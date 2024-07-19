@@ -32,9 +32,6 @@ function send(command, payload = [], operation = "") {
 }
 
 function crc16(buffer) {
-    // Implementation of CRC16 calculation
-    // You can use your preferred CRC16 algorithm here
-    // This is just a placeholder
     let crc = 0xFFFF;
     for (let i = 0; i < buffer.length; i++) {
         crc ^= buffer[i];
