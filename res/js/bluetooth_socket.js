@@ -1,6 +1,5 @@
 var SPPsocket = null;
-//get modelID from GET parameter
-var modelIDGlobalRef = window.location.search.substring(1).split("=")[1];
+var modelBase = "";
 
 let operationID = 0;
 let operationList = {};
@@ -47,6 +46,8 @@ async function initDevice() {
     await new Promise(resolve => setTimeout(resolve, 100));
     getEQ();
     await new Promise(resolve => setTimeout(resolve, 100));
+    getListeningMode();
+    await new Promise(resolve => setTimeout(resolve, 100));
     getFirmware();
     await new Promise(resolve => setTimeout(resolve, 100));
     sendInEarRead();
@@ -65,24 +66,36 @@ async function initDevice() {
     await new Promise(resolve => setTimeout(resolve, 100));
 }
 
-async function connectSPP() {
+
+function setModelBase() {
+    modelBase = localStorage.getItem("model");
+    //modelBase is a json string, so we need to parse it
+    modelBase = JSON.parse(modelBase);
+    modelBase = modelBase.base;
+}
+
+async function connectSPP(sppPort=null) {
     const SPP_UUID = "aeac4a03-dff5-498f-843a-34487cf133eb";
     const FASTPAIR_UUID = "df21fe2c-2515-4fdb-8886-f12c4d67927c";
-    sppPort = await navigator.serial.requestPort({
-        allowedBluetoothServiceClassIds: [SPP_UUID],
-        filters: [{ bluetoothServiceClassId: SPP_UUID }],
-    });
-
+    if (sppPort === null) {
+        sppPort = await navigator.serial.requestPort({
+            allowedBluetoothServiceClassIds: [SPP_UUID],
+            filters: [{ bluetoothServiceClassId: SPP_UUID }],
+        });
+    }
     if (sppPort) {
         console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
-        //print mac address of the connected device
-        console.log(sppPort);
         await sppPort.open({ baudRate: 9600 });
+        sppPort.addEventListener("disconnect", (event) => {
+            console.log('Bluetooth Serial Port Profile port disconnected', event);
+        });
+        //on disconnect serial
+        setModelBase();
         SPPsocket = sppPort;
         //read from the serial port
         const reader = sppPort.readable.getReader();
         initDevice();
-        while (true) {
+        while (sppPort.readable) {
             const { value, done } = await reader.read();
             //console.log(value);
             //print hex string of the received data
@@ -109,7 +122,7 @@ async function connectSPP() {
             if (command === 16452) {
                 readCustomEQ(rawData);
             }
-            if (command === 16415) {
+            if (command === 16415 || command === 16464) {
                 readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
             if (command === 16450) {
@@ -163,7 +176,6 @@ async function connectSPP() {
 function sendBattery() {
     send(49159, [], "readBattery");
 }
-
 function readBattery(hexString) {
     let connectedDevices = 0;
     let batteryStatus = { "left": "DISCONNECTED", "right": "DISCONNECTED", "case": "DISCONNECTED" };
@@ -231,7 +243,7 @@ function readANC_new(hexString) {
     console.log("readANC_new called");
     let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
     let ancStatus = hexArray[12];
-    if (modelIDGlobalRef === "1016dd") {
+    if (modelBase === "B157") {
         ancStatus = hexArray[9];
         console.log("ancStatusStick " + ancStatus);
     } else {
@@ -303,7 +315,7 @@ function read_advanced_anc_status(hexString)
     let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
     let advancedStatus = hexArray[8];
     console.log("advancedANC " + advancedStatus);
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520") {
+    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171") {
         if (advancedStatus === 1) {
             setEQfromRead(6);
         }
@@ -311,7 +323,15 @@ function read_advanced_anc_status(hexString)
 }
 
 function getEQ() {
-    send(49183, [], "readEQ");
+    if (modelBase !== "B172") { 
+        send(49183, [], "readEQ");
+    }
+}
+
+function getListeningMode() {
+    if (modelBase === "B172") {
+        send(49232, [], "readListeningMode");
+    }
 }
 
 function readEQ(hexString) {
@@ -330,8 +350,17 @@ function setEQ(level) {
     send(61456, byteArray, "setEQ");
 }
 
+function setListeningMode(level) {
+    if (modelBase !== "B172") {
+        return;
+    }
+    let byteArray = [0x00, 0x00];
+    byteArray[0] = level;
+    send(61469, byteArray, "setListeningMode");
+}
+
 function set_enhanced_bass(enabled, level) {
-    if (modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+    if (modelBase === "B171" || modelBase === "B172") {
         level *= 2;
         let byteArray = [0x00, 0x00];
         if (enabled) {
@@ -343,13 +372,13 @@ function set_enhanced_bass(enabled, level) {
 }
 
 function get_enhanced_bass() {
-    if (modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+    if (modelBase === "B171" || modelBase === "B172") {
         send(49230, [], "readEnhancedBass");
     }
 }
 
 function read_enhanced_bass(hexString) {
-    if (modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") { 
+    if (modelBase === "B171" || modelBase === "B172") {
         let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
         let enabled = hexArray[8];
         let level = hexArray[9];
@@ -397,7 +426,7 @@ function formatFloatForEQ(f, total) {
 
 
 function setCustomEQ_BT(level) {
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+    if (modelBase !== "B181") {
         var byteArray = [0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x44, 0xc3, 0xf5, 0x28, 0x3f, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x5a, 0x45, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x43, 0xcd, 0xcc, 0x4c, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
 
         var highestValue = 0;
@@ -423,7 +452,7 @@ function setCustomEQ_BT(level) {
 
 
 function getCustomEQ() {
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+    if (modelBase !== "B181") {
         send(49220, [], "readCustomEQ");
     }
 }
@@ -456,7 +485,7 @@ function fromFormatFloatForEQ(array) {
 
 
 function readLEDCaseColor(hexString) {
-    if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
+    if (modelBase === "B181") {
         console.log("readLEDCaseColor called");
         const hexArray = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
         const numberOfLed = hexArray[8];
@@ -479,7 +508,7 @@ function readLEDCaseColor(hexString) {
 function sendLEDCaseColor(colorArray) {
     console.log("sendLEDCaseColor called");
     console.log(colorArray);
-    if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
+    if (modelBase === "B181") {
         let bytearray = [0x05, 0x01, 0xff, 0xff, 0xff, 0x02, 0xff, 0xff, 0xff, 0x03, 0xff, 0xff, 0xff, 0x04, 0xff, 0xff, 0xff, 0x05, 0xff, 0xff, 0xff];
         for (let i = 0; i < 5; i++) {
             for (let j = 0; j < 3; j++) {
@@ -497,7 +526,7 @@ function sendLEDCaseColor(colorArray) {
 
 function readCustomEQ(hexString) {
     console.log("readCustomEQ called");
-    if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+    if (modelBase !== "B181") {
         console.log(hexString);
         var level = [];
         for (var i = 0; i < 3; i++) {
@@ -517,14 +546,14 @@ function readCustomEQ(hexString) {
 
 function ringBuds(isRing, isLeft = false) {
     let byteArray = [0x00];
-    if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
+    if (modelBase === "B181") {
         if (isRing) {
             byteArray[0] = 0x01;
         } else {
             byteArray[0] = 0x00;
         }
         send(61442, byteArray);
-    } else if (modelIDGlobalRef === "1016dd" || modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "5f8f82" || modelIDGlobalRef === "add2c4" || modelIDGlobalRef === "2eb1ca" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+    } else if (modelBase !== "B181") {
         byteArray = [0x00, 0x00];
         if (isLeft) {
             byteArray[0] = 0x02;
@@ -543,7 +572,7 @@ function getFirmware() {
 }
 
 function getLEDCaseColor() {
-    if (modelIDGlobalRef === "624011" || modelIDGlobalRef === "31d53d") {
+    if (modelBase === "B181") {
         send(49175, [], "readLEDCaseColor");
     }
 }
@@ -558,7 +587,7 @@ function readFirmware(hexstring) {
 }
 
 function launchEarFitTest() {
-    if (modelIDGlobalRef === "dee8c0" || modelIDGlobalRef === "acc520" || modelIDGlobalRef === "a20444" || modelIDGlobalRef === "feb1c7") {
+    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172") {
         send(61460, [0x01]);
     }
 }
@@ -613,7 +642,7 @@ function setLatency(status) {
 }
 
 function getPersonalizedANCStatus() {
-    if (modelIDGlobalRef == "dee8c0" || modelIDGlobalRef == "acc520") {
+    if (modelBase === "B155") {
         send(49184, [], "readPersonalizedANC");
     }
 }
@@ -624,7 +653,7 @@ function readPersonalizedANC(hexString) {
 }
 
 function setPersonalizedANC(enabled) {
-    if (modelIDGlobalRef == "dee8c0" || modelIDGlobalRef == "acc520") {
+    if (modelBase === "B155") {
         var byteArray = [0x00];
         if (enabled == 1) {
            setPersonalAncCheckbox(1);
@@ -667,3 +696,4 @@ function sendGestures(device, typeog, action) {
     byteArray[4] = parseInt(action);
     send(61443, byteArray);
 }
+

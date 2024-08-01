@@ -1,22 +1,9 @@
-var double_tap = ["Play/Pause", "Skip Back", "Skip Forward", "Voice Assistant"];
-var triple_tap = ["Skip Back", "Skip Forward", "Voice Assistant"];
-var tap_and_hold = ["Noise control", "Voice Assistant"];
-var double_tap_and_hold = ["Volume UP", "Volume Down", "Voice Assistant", "No action"];
+var double_tap = ["Play/Pause", "Skip Back", "Skip Forward", "Voice Assistant", "No action"];
+var triple_tap = ["Skip Back", "Skip Forward", "Voice Assistant", "No action"];
+var tap_and_hold = ["Noise control", "Voice Assistant", "No action"];
+var double_tap_and_hold = ["Volume up", "Volume down", "Voice Assistant", "No action"];
+
 var anc_selector_tap = [1, 1, 0]
-
-//---------------------------------------------------------------------------------//
-
-//CURRENTLY SELLECTED BUD ON THE SETTINGS PAGE
-var current_side;
-
-//VARS FOR GESTURE SETTINGS, OVERWRITING THHESE WITH EEL WILL MAKE THE TEXT APRPEAR IN THE SETTINGS PAGE ON INITIAL LOAD.
-//IF YOU CLICK A BUTTON, IT WILL OVERWRITE THIS VARS AGAIN AND YOU CAN READ THE CONTEXT WITH EEL. YOU JUST NEED TO CHECK 
-//IF THESE VARS ARE BEEING UPDATED OR NOT. IF THEY ARE, THEN YOU KNOW THAT THE USER HAS CHANGED THE SETTINGS AND YOU CAN
-//READ THE CONTEXT FROM THESE VARS. IF THEY ARE NOT, THEN YOU KNOW THAT THE USER HAS NOT CHANGED THE SETTINGS AND YOU CAN
-//READ THE CONTEXT FROM THE EEL VARIABLES. (OR YOU PUT YOUR CODE DIRECTY INTO THE FUNCTIIONS DOWN, MADE YOU SOME HINTS WHERE)
-//
-//IM JUST PICKING THE FIRST ELEMENT OF THE ARRAY TO INITIALIZE THE VARS AND TO DISPLAY SOMETHING OTHER THAN UNDEFINED ON THE
-//SETTINGS PAGE ON INITIAL LOAD. YOU NEED TO REPLACE THIS WITH THE STUFF YOU READ FROM THE BUDS.
 var left_triple_tap_current = triple_tap[0];
 var left_tap_and_hold_current = tap_and_hold[0];
 var right_triple_tap_current = triple_tap[0];
@@ -27,6 +14,13 @@ var right_double_tap_current = double_tap[0];
 var left_double_tap_current = double_tap[0];
 var anc_selector_tap_l = anc_selector_tap[0];
 var anc_selector_tap_r = anc_selector_tap[0];
+
+let leftStateEarTipTest = undefined
+let rightStateEarTipTest = undefined
+let bass_enhance = [0, 0]
+
+var current_side;
+
 
 // 0 = On, 1 = transparent, 2 = Off
 var ANC_type = 1;
@@ -101,6 +95,115 @@ var intro_timeout2;
     }, 2000)
 }, 500)
 */
+function showEarTipTestDialog() {
+    document.getElementById("popup_container").style.opacity = "100"
+    document.getElementById("popup_container").style.zIndex = "1000"
+    document.getElementById("popup_content").style.zIndex = "1001"
+    var popUpContent = ` <div class="w-fit flex m-auto text-md mb-5 mt-2">
+    <div style="width: 300px;">
+    <div id="image-container"
+    class='justify-center items-center flex relative ease-in-out duration-300' style="margin-left: -28px;">
+<div id="left_ear" class='w-52 ease-in-out duration-300'>
+    <img src="../assets/ear_two_white_left.png"
+            class='h-44 ml-[40px] duration-500 ease-in-out relative cursor-pointer'
+            id="left_ear_peace"
+            style="z-Index:100; margin: 0 0 0 40px; transform: scale(0.85);" />
+    <div id="not_left_ear_battery" class="ease-in-out duration-300" style="opacity: 100; margin-top: -10px;">
+        <div id="not-battery-l" class='text-center' style="margin-left: 45px">
+            L <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="gray"/></svg>
+        </div>
+    </div>
+</div>
+<div id="right_ear" class='w-52 w-34 ease-in-out duration-300'>
+    <img src="../assets/ear_two_white_right.png"
+            class='h-44 w-34 margin-auto duration-[2s] ease-in-out cursor-pointer'
+            id="right_ear_peace" style="margin: auto; transform: scale(0.85);" />
+    <div id="not_right_ear_battery" class="ease-in-out duration-300" style="opacity: 100; margin-top: -10px;">
+        <div id="not-battery-r" class='text-center'>
+            R <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="gray"/></svg>
+        </div>
+    </div>
+</div>
+</div>
+<div id="subtext" class="text-white m-auto text-center" style="width: 250px; margin-top: 45px; margin-bottom: 45px;">
+    <img src="../assets/loading.svg" alt="loading_animation" class="h-[80px] w-[80px] m-auto" id="loading_animation" />
+    <center>
+        Don't remove your earbuds.
+    </center>
+</div>
+<div id="button_done_anc_test" style="display: none">
+    <div id="doneTestTip" class="p-2 pl-4 pr-4 m-auto bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full text-center cursor-pointer" onclick="closePopUp()">Done</div>
+    <section class="text-sm text-white w-fit m-auto mt-2 cursor-pointer" id='again'>Launch Test</section>
+</div>
+</div></div>
+`
+
+    document.getElementById("popup_content").innerHTML = popUpContent
+    updateBudsInfo();
+    if (leftStateEarTipTest == undefined) {
+        document.getElementById("subtext").innerText = "Put both earbuds in your ears and launch the test"
+        document.getElementById("button_done_anc_test").style.display = "block"
+    }
+
+    setInterval(function () {
+
+        if (leftStateEarTipTest == undefined) {
+            document.getElementById("button_done_anc_test").style.display = "block"
+            document.getElementById("subtext").style.display = "block"
+            document.getElementById("subtext").innerText = "Put both earbuds in your ears and launch the test"
+        } else if (leftStateEarTipTest == 2) {
+            document.getElementById("button_done_anc_test").style.display = "block"
+            document.getElementById("subtext").style.display = "block"
+            document.getElementById("subtext").innerText = "Make sure both earbuds are connected and in your ears"
+            document.getElementById("not-battery-l").innerHTML = `L <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#c9202e"/></svg>`
+            document.getElementById("not-battery-r").innerHTML = `R <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#c9202e"/></svg>`
+        } else if (leftStateEarTipTest == 1 && rightStateEarTipTest == 1) {
+            document.getElementById("button_done_anc_test").style.display = "block"
+            document.getElementById("subtext").style.display = "block"
+            document.getElementById("subtext").innerText = "Adjust left and right earbuds or try another tip size and try again"
+            document.getElementById("not-battery-l").innerHTML = `L <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#ffc700"/></svg>`
+            document.getElementById("not-battery-r").innerHTML = `R <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#ffc700"/></svg>`
+        } else if (leftStateEarTipTest == 1 && rightStateEarTipTest == 0) {
+            document.getElementById("button_done_anc_test").style.display = "block"
+            document.getElementById("subtext").style.display = "block"
+            document.getElementById("subtext").innerText = "Adjust left earbud or try another tip size and try again"
+            document.getElementById("not-battery-l").innerHTML = `L <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#ffc700"/></svg>`
+            document.getElementById("not-battery-r").innerHTML = `R <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#1db159"/></svg>`
+        } else if (leftStateEarTipTest == 0 && rightStateEarTipTest == 1) {
+            document.getElementById("button_done_anc_test").style.display = "block"
+            document.getElementById("subtext").style.display = "block"
+            document.getElementById("subtext").innerText = "Adjust right earbud or try another tip size and try again"
+            document.getElementById("not-battery-r").innerHTML = `R <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#ffc700"/></svg>`
+            document.getElementById("not-battery-l").innerHTML = `L <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#1db159"/></svg>`
+        } else if (leftStateEarTipTest == 0 && rightStateEarTipTest == 0) {
+            document.getElementById("button_done_anc_test").style.display = "block"
+            document.getElementById("subtext").style.display = "block"
+            document.getElementById("subtext").innerText = "Perfect! you're ready!"
+            document.getElementById("not-battery-l").innerHTML = `L <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#1db159"/></svg>`
+            document.getElementById("not-battery-r").innerHTML = `R <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="#1db159"/></svg>`
+            clearInterval()
+        }
+
+    }, 1000)
+
+    document.getElementById("again").onclick = function () {
+        leftStateEarTipTest = "launch"
+        rightStateEarTipTest = "launch"
+        launchEarFitTest()
+        showEarTipTestDialog()
+    }
+    document.getElementById("doneTestTip").onclick = function () {
+        leftStateEarTipTest = undefined
+        rightStateEarTipTest = undefined
+        closePopUp()
+    }
+
+}
+
+function earTipStateStatus(left, right) {
+    leftStateEarTipTest = left
+    rightStateEarTipTest = right
+}
 
 function updateGesturesFromArray(array) {
     for (var i = 0; i < array.length; i++) {
@@ -115,6 +218,8 @@ function updateGesturesFromArray(array) {
                     left_double_tap_current = double_tap[2];
                 } else if (array[i].gestureAction == 11) {
                     left_double_tap_current = double_tap[3];
+                } else if (array[i].gestureAction == 1) {
+                    left_double_tap_current = double_tap[4];
                 }
             } else if (array[i].gestureType == 3) {
                 //triple tap
@@ -124,6 +229,8 @@ function updateGesturesFromArray(array) {
                     left_triple_tap_current = triple_tap[1];
                 } else if (array[i].gestureAction == 11) {
                     left_triple_tap_current = triple_tap[2];
+                } else if (array[i].gestureAction == 1) {
+                    left_triple_tap_current = triple_tap[3];
                 }
             } else if (array[i].gestureType == 7) {
                 //tap and hold
@@ -140,7 +247,10 @@ function updateGesturesFromArray(array) {
                     }
                 } else if (array[i].gestureAction == 11) {
                     left_tap_and_hold_current = tap_and_hold[1];
+                } else if (array[i].gestureAction == 1) {
+                    left_tap_and_hold_current = tap_and_hold[2];
                 }
+
             } else if (array[i].gestureType == 9) {
                 if (array[i].gestureAction == 18) {
                     left_double_tap_and_hold_current = double_tap_and_hold[0];
@@ -163,6 +273,8 @@ function updateGesturesFromArray(array) {
                     right_double_tap_current = double_tap[2];
                 } else if (array[i].gestureAction == 11) {
                     right_double_tap_current = double_tap[3];
+                } else if (array[i].gestureAction == 1) {
+                    right_double_tap_current = double_tap[4];
                 }
             } else if (array[i].gestureType == 3) {
                 //triple tap
@@ -172,11 +284,13 @@ function updateGesturesFromArray(array) {
                     right_triple_tap_current = triple_tap[1];
                 } else if (array[i].gestureAction == 11) {
                     right_triple_tap_current = triple_tap[2];
+                } else if (array[i].gestureAction == 1) {
+                    right_triple_tap_current = triple_tap[3];
                 }
             } else if (array[i].gestureType == 7) {
                 //tap and hold
                 if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
-                   right_tap_and_hold_current = tap_and_hold[0];
+                    right_tap_and_hold_current = tap_and_hold[0];
                     if (array[i].gestureAction == 10) {
                         anc_selector_tap = [1, 1, 1]
                     } else if (array[i].gestureAction == 20) {
@@ -188,6 +302,8 @@ function updateGesturesFromArray(array) {
                     }
                 } else if (array[i].gestureAction == 11) {
                     right_tap_and_hold_current = tap_and_hold[1];
+                } else if (array[i].gestureAction == 1) {
+                    right_tap_and_hold_current = tap_and_hold[2];
                 }
             } else if (array[i].gestureType == 9) {
                 if (array[i].gestureAction == 18) {
@@ -205,6 +321,7 @@ function updateGesturesFromArray(array) {
     }
     loadCurrentGestures(current_side, false);
 }
+
 
 function getANCtoggleFunction(ancList) {
     if (JSON.stringify(ancList) === JSON.stringify([1, 1, 1])) {
@@ -226,20 +343,21 @@ function loadCurrentGestures(side, refresh = true) {
     current_side = side
     //LOAD ALL VALUES BASED ON CURRENT SIDE
     if (side == "l") {
-        document.getElementById("settings_subtitle_triple").innerHTML = left_triple_tap_current + "<br />Decline Incoming call</div>";
+        document.getElementById("settings_subtitle_triple").innerHTML = left_triple_tap_current + "<br />Hang up calls / Decline Incoming call</div>";
         document.getElementById("settings_subtitle_tap_and_hold").innerHTML = left_tap_and_hold_current;
         document.getElementById("settings_subtitle_double_tap_and_hold").innerHTML = left_double_tap_and_hold_current;
-        document.getElementById("settings_subtitle_double").innerHTML = left_double_tap_current + "<br />Answer / Hang up calls</div>";
+        document.getElementById("settings_subtitle_double").innerHTML = left_double_tap_current + "<br />Answer calls</div>";
     } else if (side == "r") {
-        document.getElementById("settings_subtitle_triple").innerHTML = right_triple_tap_current + "<br />Decline Incoming call</div>";
+        document.getElementById("settings_subtitle_triple").innerHTML = right_triple_tap_current + "<br />Hang up calls / Decline Incoming call</div>";
         document.getElementById("settings_subtitle_tap_and_hold").innerHTML = right_tap_and_hold_current;
         document.getElementById("settings_subtitle_double_tap_and_hold").innerHTML = right_double_tap_and_hold_current;
-        document.getElementById("settings_subtitle_double").innerHTML = right_double_tap_current + "<br />Answer / Hang up calls</div>";
+        document.getElementById("settings_subtitle_double").innerHTML = right_double_tap_current + "<br />Answer calls</div>";
     }
 
 }
 
 function changeGesture(type) {
+    console.log("changeGesture", type);
     if (type == "double") {
         var show_popup = "";
         for (var i = 0; i < double_tap.length; i++) {
@@ -260,6 +378,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 8;
                 else if (index == 2) operation = 9;
                 else if (index == 3) operation = 11;
+                else if (index == 4) operation = 1;
                 sendGestures(2, 2, operation)
             }
             if (current_site == "r") {
@@ -271,6 +390,7 @@ function changeGesture(type) {
                 else if (index == 1) operation = 8;
                 else if (index == 2) operation = 9;
                 else if (index == 3) operation = 11;
+                else if (index == 4) operation = 1;
                 sendGestures(3, 2, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
@@ -295,6 +415,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
+                else if (index == 3) operation = 1;
                 sendGestures(2, 3, operation)
             }
             if (current_site == "r") {
@@ -304,6 +425,7 @@ function changeGesture(type) {
                 if (index == 0) operation = 8;
                 else if (index == 1) operation = 9;
                 else if (index == 2) operation = 11;
+                else if (index == 3) operation = 1;
                 sendGestures(3, 3, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
@@ -380,6 +502,7 @@ function changeGesture(type) {
                 var operation = 0;
                 if (index == 0) operation = getANCtoggleFunction(anc_selector_tap)
                 else if (index == 1) operation = 11;
+                else if (index == 2) operation = 1;
                 sendGestures(2, 7, operation)
             }
             if (current_site == "r") {
@@ -388,6 +511,7 @@ function changeGesture(type) {
                 var operation = 0;
                 if (index == 0) operation = getANCtoggleFunction(anc_selector_tap)
                 else if (index == 1) operation = 11;
+                else if (index == 2) operation = 1;
                 sendGestures(3, 7, operation)
             }
             document.getElementById("list_container").removeEventListener("change", () => { })
@@ -418,7 +542,6 @@ function checkboxCheck(evt, selected_gesture) {
 }
 
 function setANC(typeANC) {
-    console.log("typeANC", typeANC);
     if (typeANC == 0) {
         setAncToNC();
     } else if (typeANC == 1) {
@@ -431,6 +554,8 @@ function setANC(typeANC) {
         setAncStrengthMid();
     } else if (typeANC == 5) {
         setAncStrengthLow();
+    } else if (typeANC == 6) {
+        setAncStrengthAdaptive();
     }
 
     var type = 0;
@@ -490,6 +615,8 @@ function setAncStrengthHigh() {
     document.getElementById("stage_one_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-left: -0.25rem !important; margin-top: -0.25rem !important;"
     document.getElementById("stage_two_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
     document.getElementById("stage_three_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
+    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
+
     ANC_strength = 0;
 }
 
@@ -498,6 +625,8 @@ function setAncStrengthMid() {
     document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_two_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
     document.getElementById("stage_three_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
+    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
+
 
     ANC_strength = 2;
 }
@@ -509,9 +638,21 @@ function setAncStrengthLow() {
     document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_two_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_three_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
+    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
 
     ANC_strength = 1;
 }
+
+function setAncStrengthAdaptive() {
+    if (!document.getElementById("stage_one_button")) return;
+    document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
+    document.getElementById("stage_two_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
+    document.getElementById("stage_three_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
+    document.getElementById("stage_four_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
+
+    ANC_strength = 3;
+}
+
 
 
 
@@ -540,4 +681,71 @@ function setBattery(side, percentage) {
         document.getElementById("battery_bar_fill_c").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
         document.getElementById("battery_bar_fill_c").style.width = percentage + "%";
     }
+}
+
+function setBassEnhance(state, is_send=false) {
+    console.log("setBassEnhance", state)
+    switch (state) {
+
+        case 1:
+            bass_enhance[0] = 1
+            document.getElementById("selector_bass").style.marginLeft = "65px"
+
+            document.getElementById("bass_on").style.fill = "black"
+
+            document.getElementById("bass_on").style.stroke = "black"
+
+            document.getElementById("bass_off").style.fill = "white"
+
+            document.getElementById("bass_strength_selector").style.opacity = "100"
+
+            break
+
+        case 0:
+            bass_enhance[0] = 0
+            document.getElementById("selector_bass").style.marginLeft = "160px"
+
+            document.getElementById("bass_on").style.fill = "white"
+
+            document.getElementById("bass_on").style.stroke = "white"
+
+            document.getElementById("bass_off").style.fill = "black"
+
+            document.getElementById("bass_strength_selector").style.opacity = "0"
+
+            break
+    }
+    if (is_send)
+        set_enhanced_bass(bass_enhance[0], bass_enhance[1]);
+}
+
+
+
+function setBassLevel(new_level, is_send=false) {
+    if (new_level) level = new_level
+    bass_enhance[1] = level
+    switch (level) {
+        case 1:
+            document.getElementById("bass_strength_length_selector").style.width = "12px"
+            document.getElementById("bass_level_label").innerHTML = "Level 1"
+            break
+        case 2:
+            document.getElementById("bass_strength_length_selector").style.width = "55px"
+            document.getElementById("bass_level_label").innerHTML = "Level 2"
+            break
+        case 3:
+            document.getElementById("bass_strength_length_selector").style.width = "98px"
+            document.getElementById("bass_level_label").innerHTML = "Level 3"
+            break
+        case 4:
+            document.getElementById("bass_strength_length_selector").style.width = "138px"
+            document.getElementById("bass_level_label").innerHTML = "Level 4"
+            break
+        case 5:
+            document.getElementById("bass_strength_length_selector").style.width = "180px"
+            document.getElementById("bass_level_label").innerHTML = "Level 5"
+            break
+    }
+    if (is_send)
+        set_enhanced_bass(bass_enhance[0], bass_enhance[1]);
 }

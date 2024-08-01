@@ -2,17 +2,22 @@ var SPPsocket = null;
 
 let operationID = 0;
 let operationList = {};
-async function switchViewFromModelID(modelID) {
-    if (modelID == "31d53d" || modelID == "624011") {
-        window.location.href = "MainControl_one.html?modelID=" + modelID;
-    } else if (modelID == "1016dd") {
-        window.location.href = "MainControl_sticks.html?modelID=" + modelID;
-    } else if (modelID == "dee8c0" || modelID == "acc520") {
-        window.location.href = "MainControl_two.html?modelID=" + modelID;
-    } else if (modelID == "5f8f82" || modelID == "add2c4" || modelID == "2eb1ca") {
-        window.location.href = "MainControl_corsola.html?modelID=" + modelID;
-    } else if (modelID == "a20444" || modelID == "feb1c7") {
-        window.location.href = "MainControl_twos.html?modelID=" + modelID;
+async function switchViewFromModelID(model, sku) {
+    localStorage.setItem("model", JSON.stringify(model));
+    localStorage.setItem("sku", sku);
+    console.log("Switching view from model ID " + model.base);
+    if (model.base == "B181") {
+        window.location.href = "MainControl_one.html";
+    } else if (model.base == "B157") {
+        window.location.href = "MainControl_sticks.html";
+    } else if (model.base == "B155") {
+        window.location.href = "MainControl_two.html"; 
+    } else if (model.base == "B163") {
+        window.location.href = "MainControl_corsola.html";
+    } else if (model.base == "B171") {
+        window.location.href = "MainControl_twos.html";
+    } else if (model.base == "B172") {
+        window.location.href = "MainControl_espeon.html";
     }
 }
 async function loadDevicePage(device) {
@@ -163,257 +168,6 @@ function getSerialNumber(hexPayload) {
     }
 }
 
-function getModelFromSKU(SKU) {
-
-    var sku_to_model = {
-        "01": "ear_1_white",
-        "02": "ear_1_black",
-        "03": "ear_1_white",
-        "04": "ear_1_black",
-        "06": "ear_1_black",
-        "07": "ear_1_white",
-        "08": "ear_1_black",
-        "10": "ear_1_black",
-        "14": "ear_stick",
-        "15": "ear_stick",
-        "16": "ear_stick",
-        "17": "ear_2_white",
-        "18": "ear_2_white",
-        "19": "ear_2_white",
-        "27": "ear_2_black",
-        "28": "ear_2_black",
-        "29": "ear_2_black",
-        "30": "corsola_dark_grey",
-        "31": "corsola_black",
-        "32": "corsola_white",
-        "33": "corsola_white",
-        "34": "corsola_orange",
-        "35": "corsola_orange",
-        "48": "crobat_orange",
-        "49": "crobat_white",
-        "50": "crobat_black",
-        "51": "crobat_black",
-        "52": "crobat_white",
-        "53": "crobat_orange",
-        "54": "donphan_black",
-        "55": "donphan_black",
-        "56": "donphan_white",
-        "57": "donphan_white",
-        "58": "donphan_orqnge",
-        "59": "donphan_orange",
-        "61": "entei_black",
-        "62": "entei_white",
-        "63": "cleffa_black",
-        "64": "cleffa_white",
-        "65": "cleffa_yellow",
-        "66": "cleffa_black",
-        "67": "cleffa_white",
-        "68": "cleffa_yellow",
-        "69": "entei_black",
-        "70": "entei_white",
-        "71": "cleffa_black",
-        "72": "cleffa_white",
-        "73": "cleffa_yellow",
-        "74": "entei_black",
-        "75": "entei_white",
-        "76": "espeon_black",
-        "77": "espeon_white",
-        "78": "espeon_orange",
-        "79": "espeon_blue",
-    }
-
-
-    var models = {
-        "ear_1_white": {
-            name: "Nothing Ear (1)",
-            leftImg: "../assets/ear_one_white_left.png",
-            caseImg: "../assets/ear_one_white_case.png",
-            rightImg: "../assets/ear_one_white_right.png",
-            duoImg: "../assets/ear_one_white_duo.png",
-            isANC: true
-        },
-        "ear_1_black": {
-            name: "Nothing Ear (1)",
-            leftImg: "../assets/ear_one_black_left.png",
-            caseImg: "../assets/ear_one_black_case.png",
-            rightImg: "../assets/ear_one_black_right.png",
-            duoImg: "../assets/ear_one_black_duo.png",
-            isANC: true
-        },
-        "ear_stick": {
-            name: "Nothing Ear (stick)",
-            leftImg: "../assets/ear_stick_left.png",
-            caseImg: "../assets/ear_stick_case_none.png",
-            rightImg: "../assets/ear_stick_right.png",
-            duoImg: "../assets/ear_stick_white_duo.png",
-            isANC: false
-        },
-        "ear_2_white": {
-            name: "Nothing Ear (2)",
-            leftImg: "../assets/ear_two_white_left.png",
-            caseImg: "../assets/ear_two_white_case.png",
-            rightImg: "../assets/ear_two_white_right.png",
-            duoImg: "../assets/ear_two_white_duo.png",
-            isANC: true
-        },
-        "ear_2_black": {
-            name: "Nothing Ear (2)",
-            leftImg: "../assets/ear_two_black_left.png",
-            caseImg: "../assets/ear_two_black_case.png",
-            rightImg: "../assets/ear_two_black_right.png",
-            duoImg: "../assets/ear_two_black_duo.png",
-            isANC: true
-        },
-        "corsola_orange": {
-            name: "CMF Buds Pro",
-            leftImg: "../assets/ear_corsola_orange_left.png",
-            caseImg: "../assets/ear_corsola_orange_case.png",
-            rightImg: "../assets/ear_corsola_orange_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "corsola_black": {
-            name: "CMF Buds Pro",
-            leftImg: "../assets/ear_corsola_black_left.png",
-            caseImg: "../assets/ear_corsola_black_case.png",
-            rightImg: "../assets/ear_corsola_black_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "corsola_white": {
-            name: "CMF Buds Pro",
-            leftImg: "../assets/ear_corsola_white_left.png",
-            caseImg: "../assets/ear_corsola_white_case.png",
-            rightImg: "../assets/ear_corsola_white_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "entei_black": {
-            name: "Nothing Ear",
-            leftImg: "../assets/ear_twos_black_left.png",
-            caseImg: "../assets/ear_twos_black_case.png",
-            rightImg: "../assets/ear_twos_black_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "entei_white": {
-            name: "Nothing Ear",
-            leftImg: "../assets/ear_twos_white_left.png",
-            caseImg: "../assets/ear_twos_white_case.png",
-            rightImg: "../assets/ear_twos_white_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "cleffa_black": {
-            name: "Nothing Ear (a)",
-            leftImg: "../assets/ear_color_black_left.png",
-            caseImg: "../assets/ear_color_black_case.png",
-            rightImg: "../assets/ear_color_black_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "cleffa_white": {
-            name: "Nothing Ear (a)",
-            leftImg: "../assets/ear_color_white_left.png",
-            caseImg: "../assets/ear_color_white_case.png",
-            rightImg: "../assets/ear_color_white_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "cleffa_yellow": {
-            name: "Nothing Ear (a)",
-            leftImg: "../assets/ear_color_yellow_left.png",
-            caseImg: "../assets/ear_color_yellow_case.png",
-            rightImg: "../assets/ear_color_yellow_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "espeon_black": {
-            name: "CMF Buds Pro 2",
-            leftImg: "../assets/espeon_black_left.png",
-            caseImg: "../assets/espeon_black_case.png",
-            rightImg: "../assets/espeon_black_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "crobat_orange": {
-            name: "CMF Neckband Pro",
-            leftImg: "",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "../assets/crobat_orange.png",
-            isANC: true
-        },
-        "crobat_white": {
-            name: "CMF Neckband Pro",
-            leftImg: "",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "../assets/crobat_white.png",
-            isANC: true
-        },
-        "crobat_black": {
-            name: "CMF Neckband Pro",
-            leftImg: "",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "../assets/crobat_black.png",
-            isANC: true
-        },
-        "donphan_black": {
-            name: "CMF Buds",
-            leftImg: "donphan_black_left.png",
-            caseImg: "donphan_black_case.png",
-            rightImg: "donphan_black_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "donphan_white": {
-            name: "CMF Buds",
-            leftImg: "donphan_white_left.png",
-            caseImg: "donphan_white_case.png",
-            rightImg: "donphan_white_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "donphan_orange": {
-            name: "CMF Buds",
-            leftImg: "donphan_orange_left.png",
-            caseImg: "donphan_orange_case.png",
-            rightImg: "donphan_orange_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "espeon_white": {
-            name: "CMF Buds Pro 2",
-            leftImg: "../assets/espeon_white_left.png",
-            caseImg: "../assets/espeon_white_case.png",
-            rightImg: "../assets/espeon_white_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "espeon_orange": {
-            name: "CMF Buds Pro 2",
-            leftImg: "../assets/espeon_orange_left.png",
-            caseImg: "../assets/espeon_orange_case.png",
-            rightImg: "../assets/espeon_orange_right.png",
-            duoImg: "",
-            isANC: true
-        },
-        "espeon_blue": {
-            name: "CMF Buds Pro 2",
-            leftImg: "../assets/espeon_blue_left.png",
-            caseImg: "../assets/espeon_blue_case.png",
-            rightImg: "../assets/espeon_blue_right.png",
-            duoImg: "",
-            isANC: true
-        },
-            
-    };
-    model = sku_to_model[SKU];
-    return models[model];
-}
-
 function processSerial(serial) {
     // Get the first 2 characters of the serial number and compare
     let headSerial = serial.substring(0, 2);
@@ -455,6 +209,7 @@ function processSerial(serial) {
                 </div>`;
         }
     }
+    switchViewFromModelID(model, SKU);
 }
 
 
@@ -473,6 +228,8 @@ async function scanNewDevicesSerial() {
         //print mac address of the connected device
         console.log(sppPort);
         await sppPort.open({ baudRate: 9600 });
+        //store sppPort in local storage
+        localStorage.setItem("sppPort", sppPort);
         SPPsocket = sppPort;
         //read from the serial port
         const reader = sppPort.readable.getReader();
@@ -495,6 +252,8 @@ async function scanNewDevicesSerial() {
             let header = rawData.slice(0, 6);
             let command = getCommand(header);
             console.log(command);
+            //print rawData hex string
+            console.log(string);
             if (command === 16390) {
                 let serialNum = getSerialNumber(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
                 console.log(serialNum);

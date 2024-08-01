@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <script src="../js/nothing_connected.js"></script>
+<script src="../js/control.js"></script>
 <html lang="en" translate="no">
 
 <head>
@@ -62,5 +63,22 @@
         width: auto;
     }
 
+
+
 </style>
 </html>
+<script>
+    async function forgetAllDevices() {
+        const ports = await navigator.serial.getPorts();
+        for (const port of ports) {
+            if (port.opened) {
+                await port.close();
+            }
+            await port.forget();
+        }
+
+    }
+    window.onload = function () {
+        forgetAllDevices();
+    }
+</script>
