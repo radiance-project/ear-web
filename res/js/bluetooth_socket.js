@@ -151,7 +151,7 @@ async function connectSPP(sppPort=null) {
                 readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
             if (command === 16414) {
-                readANC_new(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
             if (command === 16460) {
                 read_advanced_eq_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
@@ -243,36 +243,6 @@ function readANC(hexString) {
     setANCStatus(level);
 }
 
-function readANC_new(hexString) {
-    console.log("readANC_new called");
-    let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
-    let ancStatus = hexArray[12];
-    if (modelBase === "B157") {
-        ancStatus = hexArray[9];
-        console.log("ancStatusStick " + ancStatus);
-    } else {
-        console.log("ancStatus " + ancStatus);
-    }
-    let level = 0;
-
-    if (ancStatus === 5) {
-        level = 1;
-    } else if (ancStatus === 7) {
-        level = 2;
-    } else if (ancStatus === 3) {
-        level = 3;
-    } else if (ancStatus === 1) {
-        level = 4;
-    } else if (ancStatus === 2) {
-        level = 5;
-    } else if (ancStatus === 4) {
-        level = 6;
-    }
-    console.log("level " + level);
-
-    // Assuming you have a function to set ANC status in your JavaScript code
-    setANCStatus(level);
-}
 
 function setANCDisplay(level) {
     if (level === 1) {
