@@ -10,8 +10,6 @@
     <title>Ear (PC)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <link href="../global.css" rel="stylesheet" />
-
-
 </head>
 
 <body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
@@ -30,10 +28,10 @@
                     </div>
                 </div>
             </div>
-
-
+        </div>
+    </div>
 </body>
-
+</html>
 <style>
     .device-info {
         text-align: center;
@@ -62,11 +60,8 @@
         height: auto;
         width: auto;
     }
-
-
-
 </style>
-</html>
+
 <script>
     async function forgetAllDevices() {
         const ports = await navigator.serial.getPorts();

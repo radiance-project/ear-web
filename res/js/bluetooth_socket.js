@@ -4,7 +4,7 @@ var modelBase = "";
 let operationID = 0;
 let operationList = {};
 
-var debug = true;
+var debug = false;
 if (!debug) {
     console.log = function () { };
 }
