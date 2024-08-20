@@ -4,6 +4,10 @@ var modelBase = "";
 let operationID = 0;
 let operationList = {};
 
+var debug = false;
+if (!debug) {
+    console.log = function () { };
+}
 function send(command, payload = [], operation = "") {
     let header = [0x55, 0x60, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00];
     operationID++;

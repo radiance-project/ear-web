@@ -303,7 +303,7 @@ function getImageForModel(modelID) {
     return modelInfo.rightImg;
 }
 
-async function updateBudsInfo() {
+async function updateBudsInfo(imageOnly=false) {
     //get sku from local storage
 
     var modelID = localStorage.getItem("sku");
@@ -318,13 +318,15 @@ async function updateBudsInfo() {
     }
     rightBudImg.src = modelInfo.rightImg;
 
-    var portsOpened = await navigator.serial.getPorts();
-    for (const port of portsOpened) {
-        console.log(port.getInfo());
-        if (port.getInfo().bluetoothServiceClassId == "aeac4a03-dff5-498f-843a-34487cf133eb") {
-            //port.open({ baudRate: 9600 });
-            connectSPP(port);
-            return;
+    if (!imageOnly) {
+        var portsOpened = await navigator.serial.getPorts();
+        for (const port of portsOpened) {
+            console.log(port.getInfo());
+            if (port.getInfo().bluetoothServiceClassId == "aeac4a03-dff5-498f-843a-34487cf133eb") {
+                //port.open({ baudRate: 9600 });
+                connectSPP(port);
+                return;
+            }
         }
     }
 }

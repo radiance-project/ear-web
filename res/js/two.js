@@ -165,7 +165,7 @@ function showEarTipTestDialog() {
 
 
     document.getElementById("popup_content").innerHTML = popUpContent
-    updateBudsInfo();
+    updateBudsInfo(true);
     if (leftStateEarTipTest == undefined) {
         document.getElementById("subtext").innerText = "Put both earbuds in your ears and launch the test"
         document.getElementById("button_done_anc_test").style.display = "block"

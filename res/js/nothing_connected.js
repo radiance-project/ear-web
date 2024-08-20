@@ -7,17 +7,17 @@ async function switchViewFromModelID(model, sku) {
     localStorage.setItem("sku", sku);
     console.log("Switching view from model ID " + model.base);
     if (model.base == "B181") {
-        window.location.href = "MainControl_one.html";
+        window.location.href = "MainControl_one";
     } else if (model.base == "B157") {
-        window.location.href = "MainControl_sticks.html";
+        window.location.href = "MainControl_sticks";
     } else if (model.base == "B155") {
-        window.location.href = "MainControl_two.html"; 
+        window.location.href = "MainControl_two"; 
     } else if (model.base == "B163") {
-        window.location.href = "MainControl_corsola.html";
+        window.location.href = "MainControl_corsola";
     } else if (model.base == "B171") {
-        window.location.href = "MainControl_twos.html";
+        window.location.href = "MainControl_twos";
     } else if (model.base == "B172") {
-        window.location.href = "MainControl_espeon.html";
+        window.location.href = "MainControl_espeon";
     }
 }
 async function loadDevicePage(device) {
