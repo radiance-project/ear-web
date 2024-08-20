@@ -89,10 +89,8 @@ async function connectSPP(sppPort=null) {
     }
     if (sppPort) {
         console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
+
         await sppPort.open({ baudRate: 9600 });
-        sppPort.addEventListener("disconnect", (event) => {
-            console.log('Bluetooth Serial Port Profile port disconnected', event);
-        });
         //on disconnect serial
         setModelBase();
         SPPsocket = sppPort;

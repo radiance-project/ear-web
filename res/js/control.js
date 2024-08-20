@@ -322,10 +322,14 @@ async function updateBudsInfo(imageOnly=false) {
         var portsOpened = await navigator.serial.getPorts();
         for (const port of portsOpened) {
             console.log(port.getInfo());
-            if (port.getInfo().bluetoothServiceClassId == "aeac4a03-dff5-498f-843a-34487cf133eb") {
-                //port.open({ baudRate: 9600 });
-                connectSPP(port);
-                return;
+            if (port.getInfo().bluetoothServiceClassId === "aeac4a03-dff5-498f-843a-34487cf133eb") {
+                try {
+                    await connectSPP(port);
+                    console.log("Connected to Bluetooth device successfully.");
+                    return;
+                } catch (error) {
+                    window.location.href = "index.html";
+                }
             }
         }
     }
