@@ -1,107 +1,89 @@
-<html>
+<!DOCTYPE html>
+<script src="../js/nothing_connected.js"></script>
+<script src="../js/control.js"></script>
+<html lang="en" translate="no">
+
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ear (PC)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <link href="../global.css" rel="stylesheet" />
+
+
 </head>
-<body>
-    <button type="button" id="connect-spp">Connect Bluetooth </button><br />
-    <script>
 
-        let sppPort = null;
-
-        const connectSppButton = document.getElementById('connect-spp');
-        connectSppButton.addEventListener('click', connectSpp);
-
-        function getModelInfo(modelID) {
-            var models = {
-                "31d53d": {
-                    name: "Nothing Ear (1)",
-                    leftImg: "../assets/ear_one_white_left.png",
-                    caseImg: "../assets/ear_one_white_case.png",
-                    rightImg: "../assets/ear_one_white_right.png",
-                    duoImg: "../assets/ear_one_white_duo.png",
-                    isANC: true
-                },
-                "624011": {
-                    name: "Nothing Ear (1)",
-                    leftImg: "../assets/ear_one_black_left.png",
-                    caseImg: "../assets/ear_one_black_case.png",
-                    rightImg: "../assets/ear_one_black_right.png",
-                    duoImg: "../assets/ear_one_black_duo.png",
-                    isANC: true
-                },
-                "1016dd": {
-                    name: "Nothing Ear (stick)",
-                    leftImg: "../assets/ear_stick_left.png",
-                    caseImg: "../assets/ear_stick_case_none.png",
-                    rightImg: "../assets/ear_stick_right.png",
-                    duoImg: "../assets/ear_stick_white_duo.png",
-                    isANC: false
-                },
-                "dee8c0": {
-                    name: "Nothing Ear (2)",
-                    leftImg: "../assets/ear_two_white_left.png",
-                    caseImg: "../assets/ear_two_white_case.png",
-                    rightImg: "../assets/ear_two_white_right.png",
-                    duoImg: "../assets/ear_two_white_duo.png",
-                    isANC: true
-                },
-                "acc520": {
-                    name: "Nothing Ear (2)",
-                    leftImg: "../assets/ear_two_black_left.png",
-                    caseImg: "../assets/ear_two_black_case.png",
-                    rightImg: "../assets/ear_two_black_right.png",
-                    duoImg: "../assets/ear_two_black_duo.png",
-                    isANC: true
-                }
-            };
-            return models[modelID];
-        }
-
-        async function connectSpp() {
-            const SPP_UUID = "aeac4a03-dff5-498f-843a-34487cf133eb";
-            const FASTPAIR_UUID = "df21fe2c-2515-4fdb-8886-f12c4d67927c";
-            sppPort = await navigator.serial.requestPort({
-                allowedBluetoothServiceClassIds: [FASTPAIR_UUID],
-                filters: [{ bluetoothServiceClassId: FASTPAIR_UUID }],
-            });
-
-            if (sppPort) {
-                console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
-                //print mac address of the connected device
-                console.log(sppPort);
-                await sppPort.open({ baudRate: 9600 });
-                //read from the serial port
-                const reader = sppPort.readable.getReader();
-                while (true) {
-                    const { value, done } = await reader.read();
-                    //console.log(value);
-                    //print hex string of the received data
-                    var string = "";
-                    for (let i = 0; i < value.length; i++) {
-                        //fill the string with leading zero if needed
-                        string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
-                    }
-                    console.log(string);
-                    if (done) {
-                        // Allow the serial port to be closed later.
-                        reader.releaseLock();
-                        break;
-                    }
-                    console.log(value);
-                    //if received data is 7 bytes long, disconnect
-                    if (value.length == 7) {
-                        reader.releaseLock();
-                        await sppPort.close();
-                        var modelID = string.substring(8, 14);
-                        console.log(modelID);
-                        var modelInfo = getModelInfo(modelID);
-                        console.log(modelInfo);
-                        break;
-                    }
-                }
-            }
-        }
+<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
+    <div id="container_one"
+         class=" w-fit text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
+         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+        <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
+             style="font-family: NothingNormal2;  height: 710px; width: 800px; margin-bottom: 20px;">
+            <div id="popup_container" class="h-screen w-full absolute opacity-1 ease-in-out duration-300" style="padding-bottom: 20px;">
+                <div id="popup_content" class="z-[1000] text-center">
+                    Select your device
+                    <div id="device_container">
+                    </div>
+                    <div id="scan_button" class="text-center m-auto w-fit -mb-8 mt-3 duration-300  pb-5" onclick="scanNewDevicesSerial()">
+                        <div id="scan_button-c" class="p-1 pl-7 -mr-32 pr-7 border-black border-[2px] text-white cursor-pointer rounded-full mr-3 text-sm ease-in-out hover:scale-[105%] duration-150">Scan</div>
+                    </div>
+                </div>
+            </div>
 
 
-    </script>
 </body>
+
+<style>
+    .device-info {
+        text-align: center;
+        font-size: 1.125rem; /* Equivalent to text-lg */
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .image-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem; /* Adds space between images */
+        margin-bottom: 1rem;
+    }
+
+    .image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .responsive-img {
+        max-height: 128px;
+        max-width: 128px;
+        height: auto;
+        width: auto;
+    }
+
+
+
+</style>
 </html>
+<script>
+    async function forgetAllDevices() {
+        const ports = await navigator.serial.getPorts();
+        for (const port of ports) {
+            if (port.opened) {
+                await port.close();
+            }
+            await port.forget();
+        }
+
+    }
+    window.onload = function () {
+        if (navigator.serial) {
+            forgetAllDevices();
+        }
+        else {
+            alert("This browser does not support Web Serial API. Please use Chrome or Edge or any other Chromium based browser.");
+        }
+    }
+</script>

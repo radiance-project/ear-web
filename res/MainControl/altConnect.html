@@ -79,6 +79,11 @@
 
     }
     window.onload = function () {
-        forgetAllDevices();
+        if (navigator.serial) {
+            forgetAllDevices();
+        }
+        else {
+            alert("This browser does not support Web Serial API. Please use Chrome or Edge or any other Chromium based browser.");
+        }
     }
 </script>

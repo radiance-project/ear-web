@@ -218,10 +218,22 @@ async function scanNewDevicesSerial() {
     document.getElementById("scan_button").style.display = "none";
     const SPP_UUID = "aeac4a03-dff5-498f-843a-34487cf133eb";
     const FASTPAIR_UUID = "df21fe2c-2515-4fdb-8886-f12c4d67927c";
-    sppPort = await navigator.serial.requestPort({
-        allowedBluetoothServiceClassIds: [SPP_UUID],
-        filters: [{ bluetoothServiceClassId: SPP_UUID }],
-    });
+    try {
+        sppPort = await navigator.serial.requestPort({
+            allowedBluetoothServiceClassIds: [SPP_UUID],
+            filters: [{ bluetoothServiceClassId: SPP_UUID }],
+        });
+    }
+    catch (error) {
+        console.error('Connection failed', error);
+        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device not selected</p></div>';
+        setTimeout(function () {
+            window.location.reload();
+        }, 3000);
+        return;
+    }
+
+
 
     if (sppPort) {
         console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
