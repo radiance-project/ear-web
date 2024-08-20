@@ -4,7 +4,7 @@ var modelBase = "";
 let operationID = 0;
 let operationList = {};
 
-var debug = false;
+var debug = true;
 if (!debug) {
     console.log = function () { };
 }
@@ -154,7 +154,7 @@ async function connectSPP(sppPort=null) {
                 readANC_new(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
             if (command === 16460) {
-                read_advanced_anc_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                read_advanced_eq_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
             if (command === 16462) {
                 read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
@@ -313,12 +313,12 @@ function setANC_BT(level) {
     send(61455, byteArray, "setANC");
 }
 
-function read_advanced_anc_status(hexString)
+function read_advanced_eq_status(hexString)
 {
-    console.log("read_advanced_anc_status called");
+    console.log("read_advanced_eq_status called");
     let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
     let advancedStatus = hexArray[8];
-    console.log("advancedANC " + advancedStatus);
+    console.log("advancedEQ " + advancedStatus);
     if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171") {
         if (advancedStatus === 1) {
             setEQfromRead(6);
