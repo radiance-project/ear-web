@@ -1,6 +1,6 @@
 # ear (web) [unofficial]
 
-![Ear(web) Logo](icons/png/256x256.png)
+![Ear(web) Logo](res/icons/256x256.png)
 
 
 # Compatibility
