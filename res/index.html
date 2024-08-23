@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<script src="../js/nothing_connected.js"></script>
-<script src="../js/control.js"></script>
+<script src="./js/nothing_connected.js"></script>
+<script src="./js/control.js"></script>
 <html lang="en" translate="no">
 
 <head>
@@ -9,78 +9,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ear (web)</title>
     <link rel="icon" href="icons/16x16.png" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
-    <link href="../global.css" rel="stylesheet" />
+    <link href="./global.css" rel="stylesheet" />
+    <style>
+
+
+        #logo_container {
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+            #logo_container img {
+                max-width: 150px;
+            }
+
+        #name_container {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        #scan_button {
+            text-align: center;
+            margin: 20px auto;
+            width: 200px;
+        }
+
+        #scan_button-c {
+            padding: 10px 20px;
+            border: 2px solid black;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            background-color: #333;
+            transition: transform 0.15s ease-in-out;
+        }
+
+            #scan_button-c:hover {
+                transform: scale(1.05);
+                border: 2px solid #e82525
+            }
+
+
+
+        .faq-container {
+            margin-left: auto; 
+            margin-right: auto; 
+
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            width: 60%;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+            .faq-container summary {
+                font-size: 1rem;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .faq-container details {
+                margin-bottom: 10px;
+            }
+
+            .faq-container p {
+                margin: 10px 0;
+                font-size: 0.9rem;
+            }
+
+            .faq-container summary:hover {
+                color: #e82525;
+            }
+
+            .faq-container a {
+                color: #e82525;
+                text-decoration: none;
+            }
+
+                .faq-container a:hover {
+                    text-decoration: underline;
+                }
+    </style>
 </head>
 
-<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
-    <div id="container_one"
-         class=" w-fit text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 710px; width: 800px;">
-        <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2;  height: 710px; width: 800px; margin-bottom: 20px;">
-            <div id="popup_container" class="h-screen w-full absolute opacity-1 ease-in-out duration-300" style="padding-bottom: 20px;">
-                <div id="popup_content" class="z-[1000] text-center">
-                    Select your device
-                    <div id="device_container">
-                    </div>
-                    <div id="scan_button" class="text-center m-auto w-fit -mb-8 mt-3 duration-300  pb-5" onclick="scanNewDevicesSerial()">
-                        <div id="scan_button-c" class="p-1 pl-7 -mr-32 pr-7 border-black border-[2px] text-white cursor-pointer rounded-full mr-3 text-sm ease-in-out hover:scale-[105%] duration-150">Scan</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body style="width: 80%; height: 710px; position: absolute; background: #21201f;  left: 50%; -ms-transform: translate(-50%, 0); transform: translate(-50%, 0); color:white;">
+
+    <div id="logo_container">
+        <img src="./icons/512x512.png" alt="Logo" style="margin-left: auto; margin-right: auto;" />
+        <div id="name_container">ear (web)</div>
     </div>
+
+    <div id="scan_button" onclick="scanNewDevicesSerial()">
+        <div id="scan_button-c">Connect</div>
+    </div>
+
+    <div class="faq-container">
+        <details>
+            <summary>Which browsers are supported?</summary>
+            <p>ear (web) supports any browser based on Chromium 117+ such as Google Chrome, Microsoft Edge, Brave, Arc</p>
+        </details>
+        <details>
+            <summary>Which devices are supported?</summary>
+            <p>
+                ear (web) support audio products from Nothing and CMF By Nothing, at this time:<br />
+                - Nothing ear (1)<br />
+                - Nothing ear (stick)<br />
+                - Nothing ear (2)<br />
+                - CMF Buds Pro<br />
+                - Nothing Ear<br />
+                - CMF Buds Pro 2
+            </p>
+        </details>
+        <details>
+            <summary>I found a bug/have a feature suggestion, can I contact you?</summary>
+            <p>Please open an issue on the github repository <a href="https://github.com/radiance-project/ear-web/issues">https://github.com/radiance-project/ear-web/issues</a></p>
+        </details>
+    </div>
+
+    <script>
+        async function forgetAllDevices() {
+            const ports = await navigator.serial.getPorts();
+            for (const port of ports) {
+                if (port.opened) {
+                    await port.close();
+                }
+                await port.forget();
+            }
+        }
+        window.onload = function () {
+            if (navigator.serial) {
+                forgetAllDevices();
+            } else {
+                alert("This browser does not support Web Serial API. Please use Chrome or Edge or any other Chromium-based browser.");
+                document.getElementById("scan_button-c").innerText = "Unsupported Browser";
+                document.getElementById("scan_button-c").style.backgroundColor = "#333";
+                document.getElementById("scan_button-c").style.cursor = "not-allowed";
+            }
+        }
+
+    </script>
 </body>
 </html>
-<style>
-    .device-info {
-        text-align: center;
-        font-size: 1.125rem; /* Equivalent to text-lg */
-        font-weight: bold;
-        margin-bottom: 1rem;
-    }
-
-    .image-row {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem; /* Adds space between images */
-        margin-bottom: 1rem;
-    }
-
-    .image-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .responsive-img {
-        max-height: 128px;
-        max-width: 128px;
-        height: auto;
-        width: auto;
-    }
-</style>
-
-<script>
-    async function forgetAllDevices() {
-        const ports = await navigator.serial.getPorts();
-        for (const port of ports) {
-            if (port.opened) {
-                await port.close();
-            }
-            await port.forget();
-        }
-
-    }
-    window.onload = function () {
-        if (navigator.serial) {
-            forgetAllDevices();
-        }
-        else {
-            alert("This browser does not support Web Serial API. Please use Chrome or Edge or any other Chromium based browser.");
-        }
-    }
-</script>

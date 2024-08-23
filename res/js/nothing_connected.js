@@ -188,40 +188,40 @@ function processSerial(serial) {
     let headSerial = serial.substring(0, 2);
     let SKU = ""
     if (headSerial === "MA") {
-        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
+        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         //Ear (stick)
         SKU = "14";
     }
     else if (headSerial === "SH") {
-        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
+        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         SKU = serial.substring(4, 6);
     }
     else if (headSerial === "13") {
-        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
+        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         SKU = serial.substring(4, 6);
     }
     else {
-        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Incompatible Device</p><p>Serial Number: ' + serial + '</p></div>';
+        //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Incompatible Device</p><p>Serial Number: ' + serial + '</p></div>';
         return;
     }
     let model = getModelFromSKU(SKU);
     console.log(model);
 
     if (model) {
-        document.getElementById("device_container").innerHTML += '<div class="device-info"><p>Model: ' + model.name + '</p></div>';
+       // document.getElementById("device_container").innerHTML += '<div class="device-info"><p>Model: ' + model.name + '</p></div>';
         if (model.leftImg === "") {
-            document.getElementById("device_container").innerHTML += `<div class="image-row">
+            /*document.getElementById("device_container").innerHTML += `<div class="image-row">
                     <div class="image-container"><img src="${model.duoImg}" alt="duo" class="responsive-img" /></div>
-                   </div>`;
+                   </div>`;*/
             return;
         }
         else {
-            document.getElementById("device_container").innerHTML += `
+           /* document.getElementById("device_container").innerHTML += `
                 <div class="image-row">
                     <div class="image-container"><img src="${model.leftImg}" alt="left_earbud" class="responsive-img" /></div>
                     <div class="image-container"><img src="${model.caseImg}" alt="case" class="responsive-img" /></div>
                     <div class="image-container"><img src="${model.rightImg}" alt="right_earbud" class="responsive-img" /></div>
-                </div>`;
+                </div>`;*/
         }
     }
     switchViewFromModelID(model, SKU);
@@ -229,8 +229,6 @@ function processSerial(serial) {
 
 
 async function scanNewDevicesSerial() {
-    document.getElementById("device_container").innerHTML = '<img src="../assets/loading.svg" alt="loading_animation" class="h-[80px] w-[80px] m-auto" id="loading_animation" />';
-    document.getElementById("scan_button").style.display = "none";
     const SPP_UUID = "aeac4a03-dff5-498f-843a-34487cf133eb";
     const FASTPAIR_UUID = "df21fe2c-2515-4fdb-8886-f12c4d67927c";
     try {
