@@ -25,9 +25,7 @@ function send(command, payload = [], operation = "") {
         operationList[operationID] = operation;
     }
     console.log("sending " + byteArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
-    // Assuming sock is a valid socket object
     var tempSock = SPPsocket.writable.getWriter();
-    //byteArray to ArrayBuffer
     byteArray = new Uint8Array(byteArray).buffer;
 
     tempSock.write(byteArray);
@@ -236,11 +234,8 @@ function readANC(hexString) {
         level = 6;
     }
     console.log("level " + level);
-
-    // Assuming you have a function to set ANC status in your JavaScript code
     setANCStatus(level);
 }
-
 
 function setANCDisplay(level) {
     if (level === 1) {
@@ -313,8 +308,6 @@ function readEQ(hexString) {
     console.log("eqMode " + eqMode);
     setEQfromRead(eqMode);
 }
-
-
 
 function setEQ(level) {
     let byteArray = [0x00, 0x00];
@@ -394,9 +387,6 @@ function formatFloatForEQ(f, total) {
     return array;
 }
 
-
-
-
 function setCustomEQ_BT(level) {
     if (modelBase !== "B181") {
         var byteArray = [0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x75, 0x44, 0xc3, 0xf5, 0x28, 0x3f, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x5a, 0x45, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x43, 0xcd, 0xcc, 0x4c, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
@@ -421,7 +411,6 @@ function setCustomEQ_BT(level) {
         send(61505, byteArray, "setCustomEQ");
     }
 }
-
 
 function getCustomEQ() {
     if (modelBase !== "B181") {
@@ -454,15 +443,12 @@ function fromFormatFloatForEQ(array) {
     }
 }
 
-
-
 function readLEDCaseColor(hexString) {
     if (modelBase === "B181") {
         console.log("readLEDCaseColor called");
         const hexArray = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
         const numberOfLed = hexArray[8];
         console.log(hexArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
-
         const ledArray = [];
         for (let i = 0; i < numberOfLed; i++) {
             ledArray.push([
@@ -471,7 +457,6 @@ function readLEDCaseColor(hexString) {
                 hexArray[12 + (i * 4)]
             ]);
         }
-
         const ledArrayString = ledArray.map(led => `#${led.map(value => value.toString(16).padStart(2, '0')).join('')}`);
         getCaseColor([ledArrayString[2], ledArrayString[1], ledArrayString[0], ledArrayString[3], ledArrayString[4]]);
     }
@@ -490,11 +475,6 @@ function sendLEDCaseColor(colorArray) {
         send(61453, bytearray);
     }
 }
-
-
-
-
-
 
 function readCustomEQ(hexString) {
     console.log("readCustomEQ called");
@@ -548,6 +528,7 @@ function getLEDCaseColor() {
         send(49175, [], "readLEDCaseColor");
     }
 }
+
 function readFirmware(hexstring) {
     let firmwareVersion = "";
     let hexArray = new Uint8Array(hexstring.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -668,4 +649,3 @@ function sendGestures(device, typeog, action) {
     byteArray[4] = parseInt(action);
     send(61443, byteArray);
 }
-

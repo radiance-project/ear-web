@@ -18,6 +18,8 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_twos";
     } else if (model.base == "B172") {
         window.location.href = "MainControl_espeon";
+    } else {
+        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Incompatible Device</p></div>';
     }
 }
 async function loadDevicePage(device) {
@@ -82,6 +84,16 @@ function getCommand(header) {
     return commandInt;
 }
 
+function readFirmwareFromData(hexstring) {
+    let firmwareVersion = "";
+    let hexArray = new Uint8Array(hexstring.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+    let size = hexArray[5];
+    for (let i = 0; i < size; i++) {
+        firmwareVersion += String.fromCharCode(hexArray[8 + i]);
+    }
+    return firmwareVersion;
+}
+
 function crc16(buffer) {
     let crc = 0xFFFF;
     for (let i = 0; i < buffer.length; i++) {
@@ -109,9 +121,7 @@ function send(command, payload = [], operation = "") {
         operationList[operationID] = operation;
     }
     console.log("sending " + byteArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
-    // Assuming sock is a valid socket object
     var tempSock = SPPsocket.writable.getWriter();
-    //byteArray to ArrayBuffer
     byteArray = new Uint8Array(byteArray).buffer;
 
     tempSock.write(byteArray);
@@ -121,6 +131,9 @@ async function requestSerialNumber() {
     send(0xc006);
 }
 
+async function requestFirmwareEarOne() {
+    send(49218);
+}
 function hexStringToUint8Array(hexString) {
     if (hexString.length % 2 !== 0) {
         throw new Error("Invalid hex string");
@@ -133,15 +146,13 @@ function hexStringToUint8Array(hexString) {
 }
 
 function getSerialNumber(hexPayload) {
-    // Convert hex string to Uint8Array
     const payload = hexStringToUint8Array(hexPayload);
 
     // Decode the payload
-    const E = payload[0]; // Assuming the first byte is the integer 'E'
-    const s02 = new TextDecoder().decode(payload.subarray(1, 7)); // Assuming the next 6 bytes are the string 's02'
+    const E = payload[0]; 
+    const s02 = new TextDecoder().decode(payload.subarray(1, 7)); 
     const configurations = [];
 
-    // Split the payload into lines (assuming newline character '\n' separates lines)
     const lines = new TextDecoder().decode(payload.subarray(7)).split('\n');
 
     lines.forEach(line => {
@@ -169,11 +180,16 @@ function getSerialNumber(hexPayload) {
 }
 
 function processSerial(serial) {
-    // Get the first 2 characters of the serial number and compare
+    if (serial === null) {
+        //could be ear (1)
+        requestFirmwareEarOne();
+        return;
+    }
     let headSerial = serial.substring(0, 2);
     let SKU = ""
     if (headSerial === "MA") {
         document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
+        //Ear (stick)
         SKU = "14";
     }
     else if (headSerial === "SH") {
@@ -185,10 +201,9 @@ function processSerial(serial) {
         SKU = serial.substring(4, 6);
     }
     else {
-        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Not Found</p><p>Serial Number: ' + serial + '</p></div>';
+        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Incompatible Device</p><p>Serial Number: ' + serial + '</p></div>';
         return;
     }
-
     let model = getModelFromSKU(SKU);
     console.log(model);
 
@@ -272,6 +287,17 @@ async function scanNewDevicesSerial() {
                 processSerial(serialNum);
                 //document.getElementById("device_container").innerHTML = '<div class="flex flex-col items-center justify-center"><p class="text-center text-lg font-bold">Device Found</p><p class="text-center text-lg font-bold">Serial Number: ' + serialNum + '</p></div>';
             }
+            if (command === 16450) {
+let             firmwareVersion = readFirmwareFromData(string);
+                document.getElementById("device_container").innerHTML += '<div class="device-info"><p>Firmware Version: ' + firmwareVersion + '</p></div>';
+                //split the firmware version string with "."
+                let firmwareArray = firmwareVersion.split(".");
+                if (firmwareArray[1] === "6700") {
+                    let modelEarOne = getModelFromSKU("01");
+                    switchViewFromModelID(modelEarOne, "01");
+                }
+            }
+
             if (done) {
                 // Allow the serial port to be closed later.
                 reader.releaseLock();

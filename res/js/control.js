@@ -1,4 +1,3 @@
-
 async function getDevicesJS() {
     let n = await eel.getDevices()();
     document.getElementById('list').innerText = n;
@@ -24,7 +23,6 @@ function updateBattery(leftText, caseText, rightText) {
 }
 
 function getModelFromSKU(SKU) {
-
     var sku_to_model = {
         "01": "ear_1_white",
         "02": "ear_1_black",
@@ -81,7 +79,6 @@ function getModelFromSKU(SKU) {
         "78": "espeon_orange",
         "79": "espeon_blue",
     }
-
 
     var models = {
         "ear_1_white": {
@@ -291,12 +288,10 @@ function getModelFromSKU(SKU) {
             duoImg: "",
             isANC: true
         },
-
     };
     model = sku_to_model[SKU];
     return models[model];
 }
-
 
 function getImageForModel(modelID) {
     var modelInfo = getModelInfo(modelID);
@@ -305,7 +300,6 @@ function getImageForModel(modelID) {
 
 async function updateBudsInfo(imageOnly=false) {
     //get sku from local storage
-
     var modelID = localStorage.getItem("sku");
     var modelInfo = getModelFromSKU(modelID);
     var leftBudImg = document.querySelector("#left_ear_peace");
@@ -473,7 +467,6 @@ function setInEar() {
     }
 }
 
-//set latency mode check 
 function setLatencyModeCheckbox(status) {
     if (status == 1) {
         document.getElementById("low_latency").checked = true;
@@ -482,7 +475,6 @@ function setLatencyModeCheckbox(status) {
     }
 }
 
-//set latency mode
 function setLatencyMode() {
     if (document.getElementById("low_latency").checked) {
         setLatency(1);
@@ -497,7 +489,6 @@ function connectDeviceFromList(mac) {
 }
 
 function showErrorPopup(message) {
-    // Get the error popup container and message element
     var errorPopupContainer = document.querySelector(".error-popup-container");
     var errorPopupMessage = document.querySelector(".error-popup-message");
 
@@ -511,60 +502,6 @@ function showErrorPopup(message) {
     setTimeout(function () {
         errorPopupContainer.style.bottom = "-70px"; /* Hide the error popup */
     }, 10000);
-}
-
-/*async function switchViewFromModelID(modelID) {
-    if (modelID == "31d53d" || modelID == "624011") {
-        window.location.href = "MainControl_one.html?modelID=" + modelID;
-    } else if (modelID == "1016dd") {
-        window.location.href = "MainControl_sticks.html?modelID=" + modelID;
-    } else if (modelID == "dee8c0" || modelID == "acc520") {
-        window.location.href = "MainControl_two.html?modelID=" + modelID;
-    } else if (modelID == "5f8f82" || modelID == "add2c4" || modelID == "2eb1ca") {
-        window.location.href = "MainControl_corsola.html?modelID=" + modelID;
-    }
-}*/
-
-function toggleConnectionOverlay(show, model, isTray) {
-    var tray;
-    var bigWindow;
-    console.log("toggleConnectionOverlay");
-
-  
-    width = window.screen.width;
-    height = window.screen.height - 40;
-    if (show) {
-        window.ipcRenderer.send('tray-resize', 2, 650, 300);
-        window.ipcRenderer.send('tray-position', 2, width - 650, height - 300);
-        window.ipcRenderer.send('load-url', 1, 'http://localhost:17079/MainControl/MainControl_nothing_connected.html');
-        window.ipcRenderer.send('load-url', 2, 'http://localhost:17079/tray/nothing_connected.html');
-    } else {
-        if (model == "31d53d" || model == "624011") {
-            window.ipcRenderer.send('tray-resize', 2, 650, 300);
-            window.ipcRenderer.send('tray-position', 2, width - 650, height - 300);
-            window.ipcRenderer.send('load-url', 1, 'http://localhost:17079/MainControl/MainControl_one.html');
-            window.ipcRenderer.send('load-url', 2, 'http://localhost:17079/tray/one.html');
-        } else if (model == "1016dd") {
-            window.ipcRenderer.send('tray-resize', 2, 300, 300);
-            window.ipcRenderer.send('tray-position', 2, width - 300, height - 300);
-            window.ipcRenderer.send('load-url', 1, 'http://localhost:17079/MainControl/MainControl_sticks.html');
-            window.ipcRenderer.send('load-url', 2, 'http://localhost:17079/tray/sticks.html');
-        } else if (model == "dee8c0") {
-            window.ipcRenderer.send('tray-resize', 2, 650, 300);
-            window.ipcRenderer.send('tray-position', 2, width - 650, height - 300);
-            window.ipcRenderer.send('load-url', 1, 'http://localhost:17079/MainControl/MainControl_two.html');
-            window.ipcRenderer.send('load-url', 2, 'http://localhost:17079/tray/two.html');
-        } else if (model == "acc520") {
-            window.ipcRenderer.send('tray-resize', 2, 650, 300);
-            window.ipcRenderer.send('tray-position', 2, width - 650, height - 300);
-            window.ipcRenderer.send('load-url', 1, 'http://localhost:17079/MainControl/MainControl_two.html');
-            window.ipcRenderer.send('load-url', 2, 'http://localhost:17079/tray/two.html');
-        }
-    }
-}
-
-function closeElectronInstance() {
-    window.ipcRenderer.send('close-app');
 }
 
 function getANCStatus() {
