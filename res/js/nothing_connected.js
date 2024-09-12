@@ -292,7 +292,7 @@ async function scanNewDevicesSerial() {
             }
             if (command === 16450) {
 let             firmwareVersion = readFirmwareFromData(string);
-                document.getElementById("device_container").innerHTML += '<div class="device-info"><p>Firmware Version: ' + firmwareVersion + '</p></div>';
+                //document.getElementById("device_container").innerHTML += '<div class="device-info"><p>Firmware Version: ' + firmwareVersion + '</p></div>';
                 //split the firmware version string with "."
                 let firmwareArray = firmwareVersion.split(".");
                 if (firmwareArray[1] === "6700") {
