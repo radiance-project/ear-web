@@ -187,6 +187,11 @@ function processSerial(serial) {
     }
     let headSerial = serial.substring(0, 2);
     let SKU = ""
+    if (serial === "12345678901234567") {
+        let modelEarOne = getModelFromSKU("01");
+        switchViewFromModelID(modelEarOne, "01");
+        return;
+    }
     if (headSerial === "MA") {
         //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         //Ear (stick)
