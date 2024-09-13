@@ -78,6 +78,11 @@ function getModelFromSKU(SKU) {
         "77": "espeon_white",
         "78": "espeon_orange",
         "79": "espeon_blue",
+        "80": "espeon_blue",
+        "81": "espeon_orange",
+        "82": "espeon_white",
+        "83": "espeon_black",
+
     }
 
     var models = {
