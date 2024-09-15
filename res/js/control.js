@@ -41,7 +41,7 @@ function getModelFromSKU(SKU) {
         "27": "ear_2_black",
         "28": "ear_2_black",
         "29": "ear_2_black",
-        "30": "corsola_dark_grey",
+        "30": "corsola_black",
         "31": "corsola_black",
         "32": "corsola_white",
         "33": "corsola_white",
