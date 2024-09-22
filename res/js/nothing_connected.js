@@ -5,6 +5,10 @@ let operationList = {};
 async function switchViewFromModelID(model, sku) {
     localStorage.setItem("model", JSON.stringify(model));
     localStorage.setItem("sku", sku);
+    if (sku === null || sku === "") {
+        document.getElementById("scan_button-c").innerText = "Incompatible Device";
+        return;
+    }
     console.log("Switching view from model ID " + model.base);
     if (model.base == "B181") {
         window.location.href = "MainControl_one";
@@ -19,7 +23,7 @@ async function switchViewFromModelID(model, sku) {
     } else if (model.base == "B172") {
         window.location.href = "MainControl_espeon";
     } else {
-        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Incompatible Device</p></div>';
+        document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }
 }
 async function loadDevicePage(device) {
@@ -194,8 +198,11 @@ function processSerial(serial) {
     }
     if (headSerial === "MA") {
         //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
-        //Ear (stick)
-        SKU = "14";
+        let year = serial.substring(6, 8);
+        if (year === "22" || year === "23") {
+            //Ear (stick)
+            SKU = "14";
+        }
     }
     else if (headSerial === "SH") {
         //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
