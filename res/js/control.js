@@ -233,27 +233,27 @@ function getModelFromSKU(SKU) {
         "donphan_black": {
             name: "CMF Buds",
             base: "B168",
-            leftImg: "donphan_black_left.png",
-            caseImg: "donphan_black_case.png",
-            rightImg: "donphan_black_right.png",
+            leftImg: "../assets/donphan_black_left.png",
+            caseImg: "../assets/donphan_black_case.png",
+            rightImg: "../assets/donphan_black_right.png",
             duoImg: "",
             isANC: true
         },
         "donphan_white": {
             name: "CMF Buds",
             base: "B168",
-            leftImg: "donphan_white_left.png",
-            caseImg: "donphan_white_case.png",
-            rightImg: "donphan_white_right.png",
+            leftImg: "../assets/donphan_white_left.png",
+            caseImg: "../assets/donphan_white_case.png",
+            rightImg: "../assets/donphan_white_right.png",
             duoImg: "",
             isANC: true
         },
         "donphan_orange": {
             name: "CMF Buds",
             base: "B168",
-            leftImg: "donphan_orange_left.png",
-            caseImg: "donphan_orange_case.png",
-            rightImg: "donphan_orange_right.png",
+            leftImg: "../assets/donphan_orange_left.png",
+            caseImg: "../assets/donphan_orange_case.png",
+            rightImg: "../assets/donphan_orange_right.png",
             duoImg: "",
             isANC: true
         },

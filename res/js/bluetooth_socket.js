@@ -290,13 +290,13 @@ function read_advanced_eq_status(hexString)
 }
 
 function getEQ() {
-    if (modelBase !== "B172") { 
+    if (modelBase !== "B172" && modelBase !== "B168") {
         send(49183, [], "readEQ");
     }
 }
 
 function getListeningMode() {
-    if (modelBase === "B172") {
+    if (modelBase === "B172" || modelBase === "B168") {
         send(49232, [], "readListeningMode");
     }
 }
@@ -316,7 +316,7 @@ function setEQ(level) {
 }
 
 function setListeningMode(level) {
-    if (modelBase !== "B172") {
+    if (modelBase !== "B172" && modelBase !== "B168") {
         return;
     }
     let byteArray = [0x00, 0x00];
@@ -325,7 +325,7 @@ function setListeningMode(level) {
 }
 
 function set_enhanced_bass(enabled, level) {
-    if (modelBase === "B171" || modelBase === "B172") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168") {
         level *= 2;
         let byteArray = [0x00, 0x00];
         if (enabled) {
@@ -337,13 +337,13 @@ function set_enhanced_bass(enabled, level) {
 }
 
 function get_enhanced_bass() {
-    if (modelBase === "B171" || modelBase === "B172") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168") {
         send(49230, [], "readEnhancedBass");
     }
 }
 
 function read_enhanced_bass(hexString) {
-    if (modelBase === "B171" || modelBase === "B172") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168") {
         let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
         let enabled = hexArray[8];
         let level = hexArray[9];

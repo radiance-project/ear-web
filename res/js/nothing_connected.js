@@ -22,6 +22,8 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_twos";
     } else if (model.base == "B172") {
         window.location.href = "MainControl_espeon";
+    } else if (model.base == "B168") {
+        window.location.href = "MainControl_donphan";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }
