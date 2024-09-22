@@ -383,12 +383,12 @@ function setANC(typeANC) {
 }
 
 function displayANC(display) {
-    if (display) {
-        switchPage(1, true);
+    if (display == true) {
+        switchPage(0, true);
         document.querySelector("#page_selector").style.display = "grid";
     }
     else {
-        switchPage(0, true);
+        switchPage(1, true);
         document.querySelector("#page_selector").style.display = "none";
     }
 }
