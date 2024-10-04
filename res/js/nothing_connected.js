@@ -24,6 +24,8 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_espeon";
     } else if (model.base == "B168") {
         window.location.href = "MainControl_donphan";
+    } else if (model.base == "B174") {
+        window.location.href = "MainControl_flaaffy";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }
@@ -204,6 +206,9 @@ function processSerial(serial) {
         if (year === "22" || year === "23") {
             //Ear (stick)
             SKU = "14";
+        } else if (year === "24") {
+            //Ear (open) TODO: Find a better way to identify both
+            SKU = "11200005";
         }
     }
     else if (headSerial === "SH") {

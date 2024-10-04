@@ -82,6 +82,7 @@ function getModelFromSKU(SKU) {
         "81": "espeon_orange",
         "82": "espeon_white",
         "83": "espeon_black",
+        "11200005": "flaaffy_white",
 
     }
 
@@ -292,6 +293,15 @@ function getModelFromSKU(SKU) {
             rightImg: "../assets/espeon_blue_right.png",
             duoImg: "",
             isANC: true
+        },
+        "flaaffy_white": {
+            name: "Nothing Ear (open)",
+            base: "B174",
+            leftImg: "../assets/flaffy_white_left.png",
+            caseImg: "../assets/flaffy_white_case.png",
+            rightImg: "../assets/flaffy_white_right.png",
+            duoImg: "",
+            isANC: false
         },
     };
     model = sku_to_model[SKU];

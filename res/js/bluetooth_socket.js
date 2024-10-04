@@ -167,7 +167,6 @@ async function connectSPP(sppPort=null) {
                 break;
             }
             console.log(value);
-            //if received data is 7 bytes long, disconnect
 
         }
     }
@@ -282,7 +281,7 @@ function read_advanced_eq_status(hexString)
     let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
     let advancedStatus = hexArray[8];
     console.log("advancedEQ " + advancedStatus);
-    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171") {
+    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174") {
         if (advancedStatus === 1) {
             setEQfromRead(6);
         }
@@ -553,7 +552,9 @@ function readEarFitTestResult(hexstring) {
 } 
 
 function sendInEarRead() {
-    send(49166, [], "readInEar");
+    if (modelBase !== "B174") {
+        send(49166, [], "readInEar");
+    }
 }
 
 function sendLatencyModeRead() {
