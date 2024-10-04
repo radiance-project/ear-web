@@ -324,7 +324,7 @@ function setListeningMode(level) {
 }
 
 function set_enhanced_bass(enabled, level) {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162") {
         level *= 2;
         let byteArray = [0x00, 0x00];
         if (enabled) {
@@ -336,13 +336,13 @@ function set_enhanced_bass(enabled, level) {
 }
 
 function get_enhanced_bass() {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162") {
         send(49230, [], "readEnhancedBass");
     }
 }
 
 function read_enhanced_bass(hexString) {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162") {
         let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
         let enabled = hexArray[8];
         let level = hexArray[9];
@@ -539,7 +539,7 @@ function readFirmware(hexstring) {
 }
 
 function launchEarFitTest() {
-    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172") {
+    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172" || modelBase === "B162") {
         send(61460, [0x01]);
     }
 }
