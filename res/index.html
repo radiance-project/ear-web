@@ -12,11 +12,31 @@
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
     <link href="./global.css" rel="stylesheet" />
     <style>
+        #announcement-banner {
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+            display: none;
+            position: relative;
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%);
+            border-radius: 15px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: auto;
+            z-index: 1000;
+        }
 
+        #announcement-date {
+            font-weight: bold;
+            margin-right: 15px;
+        }
 
         #logo_container {
-            margin-top: 40px;
+            margin-top: 40px; 
             margin-bottom: 20px;
+            text-align: center;
         }
 
             #logo_container img {
@@ -99,6 +119,11 @@
 
 <body style="width: 80%; height: 710px; position: absolute; background: #21201f;  left: 50%; -ms-transform: translate(-50%, 0); transform: translate(-50%, 0); color:white;">
 
+    <div id="announcement-banner">
+        <div id="announcement-date">2024-10-05</div>
+        <div id="announcement-content">Ear (open) and Ear (a) are now supported!</div>
+    </div>
+
     <div id="logo_container">
         <img src="./icons/512x512.png" alt="Logo" style="margin-left: auto; margin-right: auto;" />
         <div id="name_container">ear (web)</div>
@@ -123,7 +148,9 @@
                 - CMF Buds Pro<br />
                 - CMF Buds<br />
                 - Nothing Ear<br />
-                - CMF Buds Pro 2
+                - Nothing Ear (a)<br />
+                - CMF Buds Pro 2<br />
+                - Nothing Ear (open)<br />
             </p>
         </details>
         <details>
@@ -143,6 +170,17 @@
             }
         }
         window.onload = function () {
+            const banner = document.getElementById('announcement-banner');
+            const dateBanner = document.getElementById('announcement-date');
+            const bannerDate = new Date(dateBanner.innerHTML);
+            const currentDate = new Date();
+            const diffInDays = (currentDate - bannerDate) / (1000 * 60 * 60 * 24);
+
+            console.log(diffInDays);    
+            if (diffInDays <= 7) {
+                banner.style.display = 'inline-block';
+            }
+
             if (navigator.serial) {
                 forgetAllDevices();
             } else {
