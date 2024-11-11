@@ -57,7 +57,7 @@ function getModelFromSKU(SKU) {
         "55": "donphan_black",
         "56": "donphan_white",
         "57": "donphan_white",
-        "58": "donphan_orqnge",
+        "58": "donphan_orange",
         "59": "donphan_orange",
         "61": "entei_black",
         "62": "entei_white",
