@@ -354,7 +354,7 @@ function selectCaseColorPopup() {
     Change case color
         </div>
         <div id="case_container_color_picker">
-            <img src="../assets/ear_one_white_case.png" class='mr-2 h-42 -mt-5 m-auto -mb-8' "/>
+            <img src="../assets/ear_one_white_case.webp" class='mr-2 h-42 -mt-5 m-auto -mb-8' "/>
             <div id="case_led" class="rounded-full m-auto" style="background-color: red; height: 8px; width: 8px; margin-top: -102px; margin-bottom: 76px; z-index: 1; margin-left: 260px; position: relative;"></div>
         </div>
             <input type="color" id="case_color" style=" margin:auto; display: block; height: 30px; width: 350px; border: 0px; background: transparent;" onInput="saveColor();document.getElementById('case_led').style.backgroundColor = this.value" name="case_color" value="#000000">

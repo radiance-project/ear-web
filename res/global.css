@@ -1232,7 +1232,7 @@ video {
 }
 
 #clever-bot {
-    background: linear-gradient(70deg, rgba(0,0,0, 1) 50%, rgba(23, 23, 23, 0.2) 90%), url(./assets/gradient_image.png);
+    background: linear-gradient(70deg, rgba(0,0,0, 1) 50%, rgba(23, 23, 23, 0.2) 90%), url(./assets/gradient_image.webp);
     height: 300px;
 }
 

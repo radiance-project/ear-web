@@ -115,7 +115,7 @@ function showEarTipTestDialog() {
     <div id="image-container"
     class='justify-center items-center flex relative ease-in-out duration-300' style="margin-left: -28px;">
 <div id="left_ear" class='w-52 ease-in-out duration-300'>
-    <img src="../assets/ear_two_white_left.png"
+    <img src="../assets/ear_two_white_left.webp"
             class='h-44 ml-[40px] duration-500 ease-in-out relative cursor-pointer'
             id="left_ear_peace"
             style="z-Index:100; margin: 0 0 0 40px; transform: scale(0.85);" />
@@ -126,7 +126,7 @@ function showEarTipTestDialog() {
     </div>
 </div>
 <div id="right_ear" class='w-52 w-34 ease-in-out duration-300'>
-    <img src="../assets/ear_two_white_right.png"
+    <img src="../assets/ear_two_white_right.webp"
             class='h-44 w-34 margin-auto duration-[2s] ease-in-out cursor-pointer'
             id="right_ear_peace" style="margin: auto; transform: scale(0.85);" />
     <div id="not_right_ear_battery" class="ease-in-out duration-300" style="opacity: 100; margin-top: -10px;">
