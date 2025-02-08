@@ -3,6 +3,7 @@ var modelBase = "";
 
 let operationID = 0;
 let operationList = {};
+let firmwareVersion = "";
 
 var debug = false;
 if (!debug) {
@@ -253,6 +254,9 @@ function setANCDisplay(level) {
 }
 
 function sendANCread() {
+    var isAnc = firmwareVersion.split(".");
+    if (modelBase === "B157" && isAnc[2] !== "2")
+        return;
     send(49182, [], "readANC");
 }
 
@@ -529,7 +533,6 @@ function getLEDCaseColor() {
 }
 
 function readFirmware(hexstring) {
-    let firmwareVersion = "";
     let hexArray = new Uint8Array(hexstring.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
     let size = hexArray[5];
     for (let i = 0; i < size; i++) {
