@@ -11,23 +11,23 @@ async function switchViewFromModelID(model, sku) {
     }
     console.log("Switching view from model ID " + model.base);
     if (model.base == "B181") {
-        window.location.href = "MainControl_one";
+        window.location.href = "MainControl/MainControl_one.html";
     } else if (model.base == "B157") {
-        window.location.href = "MainControl_sticks";
+        window.location.href = "MainControl/MainControl_sticks.html";
     } else if (model.base == "B155") {
-        window.location.href = "MainControl_two";
+        window.location.href = "MainControl/MainControl_two.html";
     } else if (model.base == "B163") {
-        window.location.href = "MainControl_corsola";
+        window.location.href = "MainControl/MainControl_corsola.html";
     } else if (model.base == "B171") {
-        window.location.href = "MainControl_twos";
+        window.location.href = "MainControl/MainControl_twos.html";
     } else if (model.base == "B172") {
-        window.location.href = "MainControl_espeon";
+        window.location.href = "MainControl/MainControl_espeon.html";
     } else if (model.base == "B168") {
-        window.location.href = "MainControl_donphan";
+        window.location.href = "MainControl/MainControl_donphan.html";
     } else if (model.base == "B174") {
-        window.location.href = "MainControl_flaaffy";
+        window.location.href = "MainControl/MainControl_flaaffy.html";
     } else if (model.base == "B162") {
-        window.location.href = "MainControl_cleffa";
+        window.location.href = "MainControl/MainControl_cleffa.html";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }

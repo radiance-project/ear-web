@@ -90,33 +90,48 @@ async function connectSPP(sppPort=null) {
         console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
 
         await sppPort.open({ baudRate: 9600 });
+        
+        // Wait for connection to stabilize, especially important on macOS
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
         //on disconnect serial
         setModelBase();
         SPPsocket = sppPort;
         //read from the serial port
         const reader = sppPort.readable.getReader();
-        initDevice();
+        
+        // Delay initialization to ensure stable connection
+        setTimeout(() => initDevice(), 300);
+        
         while (sppPort.readable) {
-            const { value, done } = await reader.read();
-            //console.log(value);
-            //print hex string of the received data
-            var string = "";
-            for (let i = 0; i < value.length; i++) {
-                //fill the string with leading zero if needed
-                string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
-            }
-            let rawData = new Uint8Array(value.buffer);
-            //check if first byte is 0x55, else continue
-            if (rawData[0] !== 85 || rawData.length < 10) {
-                continue;
-            }
-            //header is 8 bytes long
-            let header = rawData.slice(0, 6);
-            let command = getCommand(header);
-            console.log(command);
-            if (command === 57345 || command===16391) {
-                readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
+            try {
+                const { value, done } = await reader.read();
+                
+                if (done) {
+                    // Allow the serial port to be closed later.
+                    reader.releaseLock();
+                    break;
+                }
+                
+                //console.log(value);
+                //print hex string of the received data
+                var string = "";
+                for (let i = 0; i < value.length; i++) {
+                    //fill the string with leading zero if needed
+                    string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
+                }
+                let rawData = new Uint8Array(value.buffer);
+                //check if first byte is 0x55, else continue
+                if (rawData[0] !== 85 || rawData.length < 10) {
+                    continue;
+                }
+                //header is 8 bytes long
+                let header = rawData.slice(0, 6);
+                let command = getCommand(header);
+                console.log(command);
+                if (command === 57345 || command===16391) {
+                    readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
             if (command === 57347) {
                 readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
             }
@@ -162,13 +177,19 @@ async function connectSPP(sppPort=null) {
                 operationList = {};
             }
             console.log(string);
-            if (done) {
-                // Allow the serial port to be closed later.
-                reader.releaseLock();
+            console.log(value);
+            
+            } catch (error) {
+                console.error("Error reading from serial port:", error);
+                // On macOS, connection issues are common, try to handle gracefully
+                if (error.name === 'NetworkError' || error.name === 'InvalidStateError') {
+                    console.log("Connection lost, returning to device selection...");
+                    setTimeout(() => {
+                        window.location.href = "../index.html";
+                    }, 2000);
+                }
                 break;
             }
-            console.log(value);
-
         }
     }
 }
