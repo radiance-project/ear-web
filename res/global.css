@@ -1127,6 +1127,51 @@ video {
     transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
+/* Nothing Technology Design System Variables */
+:root {
+    /* Color Palette - Refined Nothing Aesthetic */
+    --nothing-black: #000000;
+    --nothing-white: #FFFFFF;
+    --nothing-bg: #0F0F0F;
+    --nothing-surface: #1A1A1A;
+    --nothing-surface-elevated: #252525;
+    --nothing-gray-light: #E5E5E5;
+    --nothing-gray-medium: #808080;
+    --nothing-gray-dark: #404040;
+    --nothing-accent: #FFFFFF;
+    --nothing-border: rgba(255, 255, 255, 0.1);
+    
+    /* Typography */
+    --nothing-font-display: 'Ndot-55', -apple-system, BlinkMacSystemFont, sans-serif;
+    --nothing-font-display-bold: 'Ndot-55-Bold', -apple-system, BlinkMacSystemFont, sans-serif;
+    --nothing-font-body: 'NothingNormal2', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --nothing-font-mono: 'NothingNormal', 'Letter Mono', monospace;
+    
+    /* Spacing */
+    --nothing-spacing-xs: 4px;
+    --nothing-spacing-sm: 8px;
+    --nothing-spacing-md: 16px;
+    --nothing-spacing-lg: 24px;
+    --nothing-spacing-xl: 32px;
+    --nothing-spacing-2xl: 48px;
+    
+    /* Border Radius */
+    --nothing-radius-sm: 8px;
+    --nothing-radius-md: 12px;
+    --nothing-radius-lg: 16px;
+    --nothing-radius-full: 9999px;
+    
+    /* Shadows */
+    --nothing-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --nothing-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --nothing-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    
+    /* Transitions */
+    --nothing-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --nothing-transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --nothing-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @font-face {
     font-family: 'Ndot-55';
     src: url("./fonts/ndot_55.otf");
@@ -1157,49 +1202,73 @@ video {
     z-index: 200;
 }
 
+/* Enhanced Switch Components - Nothing Style */
 .settings-switch-container {
     display: flex;
-    justify-content: left;
-    padding: 5px;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--nothing-spacing-sm) var(--nothing-spacing-md);
     overflow: hidden;
+    transition: background-color var(--nothing-transition-fast);
+    border-radius: var(--nothing-radius-sm);
+}
+
+.settings-switch-container:hover {
+    background-color: rgba(255, 255, 255, 0.03);
 }
 
 .settings-switch-label {
-    font-size: 12px;
-    margin-left: 10px;
-    margin-right: 10px;
+    font-size: 13px;
+    font-family: var(--nothing-font-body);
+    margin-left: var(--nothing-spacing-md);
+    color: var(--nothing-gray-light);
+    letter-spacing: 0.01em;
+    flex: 1;
 }
 
 .settings-switch-button {
-    width: 40px;
-    height: 20px;
-    border-radius: 10px;
-    background-color: black;
+    width: 44px;
+    height: 24px;
+    border-radius: var(--nothing-radius-full);
+    background-color: var(--nothing-black);
+    border: 1px solid var(--nothing-border);
     position: relative;
-    transition: left 1.2s ease-in-out;
+    transition: all var(--nothing-transition-base);
+    cursor: pointer;
+}
+
+.settings-switch-button:hover {
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .settings-switch-indicator {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background-color: white;
+    background-color: var(--nothing-white);
     position: absolute;
-    top: 0;
-    left: 0;
-    transition: left 0.1s ease-in-out;
+    top: 2px;
+    left: 2px;
+    transition: all var(--nothing-transition-base);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
     .settings-switch-indicator.high {
-        left: 20px;
+        left: 22px;
     }
 
 .settings-switch-button:has(.settings-switch-checkbox:checked) .settings-switch-indicator {
-    left: 20px;
+    left: 22px;
 }
 
 .settings-switch-button:has(.settings-switch-checkbox:checked) {
-    background-color: rgb(65, 65, 65);
+    background-color: var(--nothing-white);
+    border-color: var(--nothing-white);
+}
+
+.settings-switch-button:has(.settings-switch-checkbox:checked) .settings-switch-indicator {
+    background-color: var(--nothing-black);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -1214,6 +1283,7 @@ video {
     user-select: none;
 }
 
+/* Enhanced Popup - Nothing Style */
 #popup_content {
     margin: auto;
     height: -moz-fit-content;
@@ -1225,10 +1295,25 @@ video {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #1B1D1F;
-    padding: 20px;
-    border-radius: 0.75rem;
+    background-color: var(--nothing-surface);
+    border: 1px solid var(--nothing-border);
+    padding: var(--nothing-spacing-xl);
+    border-radius: var(--nothing-radius-lg);
     max-width: 50%;
+    box-shadow: var(--nothing-shadow-lg);
+    backdrop-filter: blur(20px);
+    animation: popupFadeIn var(--nothing-transition-base);
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 #clever-bot {
@@ -1361,4 +1446,158 @@ video {
 .hover\:text-white:hover {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+/* Nothing-Style Enhanced Components */
+
+/* Button Styles */
+.nothing-button {
+    font-family: var(--nothing-font-body);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: var(--nothing-spacing-md) var(--nothing-spacing-xl);
+    border-radius: var(--nothing-radius-full);
+    border: 1px solid var(--nothing-white);
+    background-color: transparent;
+    color: var(--nothing-white);
+    cursor: pointer;
+    transition: all var(--nothing-transition-base);
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nothing-spacing-sm);
+}
+
+.nothing-button:hover {
+    background-color: var(--nothing-white);
+    color: var(--nothing-black);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.nothing-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+}
+
+.nothing-button-primary {
+    background-color: var(--nothing-white);
+    color: var(--nothing-black);
+    border-color: var(--nothing-white);
+}
+
+.nothing-button-primary:hover {
+    background-color: var(--nothing-gray-light);
+    border-color: var(--nothing-gray-light);
+}
+
+/* Card/Container Styles */
+.nothing-card {
+    background-color: var(--nothing-surface);
+    border: 1px solid var(--nothing-border);
+    border-radius: var(--nothing-radius-lg);
+    padding: var(--nothing-spacing-lg);
+    transition: all var(--nothing-transition-base);
+}
+
+.nothing-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: var(--nothing-shadow-md);
+}
+
+/* Typography Enhancements */
+.nothing-heading {
+    font-family: var(--nothing-font-display);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--nothing-white);
+}
+
+.nothing-heading-large {
+    font-size: 2.5rem;
+    line-height: 1.1;
+}
+
+.nothing-heading-medium {
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+.nothing-heading-small {
+    font-size: 1.25rem;
+    line-height: 1.3;
+}
+
+.nothing-body {
+    font-family: var(--nothing-font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--nothing-gray-light);
+    letter-spacing: 0.01em;
+}
+
+.nothing-label {
+    font-family: var(--nothing-font-body);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--nothing-gray-medium);
+}
+
+/* Enhanced Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.nothing-fade-in {
+    animation: fadeIn var(--nothing-transition-base);
+}
+
+.nothing-slide-up {
+    animation: slideUp var(--nothing-transition-base);
+}
+
+.nothing-scale-in {
+    animation: scaleIn var(--nothing-transition-base);
+}
+
+/* Smooth Scroll */
+* {
+    scroll-behavior: smooth;
+}
+
+/* Selection Styles */
+::selection {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--nothing-white);
 }

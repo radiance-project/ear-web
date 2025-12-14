@@ -12,112 +12,182 @@
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
     <link href="./global.css" rel="stylesheet" />
     <style>
+        body {
+            background: #0F0F0F;
+            font-family: var(--nothing-font-body);
+        }
+
         #announcement-banner {
-            background-color: red;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             display: none;
             position: relative;
             left: 50%;
             top: 20px;
             transform: translateX(-50%);
-            border-radius: 15px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
             text-align: center;
             width: auto;
             z-index: 1000;
+            font-family: var(--nothing-font-body);
+            font-size: 13px;
+            letter-spacing: 0.02em;
+            animation: slideUp 0.3s ease-out;
         }
 
         #announcement-date {
-            font-weight: bold;
+            font-weight: 600;
             margin-right: 15px;
+            opacity: 0.8;
         }
 
         #logo_container {
-            margin-top: 40px; 
-            margin-bottom: 20px;
+            margin-top: 60px; 
+            margin-bottom: 30px;
             text-align: center;
+            animation: fadeIn 0.6s ease-out;
         }
 
             #logo_container img {
-                max-width: 150px;
+                max-width: 180px;
+                filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.1));
+                transition: transform 0.3s ease;
+            }
+
+            #logo_container img:hover {
+                transform: scale(1.05);
             }
 
         #name_container {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 40px;
+            font-family: var(--nothing-font-display);
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 50px;
             text-align: center;
+            color: white;
+            letter-spacing: -0.02em;
+            animation: fadeIn 0.8s ease-out;
         }
 
         #scan_button {
             text-align: center;
-            margin: 20px auto;
-            width: 200px;
+            margin: 30px auto;
+            width: 220px;
+            animation: fadeIn 1s ease-out;
         }
 
         #scan_button-c {
-            padding: 10px 20px;
-            border: 2px solid black;
-            border-radius: 25px;
+            padding: 14px 32px;
+            border: 1px solid white;
+            border-radius: 9999px;
             cursor: pointer;
-            font-size: 1rem;
-            background-color: #333;
-            transition: transform 0.15s ease-in-out;
+            font-size: 13px;
+            font-family: var(--nothing-font-body);
+            font-weight: 500;
+            background-color: transparent;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
         }
 
             #scan_button-c:hover {
-                transform: scale(1.05);
-                border: 2px solid #e82525
+                background-color: white;
+                color: black;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
             }
 
-
+            #scan_button-c:active {
+                transform: translateY(0);
+                box-shadow: 0 4px 8px rgba(255, 255, 255, 0.15);
+            }
 
         .faq-container {
             margin-left: auto; 
             margin-right: auto; 
-
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
             width: 60%;
+            max-width: 600px;
             overflow-y: auto;
-            font-size: 0.9rem;
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            animation: fadeIn 1.2s ease-out;
+            font-family: var(--nothing-font-body);
         }
 
+            .faq-container:hover {
+                border-color: rgba(255, 255, 255, 0.15);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+            }
+
             .faq-container summary {
-                font-size: 1rem;
-                font-weight: bold;
+                font-size: 14px;
+                font-weight: 500;
                 cursor: pointer;
+                padding: 12px 0;
+                color: white;
+                letter-spacing: 0.02em;
+                transition: color 0.2s ease;
+                list-style: none;
+            }
+
+            .faq-container summary::-webkit-details-marker {
+                display: none;
+            }
+
+            .faq-container summary::marker {
+                display: none;
             }
 
             .faq-container details {
-                margin-bottom: 10px;
+                margin-bottom: 8px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                padding-bottom: 8px;
+            }
+
+            .faq-container details:last-child {
+                border-bottom: none;
             }
 
             .faq-container p {
-                margin: 10px 0;
-                font-size: 0.9rem;
+                margin: 12px 0;
+                font-size: 13px;
+                line-height: 1.6;
+                color: rgba(255, 255, 255, 0.7);
+                padding-left: 0;
             }
 
             .faq-container summary:hover {
-                color: #e82525;
+                color: rgba(255, 255, 255, 0.9);
             }
 
             .faq-container a {
-                color: #e82525;
-                text-decoration: none;
+                color: white;
+                text-decoration: underline;
+                text-decoration-color: rgba(255, 255, 255, 0.3);
+                text-underline-offset: 3px;
+                transition: all 0.2s ease;
             }
 
                 .faq-container a:hover {
-                    text-decoration: underline;
+                    text-decoration-color: white;
+                    color: white;
                 }
     </style>
 </head>
 
-<body style="width: 80%; height: 710px; position: absolute; background: #21201f;  left: 50%; -ms-transform: translate(-50%, 0); transform: translate(-50%, 0); color:white;">
+<body style="width: 80%; max-width: 800px; min-height: 710px; position: absolute; background: #0F0F0F;  left: 50%; -ms-transform: translate(-50%, 0); transform: translate(-50%, 0); color:white; padding: 20px;">
 
     <div id="announcement-banner">
         <div id="announcement-date">2024-10-05</div>

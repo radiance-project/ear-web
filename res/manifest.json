@@ -3,8 +3,8 @@
   "short_name": "ear (web)",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#21201f",
-  "theme_color": "#21201f",
+  "background_color": "#0F0F0F",
+  "theme_color": "#0F0F0F",
   "orientation": "portrait-primary",
   "icons": [
     {

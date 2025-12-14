@@ -13,13 +13,13 @@
     <link href="../global.css" rel="stylesheet" />
 </head>
 
-<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
+<body style="width: 800px; height: 710px; position: absolute; background: #0F0F0F; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
     <div id="container_one"
          class=" w-fit  text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+         style="font-family: var(--nothing-font-body); height: 710px; width: 800px;">
 
         <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2;  height: 710px; width: 800px; margin-top: -20px; ">
+             style="font-family: var(--nothing-font-body);  height: 710px; width: 800px; margin-top: -20px; ">
 
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
                 <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
@@ -39,34 +39,34 @@
                 <div id="test" class="top-24 left-10 absolute ease-in-out duration-300"
                      style="opacity: 0; width: 300px; z-index: -10">
                     Customisable
-                    <div class="mt-1 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                    <div class="mt-1 bg-[#1A1A1A] border border-[rgba(255,255,255,0.1)] rounded-xl pt-5 pb-5 mt-4 hover:border-[rgba(255,255,255,0.15)] transition-all duration-200" style="cursor: pointer;"
                          onclick="changeGesture('triple')">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">3x tap</div>
-                        <div id="settings_subtitle_triple" class="text-sm ml-5 text-gray-500">Skip back</div>
+                        <div id="setting_title" class=" text-sm ml-5 text-gray-200" style="font-family: var(--nothing-font-body);">3x tap</div>
+                        <div id="settings_subtitle_triple" class="text-sm ml-5 text-gray-500" style="font-family: var(--nothing-font-body);">Skip back</div>
                     </div>
-                    <div class="mt-1 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                    <div class="mt-1 bg-[#1A1A1A] border border-[rgba(255,255,255,0.1)] rounded-xl pt-5 pb-5 mt-4 hover:border-[rgba(255,255,255,0.15)] transition-all duration-200" style="cursor: pointer;"
                          onclick="changeGesture('hold')">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">Tap and hold</div>
-                        <div id="settings_subtitle_hold" class="text-sm ml-5 text-gray-500">
+                        <div id="setting_title" class=" text-sm ml-5 text-gray-200" style="font-family: var(--nothing-font-body);">Tap and hold</div>
+                        <div id="settings_subtitle_hold" class="text-sm ml-5 text-gray-500" style="font-family: var(--nothing-font-body);">
                             Change ANC type<br />Decline
                             incoming call
                         </div>
                     </div>
-                    <section class="mt-10">Not customisable</section>
-                    <div class="mt-1 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">2x tap</div>
-                        <div id="settings_subtitle" class="text-sm ml-5 text-gray-500">Play / Pause music</div>
+                    <section class="mt-10" style="font-family: var(--nothing-font-body); color: rgba(255,255,255,0.5); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;">Not customisable</section>
+                    <div class="mt-1 bg-[#1A1A1A] border border-[rgba(255,255,255,0.1)] rounded-xl pt-5 pb-5 mt-4">
+                        <div id="setting_title" class=" text-sm ml-5 text-gray-200" style="font-family: var(--nothing-font-body);">2x tap</div>
+                        <div id="settings_subtitle" class="text-sm ml-5 text-gray-500" style="font-family: var(--nothing-font-body);">Play / Pause music</div>
                     </div>
-                    <div class="mt-1 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">Slide</div>
-                        <div id="settings_subtitle" class="text-sm ml-5 text-gray-500">Change Volume</div>
+                    <div class="mt-1 bg-[#1A1A1A] border border-[rgba(255,255,255,0.1)] rounded-xl pt-5 pb-5 mt-4">
+                        <div id="setting_title" class=" text-sm ml-5 text-gray-200" style="font-family: var(--nothing-font-body);">Slide</div>
+                        <div id="settings_subtitle" class="text-sm ml-5 text-gray-500" style="font-family: var(--nothing-font-body);">Change Volume</div>
                     </div>
 
                 </div>
                 <!-- <IoSettingsOutline class="text-white h-7 w-7 mt-5 ml-5 -mb-12 absolute ease-in-out duration-300 cursor-pointer hover:text-[#1B1D1F]" id="settings_icon" /> -->
                 <div style="margin: 20px; ">
                     <div name="logo" class="w-full">
-                        <div id="prod_name" style="font-family: Ndot-55; opacity: 100; padding-top: 30px; "
+                        <div id="prod_name" style="font-family: var(--nothing-font-display); opacity: 100; padding-top: 30px; letter-spacing: -0.02em;"
                              class="w-full text-center pt-8 text-4xl duration-300 ease-in-out">ear (1)</div>
                         <div id="image-container"
                              class='justify-center items-center flex relative ease-in-out duration-300'>
@@ -99,16 +99,16 @@
                             </div>
                         </div>
                         <div id="ring_button" class="text-center m-auto w-fit -mb-8 mt-3 ease-in-out duration-300" onclick="ringBuds_UI()">
-                            <div id="ring_button-c" class="p-1 pl-7 -mr-32 pr-7 border-red-900 border-[2px] text-red-900 cursor-pointer font-bold  rounded-full mr-3 text-sm hover:bg-red-900 hover:text-white ease-in-out duration-300">Ring</div>
+                            <div id="ring_button-c" class="p-2 pl-8 pr-8 border-white border-[1px] text-white cursor-pointer font-medium rounded-full mr-3 text-xs hover:bg-white hover:text-black ease-in-out duration-300 uppercase tracking-wider" style="font-family: var(--nothing-font-body); letter-spacing: 0.1em;">Ring</div>
                         </div>
                     </div>
                     <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 mt-0 -mb-3" style="margin-bottom: 60px;">
                         <div id="pages_container" class="ease-in-out duration-300" style="opacity: 100; width: 305px; height: 270px;">
-                            <div id="eq_container" class="mt-12 bg-[#1B1D1F] ease-in-out duration-300 rounded-xl pt-2 pb-2 " style="height: 210px;">
+                            <div id="eq_container" class="mt-12 bg-[#1A1A1A] border border-[rgba(255,255,255,0.1)] ease-in-out duration-300 rounded-xl pt-2 pb-2 hover:border-[rgba(255,255,255,0.15)] transition-all" style="height: 210px;">
                                 <div id="eq_container_t" class="relative">
                                     <!-- PAGE 1 -->
                                     <div id="page_1_container" class="ease-in-out duration-300">
-                                        <div class="w-fit flex m-auto text-md mb-5 mt-2">
+                                        <div class="w-fit flex m-auto text-md mb-5 mt-2" style="font-family: var(--nothing-font-body); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6);">
                                             NOISE CONTROL
                                         </div>
                                         <div id="selector"
@@ -167,7 +167,7 @@
                                     <!-- END PAGE 1 -->
                                     <!-- PAGE 2 -->
                                     <div id="page_2_container" class="ease-in-out duration-300" style="margin-top: -195px; position: relative; z-index: -1; opacity: 0;">
-                                        <div id="settings_title" class="w-fit flex m-auto text-md mb-5 mt-2">
+                                        <div id="settings_title" class="w-fit flex m-auto text-md mb-5 mt-2" style="font-family: var(--nothing-font-body); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6);">
                                             QUICK SETTINGS
                                         </div>
                                         <div class="p-5 -mt-5">
@@ -259,9 +259,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300 h-[270px]"
+                        <div class="settings-switches mt-12 bg-[#1A1A1A] border border-[rgba(255,255,255,0.1)] rounded-xl pt-2 pb-2 ease-in-out duration-300 h-[270px] hover:border-[rgba(255,255,255,0.15)] transition-all"
                              id="pages_container_two">
-                            <div id="settings_title" class="w-fit flex m-auto text-md">
+                            <div id="settings_title" class="w-fit flex m-auto text-md" style="font-family: var(--nothing-font-body); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6);">
                                 EQUALIZER
                             </div>
                             <div class="p-5">
@@ -269,21 +269,24 @@
                                     <canvas id="myChart"></canvas>
                                 </div>
                                 <div class="grid grid-rows-2 grid-cols-2 gap-4 -mb-3">
-                                    <button id="buttonEQBalanced" class="eq-button p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                                    <button id="buttonEQBalanced" class="eq-button p-2 pl-4 pr-4 border-[1px] border-white rounded-full mr-3 hover:bg-white hover:text-black ease-in-out duration-300 w-full transition-all"
                                             onclick="EQButtonPress(0)"
-                                            style="background-color: white; color: black;">
+                                            style="background-color: white; color: black; font-family: var(--nothing-font-body); font-size: 12px;">
                                         Balanced
                                     </button>
-                                    <button id="buttonEQBass" class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
-                                            onclick="EQButtonPress(3)">
+                                    <button id="buttonEQBass" class="eq-button p-2 pl-4 pr-4 border-[1px] border-white rounded-full hover:bg-white hover:text-black ease-in-out duration-300 w-full transition-all"
+                                            onclick="EQButtonPress(3)"
+                                            style="background-color: transparent; color: white; font-family: var(--nothing-font-body); font-size: 12px;">
                                         More Bass
                                     </button>
-                                    <button id="buttonEQTreble" class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
-                                            onclick="EQButtonPress(2)">
+                                    <button id="buttonEQTreble" class="eq-button p-2 pl-4 pr-4 border-[1px] border-white rounded-full hover:bg-white hover:text-black ease-in-out duration-300 w-full transition-all"
+                                            onclick="EQButtonPress(2)"
+                                            style="background-color: transparent; color: white; font-family: var(--nothing-font-body); font-size: 12px;">
                                         More Treble
                                     </button>
-                                    <button id="buttonEQVoice" class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
-                                            onclick="EQButtonPress(1)">
+                                    <button id="buttonEQVoice" class="eq-button p-2 pl-4 pr-4 border-[1px] border-white rounded-full hover:bg-white hover:text-black ease-in-out duration-300 w-full transition-all"
+                                            onclick="EQButtonPress(1)"
+                                            style="background-color: transparent; color: white; font-family: var(--nothing-font-body); font-size: 12px;">
                                         Voice
                                     </button>
                                 </div>
