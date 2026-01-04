@@ -47,14 +47,14 @@ async function ringBudLeft(e) {
 
 async function ringBudRight(e) {
     var e = document.getElementById("ring_button-r").classList
-    if (e.contains("ringing-l")) {
-        e.remove("ringing-l")
+    if (e.contains("ringing-r")) {
+        e.remove("ringing-r")
         document.getElementById("ring_button-r").style.backgroundColor = ""
         document.getElementById("ring_button-r").style.color = ""
         document.getElementById("ring_button-r").innerText = "Ring"
         ringBuds(0, false)
     } else {
-        e.add("ringing-l")
+        e.add("ringing-r")
         document.getElementById("ring_button-r").style.backgroundColor = "#7f1d1d"
         document.getElementById("ring_button-r").style.color = "#ffffff"
         document.getElementById("ring_button-r").innerText = "STOP"
