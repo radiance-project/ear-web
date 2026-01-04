@@ -222,8 +222,39 @@ function displayPopUp(e) {
         ${e}</select>`
 }
 
+function showWarningPopup(html) {
+    document.getElementById("popup_container").style.opacity = "100"
+    document.getElementById("popup_container").style.zIndex = "1000"
+    document.getElementById("popup_content").style.zIndex = "1001"
+    document.getElementById("popup_content").innerHTML = html
+}
+
 function closePopUp() {
     document.getElementById("popup_container").style.opacity = "0"
     document.getElementById("popup_container").style.zIndex = "-10"
     document.getElementById("popup_content").style.zIndex = "-10"
+}
+
+// Add a global click listener to warn about potential risk on ring button clicks
+document.addEventListener('click', function(e) {
+    if (e.target.id && e.target.id.startsWith('ring_button')) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var side = e.target.id.split('-')[1]; // 'l' or 'r'
+        if (e.target.classList.contains('ringing-' + side)) {
+            // It's in stop mode, proceed without warning
+            proceedRing(side);
+        } else {
+            // Starting ring, show warning
+            showWarningPopup(`<div class="w-fit flex m-auto text-md mb-5 mt-2 text-white text-center">Warning: Ringing the device produces a loud sound. Please check if the device is not in use before continuing. Are you sure?</div><div class="flex justify-center mt-4"><button class="bg-[#333333] text-white px-4 py-2 mr-2 rounded border border-[#333333]" onclick="proceedRing('${side}')">Yes</button><button class="bg-[#1B1D1F] text-white px-4 py-2 rounded border border-[#333333]" onclick="closePopUp()">No</button></div>`);
+        }
+    }
+}, true);
+
+function proceedRing(side) {
+    closePopUp();
+    var funcName = 'ringBud' + (side === 'l' ? 'Left' : 'Right');
+    if (typeof window[funcName] === 'function') {
+        window[funcName]();
+    }
 }
