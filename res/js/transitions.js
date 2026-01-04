@@ -26,7 +26,11 @@ function transToLeftGest(side) {
         leftEarPeace.classList.remove("w-34")
 
         leftEarPeace.style.marginTop = "120px"
-        leftEarPeace.style.marginLeft = "301px"
+        if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+            leftEarPeace.style.marginLeft = "301px"  // dual: position on left
+        } else {
+            leftEarPeace.style.marginLeft = "300px"  // single: center
+        }
 
         document.getElementById("ring_button").style.zIndex = "-10"
         document.getElementById("eq_container_t").style.zIndex = "-10"
@@ -103,9 +107,11 @@ function transBackToLeft(e) {
         rightEarPeace.style.zIndex = "300"
     }
 
-    if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
     leftEarPeace.classList.remove("h-52")
     leftEarPeace.classList.add("h-44")
+    if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+        rightEarPeace.classList.remove("h-52")
+        rightEarPeace.classList.add("h-44")
     }
 
     document.getElementById("ring_button").style.zIndex = "10"
