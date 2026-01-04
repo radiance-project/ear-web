@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ear (web)</title>
+    <link rel="icon" href="icons/16x16.png" />
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@1.1.3/dist/chartjs-plugin-dragdata.min.js"></script>
+    <link href="../global.css" rel="stylesheet" />
+  </head>
+
+  <body
+    style="
+      width: 800px;
+      height: 710px;
+      position: absolute;
+      background: #21201f;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    "
+  >
+    <div
+      id="container_one"
+      class="w-fit text-white float-right ease-in-out duration-300"
+      style="font-family: NothingNormal2; height: 710px; width: 800px"
+    >
+      <div
+        id="container_two"
+        class="w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
+        style="
+          font-family: NothingNormal2;
+          height: 710px;
+          width: 800px;
+          margin-top: -20px;
+        "
+      >
+        <section class="w-full h-8 absolute" style="z-index: 300">
+          <div id="draggable" class="w-[750px] h-8 absolute"></div>
+        </section>
+        <section
+          onclick="transBackToLeft('MainControl')"
+          style="
+            z-index: 100;
+            opacity: 0;
+            position: absolute;
+            top: 20px;
+            cursor: pointer;
+          "
+          id="back"
+        >
+          <svg width="30" height="30" class="ml-8 mb-5">
+            <image xlink:href="../assets/back.svg" width="30" height="30" />
+          </svg>
+        </section>
+        <div id="cont" style="margin-top: 20px">
+          <div style="margin: 20px; margin-top: -20px">
+            <div name="logo" class="w-full" style="margin-bottom: 10px">
+              <div
+                id="prod_name"
+                style="
+                  font-family: Ndot-55-Bold;
+                  opacity: 100;
+                  padding-top: 30px;
+                "
+                class="w-full text-center pt-8 text-4xl duration-300 ease-in-out"
+              >
+                CMF HEADPHONE PRO
+              </div>
+              <div
+                id="image-container"
+                class="justify-center items-center flex relative ease-in-out duration-300"
+              >
+                <div class="w-50 ease-in-out duration-300">
+                  <img
+                    src="../assets/cmf_headphone-pro-dark-grey.webp"
+                    class="h-44 ml-[40px] duration-500 ease-in-out relative"
+                    id="headphone_img"
+                    style="z-index: 100; margin: auto"
+                  />
+                  <div
+                    id="battery_display"
+                    class="text-center mt-4 ease-in-out duration-300"
+                    style="opacity: 100"
+                  >
+                    <div id="battery-h" class="text-center text-lg">-- %</div>
+                    <div
+                      id="battery_bar_h"
+                      class="w-32 m-auto mt-2 rounded-md bg-gray-600"
+                    >
+                      <div
+                        id="battery_bar_fill_h"
+                        class="bg-white h-2 w-1/2 rounded-md"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4"
+              id="eq_container_t"
+              class="relative"
+            >
+              <div
+                id="pages_container"
+                class="ease-in-out duration-300"
+                style="opacity: 100; width: 305px"
+              >
+                <div
+                  id="eq_container"
+                  class="mt-12 bg-[#1B1D1F] ease-in-out duration-300 rounded-xl pt-2 pb-2"
+                  style="height: 290px"
+                >
+                  <div id="eq_container_t" class="relative">
+                    <div id="page_1_container" class="ease-in-out duration-300">
+                      <div class="w-fit flex m-auto text-md mb-5 mt-2">
+                        NOISE CONTROL
+                      </div>
+                      <div
+                        id="selector"
+                        class="w-20 p-2 bg-white rounded-full h-[38px] -mb-[58px] ml-4 z-1 relative ease-in-out duration-200"
+                      ></div>
+                      <div
+                        class="w-fit grid grid-cols-3 grid-rows-1 bg-black gap-4 m-auto mt-5 rounded-full ml"
+                      >
+                        <div
+                          id="one"
+                          class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                          onclick="setANC(0)"
+                        >
+                          <svg
+                            class="h-[23px] mt-[1px] ml-[20px] relative"
+                            id="ANC_on"
+                            style="width: 23px; fill: white !important"
+                          >
+                            <use
+                              xlink:href="../assets/anc_on_icon.svg#load"
+                            ></use>
+                          </svg>
+                        </div>
+                        <div
+                          id="two"
+                          class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                          onclick="setANC(1)"
+                        >
+                          <svg
+                            class="h-[23px] mt-[1px] ml-[20px] relative"
+                            id="trans_on"
+                            style="width: 23px; fill: white !important"
+                          >
+                            <use
+                              xlink:href="../assets/anc_transparent_icon.svg#load"
+                            ></use>
+                          </svg>
+                        </div>
+                        <div
+                          id="three"
+                          class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                          onclick="setANC(2)"
+                        >
+                          <svg
+                            class="h-[23px] mt-[1px] ml-[20px] relative"
+                            id="anc_off"
+                            style="width: 23px; fill: white !important"
+                          >
+                            <use
+                              xlink:href="../assets/anc_off_icon.svg#load"
+                            ></use>
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="w-fit grid grid-cols-3 grid-rows-1 gap-4 m-auto text-[10px] mt-2"
+                      >
+                        <div id="desc_one" class="text-center w-20">
+                          NOISE<br />CANCELLATION
+                        </div>
+                        <div id="desc_two" class="text-center w-20">
+                          TRANSPARENCY
+                        </div>
+                        <div id="desc_three" class="text-center w-20">OFF</div>
+                      </div>
+                      <div
+                        id="anc_strength_selector"
+                        class="ease-in-out duration-300"
+                      >
+                        <div
+                          class="grid ease-out duration-200 grid-cols-4 grid-rows-1 bg-black m-auto mt-2 rounded-full h-5 opacity-100"
+                          style="gap: 2rem; width: 200px"
+                        >
+                          <div
+                            id="stage_one"
+                            class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                            onclick="setANC(3)"
+                          >
+                            <div
+                              id="stage_one_button"
+                              class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full"
+                            ></div>
+                          </div>
+                          <div
+                            id="stage_two"
+                            class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                            onclick="setANC(4)"
+                          >
+                            <div
+                              id="stage_two_button"
+                              class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full"
+                            ></div>
+                          </div>
+                          <div
+                            id="stage_three"
+                            class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                            onclick="setANC(5)"
+                          >
+                            <div
+                              id="stage_three_button"
+                              class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full"
+                            ></div>
+                          </div>
+                          <div
+                            id="stage_four"
+                            class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                            onclick="setANC(6)"
+                          >
+                            <div
+                              id="stage_four_button"
+                              class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full"
+                            ></div>
+                          </div>
+                        </div>
+                        <div
+                          class="grid grid-cols-4 grid-rows-1 ease-out duration-200 m-auto text-[10px] opacity-100"
+                          style="margin-left: 45px; width: 200px; gap: 30px"
+                        >
+                          <div id="desc_one" class="p-2 text-center">HIGH</div>
+                          <div
+                            id="desc_two"
+                            class="p-2 text-center"
+                            style="margin-left: 4px"
+                          >
+                            MID
+                          </div>
+                          <div
+                            id="desc_three"
+                            class="p-2 text-center"
+                            style="margin-left: 3px"
+                          >
+                            LOW
+                          </div>
+                          <div
+                            id="desc_four"
+                            class="p-2 text-center"
+                            style="margin-left: -10px"
+                          >
+                            ADAPTIVE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="settings-switches mt-12 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300"
+                id="pages_container_two"
+              >
+                <div id="settings_title" class="w-fit flex m-auto text-md">
+                  EQUALIZER
+                </div>
+                <div class="p-5">
+                  <div
+                    class="grid-cols-3"
+                    id="custom_eq_indicator"
+                    style="
+                      width: 100%;
+                      margin-left: 10px;
+                      margin-top: -24px;
+                      display: none;
+                    "
+                  >
+                    <div id="eq_label_bass">0</div>
+                    <div id="eq_label_mid" style="margin-left: 32px">0</div>
+                    <div id="eq_label_treble" style="margin-left: 57px">0</div>
+                  </div>
+                  <div
+                    id="chart"
+                    style="width: 100%; height: 100px; overflow: hidden"
+                  >
+                    <canvas id="myChart"></canvas>
+                  </div>
+                  <div class="grid grid-rows-3 grid-cols-2 gap-4">
+                    <button
+                      class="eq-button p-2 pl-4 pr-4 bg-black border-none rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                      onclick="EQButtonPress(6)"
+                      style="background-color: white; color: black"
+                    >
+                      Custom
+                    </button>
+                    <button
+                      class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                      onclick="EQButtonPress(3)"
+                    >
+                      Pop
+                    </button>
+                    <button
+                      class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                      onclick="EQButtonPress(1)"
+                    >
+                      Rock
+                    </button>
+                    <button
+                      class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                      onclick="EQButtonPress(5)"
+                    >
+                      Classical
+                    </button>
+                    <button
+                      class="eq-button p-2 pl-4 pr-4 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                      onclick="EQButtonPress(2)"
+                    >
+                      Electronic
+                    </button>
+                    <button
+                      class="eq-button p-2 pl-2 pr-2 bg-black border-none border-[1px] rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300 w-full"
+                      onclick="EQButtonPress(4)"
+                    >
+                      Enhance Vocals
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid gap-4 grid-cols-1 m-5 -mt-1 mb-4">
+              <div
+                class="mt-0 bg-[#1B1D1F] rounded-xl pt-2 pb-2 ease-in-out duration-300"
+                id="settings_container"
+              >
+                <div
+                  id="settings_title"
+                  class="w-fit flex m-auto text-md mb-5 mt-2"
+                >
+                  QUICK SETTINGS
+                </div>
+                <div class="p-5 -mt-5">
+                  <div class="settings-switch-container overflow-hidden">
+                    <div
+                      id="lowlatencyswitchbutton"
+                      class="settings-switch-button"
+                    >
+                      <div
+                        id="lowlatencyswitchindicator"
+                        class="settings-switch-indicator"
+                      >
+                        <input
+                          type="checkbox"
+                          id="low_latency"
+                          class="settings-switch-checkbox"
+                          onclick="setLatencyMode()"
+                          style="
+                            opacity: 0;
+                            width: 300px;
+                            height: 300px;
+                            cursor: pointer;
+                            margin-top: -6px;
+                            margin-left: -35px;
+                          "
+                        />
+                      </div>
+                    </div>
+                    <div class="settings-switch-label">Low Latency Mode</div>
+                  </div>
+
+                  <div class="settings-switch-container overflow-hidden">
+                    <div
+                      id="personalizedsoundswitchbutton"
+                      class="settings-switch-button"
+                    >
+                      <div
+                        id="personalizedsoundswitchindicator"
+                        class="settings-switch-indicator"
+                      >
+                        <input
+                          type="checkbox"
+                          id="personalized_sound"
+                          class="settings-switch-checkbox"
+                          disabled
+                          onclick="setPersonalizedSoundMode()"
+                          style="
+                            opacity: 0;
+                            width: 300px;
+                            height: 300px;
+                            cursor: not-allowed;
+                            margin-top: -6px;
+                            margin-left: -35px;
+                          "
+                        />
+                      </div>
+                    </div>
+                    <div class="settings-switch-label">Personalized Sound</div>
+                  </div>
+
+                  <div id="seperator">
+                    <div
+                      class="h-[2px] bg-gray-500 w-full rounded-xl mt-5"
+                      style="opacity: 0.5"
+                    ></div>
+                  </div>
+                  <div class="grid grid-cols-2 grid-rows-2 -ml-5 mt-2">
+                    <div
+                      id="setting_title"
+                      class="text-[12px] ml-5 text-gray-200 w-max"
+                    >
+                      Firmware Version
+                    </div>
+                    <div
+                      id="settings_subtitle_firmware"
+                      class="text-[12px] ml-5 text-gray-500 flex"
+                      style="justify-content: right"
+                    >
+                      1.0.0
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            id="settings_subtitle"
+            class="text-[8px] text-center mt-5 text-gray-500"
+          >
+            This app is an unofficial app for Nothing(R) Ear Products, Nothing
+            Technology Limited is not responsible for the content of this app or
+            any of its features.<br />
+            This app is not endorsed by Nothing Technology Limited and is not
+            affiliated with Nothing Technology Limited in any way.
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/transitions.js"></script>
+    <script src="/js/eq_cmf_headphone_pro.js"></script>
+    <script type="text/javascript" src="/js/control.js"></script>
+    <script src="/js/cmf_headphone_pro.js"></script>
+    <script src="/js/bluetooth_socket.js"></script>
+    <script type="text/javascript">
+      window.addEventListener("load", () => {
+        updateBudsInfo();
+      });
+    </script>
+  </body>
+</html>

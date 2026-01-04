@@ -1,196 +1,226 @@
-<!DOCTYPE html>
+<!doctype html>
 <script src="./js/nothing_connected.js"></script>
 <script src="./js/control.js"></script>
 <html lang="en" translate="no">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ear (web)</title>
     <link rel="icon" href="icons/16x16.png" />
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
     <link href="./global.css" rel="stylesheet" />
     <style>
-        #announcement-banner {
-            background-color: red;
-            color: white;
-            padding: 10px 20px;
-            display: none;
-            position: relative;
-            left: 50%;
-            top: 20px;
-            transform: translateX(-50%);
-            border-radius: 15px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            width: auto;
-            z-index: 1000;
-        }
+      #announcement-banner {
+        background-color: red;
+        color: white;
+        padding: 10px 20px;
+        display: none;
+        position: relative;
+        left: 50%;
+        top: 20px;
+        transform: translateX(-50%);
+        border-radius: 15px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        width: auto;
+        z-index: 1000;
+      }
 
-        #announcement-date {
-            font-weight: bold;
-            margin-right: 15px;
-        }
+      #announcement-date {
+        font-weight: bold;
+        margin-right: 15px;
+      }
 
-        #logo_container {
-            margin-top: 40px; 
-            margin-bottom: 20px;
-            text-align: center;
-        }
+      #logo_container {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
 
-            #logo_container img {
-                max-width: 150px;
-            }
+      #logo_container img {
+        max-width: 150px;
+      }
 
-        #name_container {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 40px;
-            text-align: center;
-        }
+      #name_container {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 40px;
+        text-align: center;
+      }
 
-        #scan_button {
-            text-align: center;
-            margin: 20px auto;
-            width: 200px;
-        }
+      #scan_button {
+        text-align: center;
+        margin: 20px auto;
+        width: 200px;
+      }
 
-        #scan_button-c {
-            padding: 10px 20px;
-            border: 2px solid black;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            background-color: #333;
-            transition: transform 0.15s ease-in-out;
-        }
+      #scan_button-c {
+        padding: 10px 20px;
+        border: 2px solid black;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1rem;
+        background-color: #333;
+        transition: transform 0.15s ease-in-out;
+      }
 
-            #scan_button-c:hover {
-                transform: scale(1.05);
-                border: 2px solid #e82525
-            }
+      #scan_button-c:hover {
+        transform: scale(1.05);
+        border: 2px solid #e82525;
+      }
 
+      .faq-container {
+        margin-left: auto;
+        margin-right: auto;
 
+        background-color: #333;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        width: 60%;
+        overflow-y: auto;
+        font-size: 0.9rem;
+        transition:
+          transform 0.3s ease-in-out,
+          opacity 0.3s ease-in-out;
+      }
 
-        .faq-container {
-            margin-left: auto; 
-            margin-right: auto; 
+      .faq-container summary {
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
 
-            background-color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            width: 60%;
-            overflow-y: auto;
-            font-size: 0.9rem;
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
+      .faq-container details {
+        margin-bottom: 10px;
+      }
 
-            .faq-container summary {
-                font-size: 1rem;
-                font-weight: bold;
-                cursor: pointer;
-            }
+      .faq-container p {
+        margin: 10px 0;
+        font-size: 0.9rem;
+      }
 
-            .faq-container details {
-                margin-bottom: 10px;
-            }
+      .faq-container summary:hover {
+        color: #e82525;
+      }
 
-            .faq-container p {
-                margin: 10px 0;
-                font-size: 0.9rem;
-            }
+      .faq-container a {
+        color: #e82525;
+        text-decoration: none;
+      }
 
-            .faq-container summary:hover {
-                color: #e82525;
-            }
-
-            .faq-container a {
-                color: #e82525;
-                text-decoration: none;
-            }
-
-                .faq-container a:hover {
-                    text-decoration: underline;
-                }
+      .faq-container a:hover {
+        text-decoration: underline;
+      }
     </style>
-</head>
+  </head>
 
-<body style="width: 80%; height: 710px; position: absolute; background: #21201f;  left: 50%; -ms-transform: translate(-50%, 0); transform: translate(-50%, 0); color:white;">
-
+  <body
+    style="
+      width: 80%;
+      height: 710px;
+      position: absolute;
+      background: #21201f;
+      left: 50%;
+      -ms-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+      color: white;
+    "
+  >
     <div id="announcement-banner">
-        <div id="announcement-date">2024-10-05</div>
-        <div id="announcement-content">Ear (open) and Ear (a) are now supported!</div>
+      <div id="announcement-date">2024-10-05</div>
+      <div id="announcement-content">
+        Ear (open) and Ear (a) are now supported!
+      </div>
     </div>
 
     <div id="logo_container">
-        <img src="./icons/512x512.png" alt="Logo" style="margin-left: auto; margin-right: auto;" />
-        <div id="name_container">ear (web)</div>
+      <img
+        src="./icons/512x512.png"
+        alt="Logo"
+        style="margin-left: auto; margin-right: auto"
+      />
+      <div id="name_container">ear (web)</div>
     </div>
 
     <div id="scan_button" onclick="scanNewDevicesSerial()">
-        <div id="scan_button-c">Connect</div>
+      <div id="scan_button-c">Connect</div>
     </div>
 
     <div class="faq-container">
-        <details>
-            <summary>Which browsers are supported?</summary>
-            <p>ear (web) supports any browser based on Chromium 117+ such as Google Chrome, Microsoft Edge, Brave, Arc</p>
-        </details>
-        <details>
-            <summary>Which devices are supported?</summary>
-            <p>
-                ear (web) support audio products from Nothing and CMF By Nothing, at this time:<br />
-                - Nothing ear (1)<br />
-                - Nothing ear (stick)<br />
-                - Nothing ear (2)<br />
-                - CMF Buds Pro<br />
-                - CMF Buds<br />
-                - Nothing Ear<br />
-                - Nothing Ear (a)<br />
-                - CMF Buds Pro 2<br />
-                - Nothing Ear (open)<br />
-            </p>
-        </details>
-        <details>
-            <summary>I found a bug/have a feature suggestion, can I contact you?</summary>
-            <p>Please open an issue on the github repository <a href="https://github.com/radiance-project/ear-web/issues">https://github.com/radiance-project/ear-web/issues</a></p>
-        </details>
+      <details>
+        <summary>Which browsers are supported?</summary>
+        <p>
+          ear (web) supports any browser based on Chromium 117+ such as Google
+          Chrome, Microsoft Edge, Brave, Arc
+        </p>
+      </details>
+      <details>
+        <summary>Which devices are supported?</summary>
+        <p>
+          ear (web) support audio products from Nothing and CMF By Nothing, at
+          this time:<br />
+          - Nothing ear (1)<br />
+          - Nothing ear (stick)<br />
+          - Nothing ear (2)<br />
+          - Nothing Ear<br />
+          - Nothing Ear (a)<br />
+          - Nothing Ear (open)<br />
+          - CMF Buds Pro<br />
+          - CMF Buds<br />
+          - CMF Buds Pro 2<br />
+          - CMF Headphone Pro<br />
+        </p>
+      </details>
+      <details>
+        <summary>
+          I found a bug/have a feature suggestion, can I contact you?
+        </summary>
+        <p>
+          Please open an issue on the github repository
+          <a href="https://github.com/radiance-project/ear-web/issues"
+            >https://github.com/radiance-project/ear-web/issues</a
+          >
+        </p>
+      </details>
     </div>
 
     <script>
-        async function forgetAllDevices() {
-            const ports = await navigator.serial.getPorts();
-            for (const port of ports) {
-                if (port.opened) {
-                    await port.close();
-                }
-                await port.forget();
-            }
+      async function forgetAllDevices() {
+        const ports = await navigator.serial.getPorts()
+        for (const port of ports) {
+          if (port.opened) {
+            await port.close()
+          }
+          await port.forget()
         }
-        window.onload = function () {
-            const banner = document.getElementById('announcement-banner');
-            const dateBanner = document.getElementById('announcement-date');
-            const bannerDate = new Date(dateBanner.innerHTML);
-            const currentDate = new Date();
-            const diffInDays = (currentDate - bannerDate) / (1000 * 60 * 60 * 24);
+      }
+      window.onload = function () {
+        const banner = document.getElementById("announcement-banner")
+        const dateBanner = document.getElementById("announcement-date")
+        const bannerDate = new Date(dateBanner.innerHTML)
+        const currentDate = new Date()
+        const diffInDays = (currentDate - bannerDate) / (1000 * 60 * 60 * 24)
 
-            console.log(diffInDays);    
-            if (diffInDays <= 7) {
-                banner.style.display = 'inline-block';
-            }
-
-            if (navigator.serial) {
-                forgetAllDevices();
-            } else {
-                alert("This browser does not support Web Serial API. Please use Chrome or Edge or any other Chromium-based browser.");
-                document.getElementById("scan_button-c").innerText = "Unsupported Browser";
-                document.getElementById("scan_button-c").style.backgroundColor = "#333";
-                document.getElementById("scan_button-c").style.cursor = "not-allowed";
-            }
+        console.log(diffInDays)
+        if (diffInDays <= 7) {
+          banner.style.display = "inline-block"
         }
 
+        if (navigator.serial) {
+          forgetAllDevices()
+        } else {
+          alert(
+            "This browser does not support Web Serial API. Please use Chrome or Edge or any other Chromium-based browser."
+          )
+          document.getElementById("scan_button-c").innerText =
+            "Unsupported Browser"
+          document.getElementById("scan_button-c").style.backgroundColor =
+            "#333"
+          document.getElementById("scan_button-c").style.cursor = "not-allowed"
+        }
+      }
     </script>
-</body>
+  </body>
 </html>

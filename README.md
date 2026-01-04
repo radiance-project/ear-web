@@ -2,34 +2,40 @@
 
 ![Ear(web) Logo](res/icons/256x256.png)
 
-
 # Compatibility
+
 This website is compatible with the following devices:
+
 - Nothing ear (1)
 - Nothing ear (stick)
 - Nothing ear (2)
+- Nothing Ear
+- Nothing Ear (a)
+- Nothing Ear (open)
 - CMF Buds Pro
 - CMF Buds
-- Nothing Ear
 - CMF Buds Pro 2
-
+- CMF Headphone Pro
 
 # Usage
+
 1. Use a Chromium-based browser (Chrome, Edge, Brave, etc.) based on version 117+
 2. Go to [this link](https://earweb.bttl.xyz/)
 
 ## Features
- - Battery percentage                  
- - Equalizer settings with custom Equalizer and Advanced EQ toggle for compatibles devices.
- - Quick Settings (In-Ear Detection, Low Latency Mode, Firmware version), Personalized ANC toggle and Ear Tip Fit Test
- - Bass Enhance and ANC settings
- - Gestures
- - Find my Earbuds 
- - Case Battery Status LED (Ear (1) only)
- 
+
+- Battery percentage
+- Equalizer settings with custom Equalizer and Advanced EQ toggle for compatibles devices.
+- Quick Settings (In-Ear Detection, Low Latency Mode, Firmware version), Personalized ANC toggle and Ear Tip Fit Test
+- Bass Enhance and ANC settings
+- Gestures
+- Find my Earbuds
+- Case Battery Status LED (Ear (1) only)
+
 ## Credits and Acknowledgements
+
 - RapidZapper for the idea and backend work
-- [Bendix](https://www.mrbrickstar.de/) for the frontend work 
+- [Bendix](https://www.mrbrickstar.de/) for the frontend work
 - [DerrenGoneDigital](https://twitter.com/DerrenDigital) for the logo
 
 ## LEGAL
