@@ -248,8 +248,7 @@ function checkboxCheck(evt, selected_gesture) {
         if (selected_gesture == "anc_selector_hold") {
             var index = Array.prototype.indexOf.call(checkboxes, evt.target);
             anc_selector_hold[index] = anc_selector_hold[index] == 1 ? 0 : 1;
-            sendGestures(2, 7, getANCtoggleFunction(anc_selector_hold))
-            sendGestures(3, 7, getANCtoggleFunction(anc_selector_hold))
+            sendGestures(6, 7, getANCtoggleFunction(anc_selector_hold))
         }
     }
 }
