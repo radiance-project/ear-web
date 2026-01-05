@@ -160,8 +160,13 @@ function switchPage(page, force=false, legacy=true) {
     } else {
         page == "next" ? current_page++ : current_page--
 
-        if (current_page == 3) current_page = 0
-        if (current_page == -1) current_page = 1
+        if (page_3) {
+            if (current_page == 3) current_page = 0
+            if (current_page == -1) current_page = 2
+        } else {
+            if (current_page == 2) current_page = 0
+            if (current_page == -1) current_page = 1
+        }
     }
 
     switch (current_page) {

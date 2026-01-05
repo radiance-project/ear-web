@@ -329,13 +329,13 @@ function read_advanced_eq_status(hexString)
 }
 
 function getEQ() {
-    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185") {
+    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175") {
         send(49183, [], "readEQ");
     }
 }
 
 function getListeningMode() {
-    if (modelBase === "B172" || modelBase === "B168" || modelBase === "B179" || modelBase === "B184" || modelBase === "B185") {
+    if (modelBase === "B172" || modelBase === "B168" || modelBase === "B179" || modelBase === "B184" || modelBase === "B185" || modelBase === "B175") {
         send(49232, [], "readListeningMode");
     }
 }
@@ -355,7 +355,7 @@ function setEQ(level) {
 }
 
 function setListeningMode(level) {
-    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185") {
+    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175") {
         return;
     }
     let byteArray = [0x00, 0x00];
@@ -757,7 +757,7 @@ function readEarFitTestResult(hexstring) {
 } 
 
 function sendInEarRead() {
-    if (modelBase !== "B174" && modelBase !== "B185") {
+    if (modelBase !== "B174" && modelBase !== "B185" && modelBase !== "B175") {
         send(49166, [], "readInEar");
     }
 }

@@ -401,6 +401,33 @@ function getModelFromFastpair(fastpairID) {
             duoImg: "",
             isANC: true
         },
+        "1EFB39": {
+            name: "CMF Headphone Pro",
+            base: "B175",
+            leftImg: "../assets/b175_black_left.webp",
+            caseImg: "",
+            rightImg: "",
+            duoImg: "",
+            isANC: true
+        },
+        "73C9EB": {
+            name: "CMF Headphone Pro",
+            base: "B175",
+            leftImg: "../assets/b175_white_left.webp",
+            caseImg: "",
+            rightImg: "",
+            duoImg: "",
+            isANC: true
+        },
+        "563DA5": {
+            name: "CMF Headphone Pro",
+            base: "B175",
+            leftImg: "../assets/b175_green_left.webp",
+            caseImg: "",
+            rightImg: "",
+            duoImg: "",
+            isANC: true
+        }
     };
 
     return models[fastpairID];

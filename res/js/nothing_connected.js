@@ -38,6 +38,8 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_elekid";
     } else if (model.base == "B164") {
         window.location.href = "MainControl_crobat";
+    } else if (model.base == "B175") {
+        window.location.href = "MainControl_forretress";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }
