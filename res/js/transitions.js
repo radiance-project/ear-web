@@ -227,3 +227,28 @@ function closePopUp() {
     document.getElementById("popup_container").style.zIndex = "-10"
     document.getElementById("popup_content").style.zIndex = "-10"
 }
+
+function displayRingWarningPopUp(onConfirm) {
+    document.getElementById("popup_container").style.opacity = "100"
+    document.getElementById("popup_container").style.zIndex = "1000"
+    document.getElementById("popup_content").style.zIndex = "1001"
+
+    document.getElementById("popup_content").innerHTML = `
+        <div class="w-fit flex m-auto text-md mb-5 mt-2 text-center" style="max-width: 300px;">
+            Playing sound in ear will permanently damage hearing. Are you sure you want to proceed?
+        </div>
+        <div class="flex justify-center gap-4 mt-5">
+             <div id="cancel_ring" class="p-2 pl-6 pr-6 border-white border-[1px] text-white cursor-pointer rounded-full text-sm hover:bg-white hover:text-black ease-in-out duration-300">Cancel</div>
+             <div id="confirm_ring" class="p-2 pl-6 pr-6 text-white cursor-pointer rounded-full text-sm hover:scale-[105%] ease-in-out duration-300" style="background-color: rgb(127, 29, 29);">Ring</div>
+        </div>
+    `;
+
+    document.getElementById("cancel_ring").onclick = function() {
+        closePopUp();
+    };
+
+    document.getElementById("confirm_ring").onclick = function() {
+        onConfirm();
+        closePopUp();
+    };
+}
