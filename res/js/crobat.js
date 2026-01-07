@@ -36,11 +36,13 @@ async function ringBudLeft(e) {
         document.getElementById("ring_button-l").innerText = "Ring"
         ringBuds(0, true)
     } else {
-        e.add("ringing-l")
-        document.getElementById("ring_button-l").style.backgroundColor = "#7f1d1d"
-        document.getElementById("ring_button-l").style.color = "#ffffff"
-        document.getElementById("ring_button-l").innerText = "STOP"
-        ringBuds(1, true)
+        displayRingWarningPopUp(() => {
+            e.add("ringing-l")
+            document.getElementById("ring_button-l").style.backgroundColor = "#7f1d1d"
+            document.getElementById("ring_button-l").style.color = "#ffffff"
+            document.getElementById("ring_button-l").innerText = "STOP"
+            ringBuds(1, true)
+        });
     }
 }
 
