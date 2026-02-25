@@ -5,6 +5,7 @@ let operationList = {};
 async function switchViewFromModelID(model, sku) {
     localStorage.setItem("model", JSON.stringify(model));
     localStorage.setItem("sku", sku);
+    addToHistory(model, sku);
     if (sku === null || sku === "") {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
         return;
@@ -28,6 +29,16 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_flaaffy";
     } else if (model.base == "B162") {
         window.location.href = "MainControl_cleffa";
+    } else if (model.base == "B184") {
+        window.location.href = "MainControl_gligar";
+    } else if (model.base == "B179") {
+        window.location.href = "MainControl_girafarig";
+    } else if (model.base == "B185") {
+        window.location.href = "MainControl_hoothoot";
+    } else if (model.base == "B170") {
+        window.location.href = "MainControl_elekid";
+    } else if (model.base == "B164") {
+        window.location.href = "MainControl_crobat";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }
@@ -94,6 +105,15 @@ function getCommand(header) {
     return commandInt;
 }
 
+function getPayloadLength(header) {
+    let length = header[5];
+    return length;
+}
+
+function getPayload(data, length) {
+    return data.slice(8, 8 + length);
+}
+
 function readFirmwareFromData(hexstring) {
     let firmwareVersion = "";
     let hexArray = new Uint8Array(hexstring.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -156,14 +176,12 @@ function hexStringToUint8Array(hexString) {
 }
 
 function getSerialNumber(hexPayload) {
-    const payload = hexStringToUint8Array(hexPayload);
-
-    // Decode the payload
-    const E = payload[0]; 
-    const s02 = new TextDecoder().decode(payload.subarray(1, 7)); 
+    const payloadArray = hexStringToUint8Array(hexPayload);
+    const payloadLength = getPayloadLength(payloadArray);
+    const payloadWithoutCRC = getPayload(payloadArray, payloadLength);
     const configurations = [];
 
-    const lines = new TextDecoder().decode(payload.subarray(7)).split('\n');
+    const lines = new TextDecoder().decode(payloadWithoutCRC).split('\n');
 
     lines.forEach(line => {
         const parts = line.split(',');
@@ -171,7 +189,6 @@ function getSerialNumber(hexPayload) {
             const device = parseInt(parts[0], 10);
             const type = parseInt(parts[1], 10);
             const value = parts[2];
-
             if (!isNaN(device) && !isNaN(type) && value) {
                 configurations.push({ device, type, value });
             }
@@ -197,6 +214,7 @@ function processSerial(serial) {
     }
     let headSerial = serial.substring(0, 2);
     let SKU = ""
+    let isAltList = false;
     if (serial === "12345678901234567") {
         let modelEarOne = getModelFromSKU("01");
         switchViewFromModelID(modelEarOne, "01");
@@ -208,24 +226,38 @@ function processSerial(serial) {
         if (year === "22" || year === "23") {
             //Ear (stick)
             SKU = "14";
-        } else if (year === "24") {
-            //Ear (open) TODO: Find a better way to identify both
+        } else if (year === "24" || year === "25") {
             SKU = "11200005";
         }
+    }
+    else if (headSerial === "M3") {
+        SKU = serial.substring(4, 6);
+        SKU = "113000"+ SKU; 
     }
     else if (headSerial === "SH") {
         //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         SKU = serial.substring(4, 6);
+        let year = serial.substring(6, 8);
+        if (year === "25") {
+            isAltList = true;
+        }
     }
     else if (headSerial === "13") {
         //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device Found</p><p>Serial Number: ' + serial + '</p></div>';
         SKU = serial.substring(4, 6);
+        Year = serial.substring(6, 8);
+        if (Year === "25") {
+            isAltList = true;
+        }
+    }
+    else if (headSerial === "CI") {
+        SKU = "65";
     }
     else {
         //document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Incompatible Device</p><p>Serial Number: ' + serial + '</p></div>';
         return;
     }
-    let model = getModelFromSKU(SKU);
+    let model = getModelFromSKU(SKU, isAltList);
     console.log(model);
 
     if (model) {
@@ -248,84 +280,117 @@ function processSerial(serial) {
     switchViewFromModelID(model, SKU);
 }
 
-
-async function scanNewDevicesSerial() {
-    const SPP_UUID = "aeac4a03-dff5-498f-843a-34487cf133eb";
-    const FASTPAIR_UUID = "df21fe2c-2515-4fdb-8886-f12c4d67927c";
-    try {
-        sppPort = await navigator.serial.requestPort({
-            allowedBluetoothServiceClassIds: [SPP_UUID],
-            filters: [{ bluetoothServiceClassId: SPP_UUID }],
-        });
+function forceModelForDemo(sku, isAltList = false) {
+    let model = getModelFromSKU(sku, isAltList);
+    if (model) {
+        console.log("Forcing model for demo: " + model.name);
+        switchViewFromModelID(model, sku);
+    } else {
+        console.error("Model not found for SKU: " + sku);
     }
-    catch (error) {
-        console.error('Connection failed', error);
-        document.getElementById("device_container").innerHTML = '<div class="device-info"><p>Device not selected</p></div>';
-        setTimeout(function () {
-            window.location.reload();
-        }, 3000);
+}
+
+async function scanNewDevicesFastpair() {
+	const SPP_UUID = "aeac4a03-dff5-498f-843a-34487cf133eb";
+	const FASTPAIR_UUID = "df21fe2c-2515-4fdb-8886-f12c4d67927c";
+	forgetAllDevices();
+	try {
+		sppPort = await navigator.serial.requestPort({
+			allowedBluetoothServiceClassIds: [SPP_UUID, FASTPAIR_UUID],
+			filters: [{ bluetoothServiceClassId: FASTPAIR_UUID }],
+		});
+	}
+	catch (error) {
+		console.error('Connection failed', error);
+		document.getElementById("scan_button-c").innerText = "Device not selected";
+		setTimeout(function () {
+			window.location.reload();
+		}, 3000);
+		return;
+	}
+
+	if (sppPort) {
+		console.log('connected to a Bluetooth Serial Port Profile port, waiting for id data...', sppPort.getInfo());
+		console.log(sppPort);
+		await sppPort.open({ baudRate: 9600 });
+		//read from the serial port
+		const reader = sppPort.readable.getReader();
+		while (true) {
+			const { value, done } = await reader.read();
+			//console.log(value);
+			//print hex string of the received data
+			var string = "";
+			for (let i = 0; i < value.length; i++) {
+				//fill the string with leading zero if needed
+				string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
+			}
+			if (done) {
+				// Allow the serial port to be closed later.
+				reader.releaseLock();
+				break;
+			}
+			//if received data is 7 bytes long, disconnect
+			if (value.length == 7) {
+				console.log("Received id data: " + string);
+				reader.releaseLock();
+				await sppPort.close();
+				var modelID = string.substring(8, 14).toUpperCase();
+				var modelInfo = getModelFromFastpair(modelID);
+				if (modelInfo) {
+					switchViewFromModelID(modelInfo, modelID);
+				}
+				else {
+                    document.getElementById("scan_button-c").innerText = "Incompatible Device";
+                }
+				break;
+			}
+		}
+	}
+}
+
+function addToHistory(model, sku) {
+    if (!model || !sku) return;
+    let history = JSON.parse(localStorage.getItem("ear_web_history") || "[]");
+
+    // Remove if exists to push to top
+    history = history.filter(item => item.sku !== sku);
+
+    // Add new
+    history.unshift({
+        name: model.name,
+        sku: sku,
+        image: model.rightImg, // Use right image as thumbnail
+        base: model.base
+    });
+
+    // Limit to 5
+    if (history.length > 5) history.pop();
+
+    localStorage.setItem("ear_web_history", JSON.stringify(history));
+}
+
+function renderHistory() {
+    const container = document.getElementById("recent_devices");
+    if (!container) return;
+
+    const history = JSON.parse(localStorage.getItem("ear_web_history") || "[]");
+    if (history.length === 0) {
+        container.style.display = "none";
         return;
     }
 
+    container.style.display = "block";
+    container.innerHTML = "<div class='text-sm text-gray-400 mb-2'>Recent Devices:</div>";
 
+    history.forEach(device => {
+        const div = document.createElement("div");
+        div.className = "inline-flex items-center bg-[#333] p-2 rounded-lg mr-2 cursor-pointer hover:bg-[#444] transition mb-2";
+        div.onclick = () => scanNewDevicesFastpair(); // We still need to scan due to browser security
 
-    if (sppPort) {
-        console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
-        //print mac address of the connected device
-        console.log(sppPort);
-        await sppPort.open({ baudRate: 9600 });
-        //store sppPort in local storage
-        localStorage.setItem("sppPort", sppPort);
-        SPPsocket = sppPort;
-        //read from the serial port
-        const reader = sppPort.readable.getReader();
-        requestSerialNumber();
-        while (true) {
-            const { value, done } = await reader.read();
-            //console.log(value);
-            //print hex string of the received data
-            var string = "";
-            for (let i = 0; i < value.length; i++) {
-                //fill the string with leading zero if needed
-                string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
-            }
-            let rawData = new Uint8Array(value.buffer);
-            //check if first byte is 0x55, else continue
-            if (rawData[0] !== 85 || rawData.length < 10) {
-                continue;
-            }
-            //header is 8 bytes long
-            let header = rawData.slice(0, 6);
-            let command = getCommand(header);
-            console.log(command);
-            //print rawData hex string
-            console.log(string);
-            if (command === 16390) {
-                let serialNum = getSerialNumber(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                console.log(serialNum);
-                processSerial(serialNum);
-                //document.getElementById("device_container").innerHTML = '<div class="flex flex-col items-center justify-center"><p class="text-center text-lg font-bold">Device Found</p><p class="text-center text-lg font-bold">Serial Number: ' + serialNum + '</p></div>';
-            }
-            if (command === 16450) {
-let             firmwareVersion = readFirmwareFromData(string);
-                //document.getElementById("device_container").innerHTML += '<div class="device-info"><p>Firmware Version: ' + firmwareVersion + '</p></div>';
-                //split the firmware version string with "."
-                let firmwareArray = firmwareVersion.split(".");
-                if (firmwareArray[1] === "6700") {
-                    let modelEarOne = getModelFromSKU("01");
-                    switchViewFromModelID(modelEarOne, "01");
-                }
-            }
-
-            if (done) {
-                // Allow the serial port to be closed later.
-                reader.releaseLock();
-                break;
-            }
-            console.log(value);
-        }
-    }
-    setTimeout(function () {
-        window.location.reload();
-    }, 3000);
+        div.innerHTML = `
+            <img src="${device.image}" class="w-8 h-8 mr-2 object-contain">
+            <span class="text-sm">${device.name}</span>
+        `;
+        container.appendChild(div);
+    });
 }

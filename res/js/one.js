@@ -146,7 +146,7 @@ function changeGesture(type) {
         var show_popup = "";
         for(var i = 0; i < triple_tap.length; i++) {
            show_popup += `
-            <option id="${triple_tap[i]}" ${current_site == "l" ? left_triple_tap_current == triple_tap[i] ? "selected" : "" : right_triple_tap_current == triple_tap[i] ? "selected" : ""}>
+            <option id="${triple_tap[i]}" ${current_side == "l" ? left_triple_tap_current == triple_tap[i] ? "selected" : "" : right_triple_tap_current == triple_tap[i] ? "selected" : ""}>
                 ${triple_tap[i]}
             </option>
            `
@@ -155,7 +155,7 @@ function changeGesture(type) {
 
         document.getElementById("list_container").addEventListener("change", function(e) {
             document.getElementById("settings_subtitle_triple").innerHTML = document.getElementById("list_container").value
-            if (current_site == "l") {
+            if (current_side == "l") {
                 left_triple_tap_current = document.getElementById("list_container").value;
                 //get index of current gesture
                 var index = triple_tap.indexOf(document.getElementById("list_container").value);
@@ -166,7 +166,7 @@ function changeGesture(type) {
                 else if (index == 3) operation = 1;
                 sendGestures(2, 3, operation)
             }
-            if (current_site == "r") {
+            if (current_side == "r") {
                 right_triple_tap_current = document.getElementById("list_container").value;
                 var index = triple_tap.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -187,7 +187,7 @@ function changeGesture(type) {
                 var show_popup = "";
                 for(var i = 0; i < tap_and_hold.length; i++) {
                    show_popup += `
-                    <option id="${tap_and_hold[i]}" ${current_site == "l" ? left_tap_and_hold_current == tap_and_hold[i] ? "selected" : "" : right_tap_and_hold_current == tap_and_hold[i] ? "selected" : ""}>
+                    <option id="${tap_and_hold[i]}" ${current_side == "l" ? left_tap_and_hold_current == tap_and_hold[i] ? "selected" : "" : right_tap_and_hold_current == tap_and_hold[i] ? "selected" : ""}>
                         ${tap_and_hold[i]}
                     </option>
                    `
@@ -196,7 +196,7 @@ function changeGesture(type) {
         
                 document.getElementById("list_container").addEventListener("change", function(e) {
                     document.getElementById("settings_subtitle_hold").innerHTML = document.getElementById("list_container").value +"<br />Decline incoming call"
-                    if (current_site == "l") {
+                    if (current_side == "l") {
                         left_tap_and_hold_current = document.getElementById("list_container").value;
                         //get index of current gesture
                         var index = tap_and_hold.indexOf(document.getElementById("list_container").value);
@@ -205,7 +205,7 @@ function changeGesture(type) {
                         else if (index == 1) operation = 1;
                         sendGestures(2, 7, operation)
                     }
-                    if (current_site == "r") {
+                    if (current_side == "r") {
                         right_tap_and_hold_current = document.getElementById("list_container").value;
                         var index = tap_and_hold.indexOf(document.getElementById("list_container").value);
                         var operation = 0;

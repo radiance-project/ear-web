@@ -385,7 +385,7 @@ function changeGesture(type) {
         var show_popup = "";
         for (var i = 0; i < double_pinch.length; i++) {
             show_popup += `
-            <option id="${double_pinch[i]}" ${current_site == "l" ? left_double_pinch_current == double_pinch[i] ? "selected" : "" : right_double_pinch_current == double_pinch[i] ? "selected" : ""}>
+            <option id="${double_pinch[i]}" ${current_side == "l" ? left_double_pinch_current == double_pinch[i] ? "selected" : "" : right_double_pinch_current == double_pinch[i] ? "selected" : ""}>
                 ${double_pinch[i]}
             </option>
            `
@@ -393,7 +393,7 @@ function changeGesture(type) {
         displayPopUp(show_popup)
         document.getElementById("list_container").addEventListener("change", function (e) {
             document.getElementById("settings_subtitle_double").innerHTML = document.getElementById("list_container").value + "<br />Decline incoming call"
-            if (current_site == "l") {
+            if (current_side == "l") {
                 left_double_pinch_current = document.getElementById("list_container").value;
                 var index = double_pinch.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -402,7 +402,7 @@ function changeGesture(type) {
                 else if (index == 2) operation = 11;
                 sendGestures(2, 2, operation)
             }
-            if (current_site == "r") {
+            if (current_side == "r") {
                 right_double_pinch_current = document.getElementById("list_container").value;
                 var index = double_pinch.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -416,9 +416,9 @@ function changeGesture(type) {
         })
     } else if (type == "triple") {
         var show_popup = "";
-        for (var i = 0; i < double_pinch.length; i++) {
+        for (var i = 0; i < triple_pinch.length; i++) {
             show_popup += `
-            <option id="${triple_pinch[i]}" ${current_site == "l" ? left_triple_pinch_current == triple_pinch[i] ? "selected" : "" : right_triple_pinch_current == triple_pinch[i] ? "selected" : ""}>
+            <option id="${triple_pinch[i]}" ${current_side == "l" ? left_triple_pinch_current == triple_pinch[i] ? "selected" : "" : right_triple_pinch_current == triple_pinch[i] ? "selected" : ""}>
                 ${triple_pinch[i]}
             </option>
            `
@@ -426,7 +426,7 @@ function changeGesture(type) {
         displayPopUp(show_popup)
         document.getElementById("list_container").addEventListener("change", function (e) {
             document.getElementById("settings_subtitle_triple").innerHTML = document.getElementById("list_container").value
-            if (current_site == "l") {
+            if (current_side == "l") {
                 left_triple_pinch_current = document.getElementById("list_container").value;
                 var index = triple_pinch.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -435,7 +435,7 @@ function changeGesture(type) {
                 else if (index == 2) operation = 11;
                 sendGestures(2, 3, operation)
             }
-            if (current_site == "r") {
+            if (current_side == "r") {
                 right_triple_pinch_current = document.getElementById("list_container").value;
                 var index = triple_pinch.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -451,7 +451,7 @@ function changeGesture(type) {
         var show_popup = "";
         for (var i = 0; i < double_pinch_and_hold.length; i++) {
             show_popup += `
-            <option id="${double_pinch_and_hold[i]}" ${current_site == "l" ? left_double_pinch_and_hold_current == double_pinch_and_hold[i] ? "selected" : "" : right_double_pinch_and_hold_current == double_pinch_and_hold[i] ? "selected" : ""}>
+            <option id="${double_pinch_and_hold[i]}" ${current_side == "l" ? left_double_pinch_and_hold_current == double_pinch_and_hold[i] ? "selected" : "" : right_double_pinch_and_hold_current == double_pinch_and_hold[i] ? "selected" : ""}>
                 ${double_pinch_and_hold[i]}
             </option>
            `
@@ -471,13 +471,13 @@ function changeGesture(type) {
             </div>
             <select id="list_container" class="flex flex-col w-fit m-auto bg-[#1B1D1F] w-[300px] outline-none p-3 border-[#333333] border-[1px] rounded-md" style="width: 300px; padding: 12px; border: #333333 1px solid; background-color: #1B1D1F; outline: none;">
             ${show_popup}</select>`
-        if (current_site == "l") if (left_double_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
-        if (current_site == "r") if (right_double_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
+        if (current_side == "l") if (left_double_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
+        if (current_side == "r") if (right_double_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
         document.getElementById("list_container").addEventListener("change", function (e) {
             document.getElementById("settings_subtitle_double_pinch_and_hold").innerHTML = document.getElementById("list_container").value
             if (document.getElementById("list_container").value == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
             else document.getElementById("anc_pinch_settings").style.display = "none";
-            if (current_site == "l") {
+            if (current_side == "l") {
                 left_double_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = double_pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -488,7 +488,7 @@ function changeGesture(type) {
                 else if (index == 4) operation = 1;
                 sendGestures(2, 9, operation)
             }
-            if (current_site == "r") {
+            if (current_side == "r") {
                 right_double_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = double_pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -506,7 +506,7 @@ function changeGesture(type) {
         var show_popup = "";
         for (var i = 0; i < pinch_and_hold.length; i++) {
             show_popup += `
-            <option id="${pinch_and_hold[i]}" ${current_site == "l" ? left_pinch_and_hold_current == pinch_and_hold[i] ? "selected" : "" : right_pinch_and_hold_current == pinch_and_hold[i] ? "selected" : ""}>
+            <option id="${pinch_and_hold[i]}" ${current_side == "l" ? left_pinch_and_hold_current == pinch_and_hold[i] ? "selected" : "" : right_pinch_and_hold_current == pinch_and_hold[i] ? "selected" : ""}>
                 ${pinch_and_hold[i]}
             </option>
            `
@@ -526,13 +526,13 @@ function changeGesture(type) {
             </div>
             <select id="list_container" class="flex flex-col w-fit m-auto bg-[#1B1D1F] w-[300px] outline-none p-3 border-[#333333] border-[1px] rounded-md" style="width: 300px; padding: 12px; border: #333333 1px solid; background-color: #1B1D1F; outline: none;">
             ${show_popup}</select>`
-        if (current_site == "l") if (left_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
-        if (current_site == "r") if (right_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
+        if (current_side == "l") if (left_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
+        if (current_side == "r") if (right_pinch_and_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
         document.getElementById("list_container").addEventListener("change", function (e) {
             document.getElementById("settings_subtitle_pinch_and_hold").innerHTML = document.getElementById("list_container").value
             if (document.getElementById("list_container").value == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
             else document.getElementById("anc_pinch_settings").style.display = "none";
-            if (current_site == "l") {
+            if (current_side == "l") {
                 left_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;
@@ -542,7 +542,7 @@ function changeGesture(type) {
                 else if (index == 3) operation = 11;
                 sendGestures(2, 7, operation)
             }
-            if (current_site == "r") {
+            if (current_side == "r") {
                 right_pinch_and_hold_current = document.getElementById("list_container").value;
                 var index = pinch_and_hold.indexOf(document.getElementById("list_container").value);
                 var operation = 0;

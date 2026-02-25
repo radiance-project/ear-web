@@ -1,21 +1,24 @@
 
 function transToLeftGest(side) {
-    current_site = side;
-    if (current_site == "l") {
-
-        rightEarPeace.classList.remove("duration-[2s]")
-        rightEarPeace.classList.add("duration-300")
-
+    current_side = side;
+    if (current_side == "l") {
         leftEarBattery.style.opacity = "0"
-        rightEarBattery.style.opacity = "0"
+
         prod_name.style.opacity = "0"
 
         pages_container.style.opacity = "0"
         pages_container_two.style.opacity = "0"
         ringButton.style.opacity = "0"
-        rightEarPeace.style.opacity = "0"
+        if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+            rightEarPeace.classList.remove("duration-[2s]")
+            rightEarPeace.classList.add("duration-300")
+            rightEarBattery.style.opacity = "0"
+            rightEarPeace.style.opacity = "0"
+        }
 
-        rightEarPeace.style.zIndex = "-10"
+        if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+            rightEarPeace.style.zIndex = "-10"
+        }
 
         clearTimeout(intro_timeout);
         clearTimeout(intro_timeout2);
@@ -36,11 +39,15 @@ function transToLeftGest(side) {
 
     } else {
 
-        rightEarPeace.classList.remove("duration-[2s]")
-        rightEarPeace.classList.add("duration-300")
+        if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+            rightEarPeace.classList.remove("duration-[2s]")
+            rightEarPeace.classList.add("duration-300")
+        }
 
         leftEarBattery.style.opacity = "0"
-        rightEarBattery.style.opacity = "0"
+        if (typeof rightEarBattery !== 'undefined' && rightEarBattery !== null) {
+            rightEarBattery.style.opacity = "0"
+        }
         prod_name.style.opacity = "0"
 
         pages_container.style.opacity = "0"
@@ -52,11 +59,13 @@ function transToLeftGest(side) {
 
         clearTimeout(intro_timeout);
         clearTimeout(intro_timeout2);
-        rightEarPeace.classList.remove("h-44")
-        rightEarPeace.classList.remove("w-34")
+        if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+            rightEarPeace.classList.remove("h-44")
+            rightEarPeace.classList.remove("w-34")
 
-        rightEarPeace.style.marginTop = "120px"
-        rightEarPeace.style.marginLeft = "101px"
+            rightEarPeace.style.marginTop = "120px"
+            rightEarPeace.style.marginLeft = "101px"
+        }
 
         document.getElementById("ring_button").style.zIndex = "-10"
         document.getElementById("eq_container_t").style.zIndex = "-10"
@@ -71,23 +80,33 @@ function transToLeftGest(side) {
 
 function transBackToLeft(e) {
     document.getElementById("test").style.opacity = "0"
-    rightEarPeace.classList.remove("duration-[2s]")
-    rightEarPeace.classList.add("duration-300")
+    if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+        rightEarPeace.classList.remove("duration-[2s]")
+        rightEarPeace.classList.add("duration-300")
+    }
 
     leftEarBattery.style.opacity = "100"
-    rightEarBattery.style.opacity = "100"
+    if (typeof rightEarBattery !== 'undefined' && rightEarBattery !== null) {
+        rightEarBattery.style.opacity = "100"
+    }
     prod_name.style.opacity = "100"
     pages_container.style.opacity = "100"
     if (pages_container_two !== null) pages_container_two.style.opacity = "1"
     ringButton.style.opacity = "100"
-    rightEarPeace.style.opacity = "100"
+    if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+        rightEarPeace.style.opacity = "100"
+    }
     document.getElementById("back").style.opacity = "0"
 
     leftEarPeace.style.zIndex = "300"
-    rightEarPeace.style.zIndex = "300"
+    if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+        rightEarPeace.style.zIndex = "300"
+    }
 
+    if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
     leftEarPeace.classList.remove("h-52")
     leftEarPeace.classList.add("h-44")
+    }
 
     document.getElementById("ring_button").style.zIndex = "10"
     document.getElementById("eq_container_t").style.zIndex = "10"
@@ -95,15 +114,20 @@ function transBackToLeft(e) {
     leftEarPeace.style.marginTop = "0px"
     if (e == "MainControl") leftEarPeace.style.marginLeft = "40px"
     else leftEarPeace.style.marginLeft = "0px"
+    if (typeof rightEarPeace === 'undefined' || rightEarPeace === null) {
+        leftEarPeace.style.marginLeft = "0px"
+    }
     document.getElementById("test").style.zIndex = "-10"
 
     //SAME FOR RIGHT EARPEACE
-    rightEarPeace.classList.remove("h-52")
-    rightEarPeace.classList.add("h-44")
+    if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {
+        rightEarPeace.classList.remove("h-52")
+        rightEarPeace.classList.add("h-44")
 
-    rightEarPeace.style.marginTop = "0px"
-    if (e == "MainControl") rightEarPeace.style.marginLeft = "auto"
-    else rightEarPeace.style.marginLeft = "0px"
+        rightEarPeace.style.marginTop = "0px"
+        if (e == "MainControl") rightEarPeace.style.marginLeft = "auto"
+        else rightEarPeace.style.marginLeft = "0px"
+    }
     document.getElementById("test").style.zIndex = "-10"
     leftEarPeace.style.opacity = "100"
 

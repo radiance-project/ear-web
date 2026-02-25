@@ -70,6 +70,11 @@ function setEQfromRead(level, pos) {
         setCustom(document.getElementById("buttonEQCustom"));
         updateIndicator();
         pos = 6;
+    } else if (level == 7) {
+        //For hoothoot Dirac EQ
+        document.querySelector("#chart").style.display = "none";
+        document.getElementById("custom_eq_indicator").style.display = "none";
+        pos = 0;
     }
     buttons[pos].style.backgroundColor = "#ffffff";
     buttons[pos].style.color = "#000000";

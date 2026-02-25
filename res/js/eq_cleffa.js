@@ -328,3 +328,22 @@ function clearButtons() {
         button.style.color = "#ffffff";
     }
 }
+
+// EQ Manager Integration
+const MODEL_ID_CLEFFA = "B162"; // Ear (a)
+
+// Implement helpers required by eq_presets.js
+function getCurrentEQData() {
+    return custom_values;
+}
+
+function applyPresetData(data) {
+    custom_values = data;
+    setCustomEQ(custom_values);
+    // Force UI update to "Custom" mode if not already
+    EQButtonPress(5);
+    setCustomEQ_BT([custom_values[1], custom_values[2], custom_values[0]]);
+}
+
+// Initialize
+renderPresetsUI(MODEL_ID_CLEFFA);
