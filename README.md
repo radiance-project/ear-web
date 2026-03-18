@@ -10,8 +10,16 @@ This website is compatible with the following devices:
 - Nothing ear (2)
 - CMF Buds Pro
 - CMF Buds
+- CMF Neckband Pro
 - Nothing Ear
+- Nothing Ear (a)
 - CMF Buds Pro 2
+- Nothing Ear (open)
+- CMF Buds 2a
+- CMF Buds 2
+- CMF Buds 2 Plus
+- Nothing Headphone (1)
+- CMF Headphone Pro
 
 
 # Usage
