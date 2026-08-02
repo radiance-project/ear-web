@@ -172,8 +172,8 @@ function switchPage(page, force=false, legacy=true) {
     switch (current_page) {
         case 1:
             document.getElementById("stage_two_selector_button").style.backgroundColor = "white"
-            if (page_3 !== null) document.getElementById("stage_three_selector_button").style.backgroundColor = "#1B1D1F"
-            document.getElementById("stage_one_selector_button").style.backgroundColor = "#1B1D1F"
+            if (page_3 !== null) document.getElementById("stage_three_selector_button").style.backgroundColor = "#6B7280"
+            document.getElementById("stage_one_selector_button").style.backgroundColor = "#6B7280"
 
             page_1.style.opacity = "0"
             if (page_3 !== null) page_3.style.opacity = "0"
@@ -188,8 +188,8 @@ function switchPage(page, force=false, legacy=true) {
             break
         case 0:
             document.getElementById("stage_one_selector_button").style.backgroundColor = "white"
-            if (page_3 !== null) document.getElementById("stage_three_selector_button").style.backgroundColor = "#1B1D1F"
-            document.getElementById("stage_two_selector_button").style.backgroundColor = "#1B1D1F"
+            if (page_3 !== null) document.getElementById("stage_three_selector_button").style.backgroundColor = "#6B7280"
+            document.getElementById("stage_two_selector_button").style.backgroundColor = "#6B7280"
 
             page_2.style.opacity = "0"
             if (page_3 !== null) page_3.style.opacity = "0"
@@ -203,8 +203,8 @@ function switchPage(page, force=false, legacy=true) {
             }, 100)
             break
         case 2:
-            document.getElementById("stage_two_selector_button").style.backgroundColor = "#1B1D1F"
-            document.getElementById("stage_one_selector_button").style.backgroundColor = "#1B1D1F"
+            document.getElementById("stage_two_selector_button").style.backgroundColor = "#6B7280"
+            document.getElementById("stage_one_selector_button").style.backgroundColor = "#6B7280"
             if (page_3 != null) document.getElementById("stage_three_selector_button").style.backgroundColor = "white"
 
             if (page_3 != null) page_3.style.opacity = "0"
