@@ -1,0 +1,24 @@
+{
+  "name": "ear-web-internal",
+  "version": "1.0.0",
+  "description": "ear (web) - Web Serial control panel for Nothing/CMF earbuds",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i tailwind-input.css -o res/tailwind.css --minify",
+    "watch:css": "tailwindcss -i tailwind-input.css -o res/tailwind.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radiance-project/ear-web-internal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/radiance-project/ear-web-internal/issues"
+  },
+  "homepage": "https://github.com/radiance-project/ear-web-internal#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

@@ -126,79 +126,89 @@ async function connectSPP(sppPort=null) {
         //read from the serial port
         const reader = sppPort.readable.getReader();
         initDevice();
-        while (sppPort.readable) {
-            const { value, done } = await reader.read();
-            //console.log(value);
-            //print hex string of the received data
-            var string = "";
-            for (let i = 0; i < value.length; i++) {
-                //fill the string with leading zero if needed
-                string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
-            }
-            let rawData = new Uint8Array(value.buffer);
-            //check if first byte is 0x55, else continue
-            if (rawData[0] !== 85 || rawData.length < 8) {
-                continue;
-            }
-            //header is 8 bytes long
-            let header = rawData.slice(0, 6);
-            let command = getCommand(header);
-            console.log(command);
-            if (command === 57345 || command===16391) {
-                readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 57347) {
-                readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16452) {
-                readCustomEQ(rawData);
-            }
-            if (command === 16415 || command === 16464) {
-                readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16450) {
-                readFirmware(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 57357) {
-                readEarFitTestResult(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16416) {
-                readPersonalizedANC(rawData);
-            }
-            if (command === 16398) {
-                readInEar(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16449) {
-                readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16407) {
-                readLEDCaseColor(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16408) {
-                readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16414) {
-                readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16460) {
-                read_advanced_eq_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
-            if (command === 16462) {
-                read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-            }
+        try {
+            while (sppPort.readable) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    // Allow the serial port to be closed later.
+                    break;
+                }
+                //console.log(value);
+                //print hex string of the received data
+                var string = "";
+                for (let i = 0; i < value.length; i++) {
+                    //fill the string with leading zero if needed
+                    string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
+                }
+                let rawData = new Uint8Array(value.buffer);
+                //check if first byte is 0x55, else continue
+                if (rawData[0] !== 85 || rawData.length < 8) {
+                    continue;
+                }
+                //header is 8 bytes long
+                let header = rawData.slice(0, 6);
+                let command = getCommand(header);
+                console.log(command);
+                if (command === 57345 || command===16391) {
+                    readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 57347) {
+                    readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16452) {
+                    readCustomEQ(rawData);
+                }
+                if (command === 16415 || command === 16464) {
+                    readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16450) {
+                    readFirmware(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 57357) {
+                    readEarFitTestResult(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16416) {
+                    readPersonalizedANC(rawData);
+                }
+                if (command === 16398) {
+                    readInEar(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16449) {
+                    readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16407) {
+                    readLEDCaseColor(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16408) {
+                    readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16414) {
+                    readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16460) {
+                    read_advanced_eq_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
+                if (command === 16462) {
+                    read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                }
 
-            if (operationID >= 250) {
-                operationID = 1;
-                operationList = {};
+                if (operationID >= 250) {
+                    operationID = 1;
+                    operationList = {};
+                }
+                console.log(string);
+                console.log(value);
             }
-            console.log(string);
-            if (done) {
-                // Allow the serial port to be closed later.
+        } catch (error) {
+            console.error("Serial connection lost:", error);
+        } finally {
+            try {
                 reader.releaseLock();
-                break;
+            } catch (releaseError) {
+                console.error("Failed to release serial reader lock:", releaseError);
             }
-            console.log(value);
-
+            SPPsocket = null;
+            window.location.href = "index.html";
         }
     }
 }

@@ -1,27 +1,3 @@
-async function getDevicesJS() {
-    let n = await eel.getDevices()();
-    document.getElementById('list').innerText = n;
-}
-
-function updateBattery(leftText, caseText, rightText) {
-    const containerLeft = document.getElementById('container-left');
-    const containerCase = document.getElementById('container-case');
-    const containerRight = document.getElementById('container-right');
-    const batteryLeft = document.getElementById('battery-left');
-    const batteryCase = document.getElementById('battery-case');
-    const batteryRight = document.getElementById('battery-right');
-
-    // hide/show containers based on the text
-    containerLeft.style.display = leftText === 'DISCONNECTED' ? 'none' : 'block';
-    containerCase.style.display = caseText === 'DISCONNECTED' ? 'none' : 'block';
-    containerRight.style.display = rightText === 'DISCONNECTED' ? 'none' : 'block';
-
-    // set the battery text
-    batteryLeft.innerText = leftText;
-    batteryCase.innerText = caseText;
-    batteryRight.innerText = rightText;
-}
-
 function getModelFromFastpair(fastpairID) {
 
     var models = {
@@ -433,11 +409,6 @@ function getModelFromFastpair(fastpairID) {
     return models[fastpairID];
 }
 
-function getImageForModel(modelID) {
-    var modelInfo = getModelInfo(modelID);
-    return modelInfo.rightImg;
-}
-
 async function updateBudsInfo(imageOnly=false, isHeadphone=false) {
     //get sku from local storage
     var modelID = localStorage.getItem("sku");
@@ -480,27 +451,6 @@ async function updateBudsInfo(imageOnly=false, isHeadphone=false) {
     }
 }
 
-
-function getDevicesForList(devices) {
-    var list = document.querySelector("#device_container");
-    for (var i = 0; i < devices.length; i++) {
-        var container = document.createElement("div");
-        container.id = "device_container_child";
-        container.className = "inline-grid p-2 pl-5 pr-5 cursor-pointer border-[1px] border-black rounded-xl mt-2 hover:scale-[105%] duration-200 ease-in-out";
-        container.style.display = "inline-grid";
-        container.style.width = "280px";
-        container.style.gridTemplateColumns = "auto auto";
-        var image = getImageForModel(devices[i][3]);
-        var name = getModelInfo(devices[i][3]).name;
-        var mac = devices[i][1];
-        container.setAttribute("onclick", `loadDevicePage('${mac}')`);
-        container.innerHTML = `
-            <img src="${image}" alt="" id="device_image" class="h-12 w-fit">
-            <section class="mt-3 ml-5">${name}</section>
-        `;
-        list.appendChild(container);
-    }
-}
 
 function setFirmwareText(firmware_text) {
     document.getElementById("settings_subtitle_firmware").innerHTML = firmware_text;
@@ -549,11 +499,6 @@ function setLatencyMode() {
     } else {
         setLatency(0);
     }
-}
-
-function connectDeviceFromList(mac) {
-    eel.stopReceivingData();
-    eel.connectToDevice(mac);
 }
 
 function showErrorPopup(message) {

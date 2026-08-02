@@ -81,392 +81,70 @@ var intro_timeout2;
 */
 
 
-function updateGesturesFromArray(array) {
-    for (var i = 0; i < array.length; i++) {
-        console.log(array[i])
-        if (array[i].gestureDevice == 6) {
-            if (array[i].gestureCommon == 10) {
-                if (array[i].gestureType == 1) {
-                    if (array[i].gestureAction == 32) {
-                        button_press_current = button_press[0];
-                    } else if (array[i].gestureAction == 11) {
-                        button_press_current = button_press[1];
-                    } else if (array[i].gestureAction == 31) {
-                        button_press_current = button_press[2];
-                    } else if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
-                        button_press_current = button_press[3];
-                        if (array[i].gestureAction == 10) {
-                            anc_selector_button_press = [1, 1, 1]
-                        } else if (array[i].gestureAction == 20) {
-                            anc_selector_button_press = [0, 1, 1]
-                        } else if (array[i].gestureAction == 21) {
-                            anc_selector_button_press = [1, 0, 1]
-                        } else if (array[i].gestureAction == 22) {
-                            anc_selector_button_press = [1, 1, 0]
-                        }
-                    } else if (array[i].gestureAction == 27) {
-                        button_press_current = button_press[4];
-                    } else if (array[i].gestureAction == 29) {
-                        button_press_current = button_press[5];
-                    } else if (array[i].gestureAction == 34) {
-                        button_press_current = button_press[6];
-                    } else if (array[i].gestureAction == 1) {
-                        button_press_current = button_press[7];
-                    }
-                } else if (array[i].gestureType == 7) {
-                    //tap and hold
-                    if (array[i].gestureAction == 32) {
-                        button_hold_current = button_hold[0];
-                    } else if (array[i].gestureAction == 11) {
-                        button_hold_current = button_hold[1];
-                    } else if (array[i].gestureAction == 31) {
-                        button_hold_current = button_hold[2];
-                    } else if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
-                        button_hold_current = button_hold[3];
-                        if (array[i].gestureAction == 10) {
-                            anc_selector_button_hold = [1, 1, 1]
-                        } else if (array[i].gestureAction == 20) {
-                            anc_selector_button_hold = [0, 1, 1]
-                        } else if (array[i].gestureAction == 21) {
-                            anc_selector_button_hold = [1, 0, 1]
-                        } else if (array[i].gestureAction == 22) {
-                            anc_selector_button_hold = [1, 1, 0]
-                        }
-                    } else if (array[i].gestureAction == 27) {
-                        button_hold_current = button_hold[4];
-                    } else if (array[i].gestureAction == 33) {
-                        button_hold_current = button_hold[5];
-                    } else if (array[i].gestureAction == 29) {
-                        button_hold_current = button_hold[6];
-                    } else if (array[i].gestureAction == 34) {
-                        button_hold_current = button_hold[7];
-                    } else if (array[i].gestureAction == 1) {
-                        button_hold_current = button_hold[8];
-                    }
-                } 
-            } else if (array[i].gestureCommon == 1) {
-                if (array[i].gestureType == 7) {
-                    //tap and hold
-                    if (array[i].gestureAction == 10 || array[i].gestureAction == 20 || array[i].gestureAction == 21 || array[i].gestureAction == 22) {
-                        roller_hold_current = roller_hold[0];
-                        if (array[i].gestureAction == 10) {
-                            anc_selector_roller = [1, 1, 1]
-                        } else if (array[i].gestureAction == 20) {
-                            anc_selector_roller = [0, 1, 1]
-                        } else if (array[i].gestureAction == 21) {
-                            anc_selector_roller = [1, 0, 1]
-                        } else if (array[i].gestureAction == 22) {
-                            anc_selector_roller = [1, 1, 0]
-                        }
-                    } else if (array[i].gestureAction == 1) {
-                        roller_hold_current = roller_hold[1];
-                    }
-                } 
-            }
-        } 
-    }
+var GESTURE_TOPOLOGY = {
+    sides: ["l"],
+    deviceCodes: { l: 6 },
+    varPrefix: false,
+};
+
+var GESTURE_SLOTS = [
+    {
+        key: "button_press",
+        type: "button_press",
+        sendType: 1,
+        gestureCommon: 10,
+        sendExtra: 10,
+        options: button_press,
+        actionToIndex: { 32: 0, 11: 1, 31: 2, 10: 3, 20: 3, 21: 3, 22: 3, 27: 4, 29: 5, 34: 6, 1: 7 },
+        ancToggle: { selectorName: "anc_selector_button_press", panelId: "anc_pinch_settings", mergedIndex: 3 },
+        subtitleId: "settings_subtitle_button_press",
+        alwaysCloseOnChange: true,
+    },
+    {
+        key: "button_hold",
+        type: "button_hold",
+        sendType: 7,
+        gestureCommon: 10,
+        sendExtra: 10,
+        options: button_hold,
+        actionToIndex: { 32: 0, 11: 1, 31: 2, 10: 3, 20: 3, 21: 3, 22: 3, 27: 4, 33: 5, 29: 6, 34: 7, 1: 8 },
+        ancToggle: { selectorName: "anc_selector_button_hold", panelId: "anc_pinch_settings", mergedIndex: 3 },
+        subtitleId: "settings_subtitle_button_hold",
+        alwaysCloseOnChange: true,
+    },
+    {
+        key: "roller_hold",
+        type: "roller_hold",
+        sendType: 7,
+        gestureCommon: 1,
+        sendExtra: 1,
+        options: roller_hold,
+        actionToIndex: { 10: 0, 20: 0, 21: 0, 22: 0, 1: 1 },
+        ancToggle: { selectorName: "anc_selector_roller", panelId: "anc_pinch_settings", mergedIndex: 0 },
+        subtitleId: "settings_subtitle_roller_hold",
+    },
+];
+
+function updateGesturesFromArray(records) {
+    applyGestureRecords(records, GESTURE_TOPOLOGY, GESTURE_SLOTS);
     loadCurrentGestures(current_side, false);
 }
-
-function getANCtoggleFunction(ancList) {
-    if (JSON.stringify(ancList) === JSON.stringify([1, 1, 1])) {
-        return 10;
-    } else if (JSON.stringify(ancList) === JSON.stringify([0, 1, 1])) {
-        return 20;
-    } else if (JSON.stringify(ancList) === JSON.stringify([1, 0, 1])) {
-        return 21;
-    } else if (JSON.stringify(ancList) === JSON.stringify([1, 1, 0])) {
-        return 22;
-    }
-}
-
 
 function loadCurrentGestures(side, refresh = true) {
     if (refresh) {
         sendGetGesture();
     }
-    current_side = side
-    //LOAD ALL VALUES BASED ON CURRENT SIDE
-    if (side == "l") {
-        document.getElementById("settings_subtitle_button_press").innerHTML = button_press_current;
-        document.getElementById("settings_subtitle_button_hold").innerHTML = button_hold_current;
-        document.getElementById("settings_subtitle_roller_hold").innerHTML = roller_hold_current;
-    }
-
+    current_side = side;
+    loadCurrentGesturesGeneric(side, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
 function changeGesture(type) {
-    if (type == "button_press") {
-        var show_popup = "";
-        for (var i = 0; i < button_press.length; i++) {
-            show_popup += `
-            <option id="${button_press[i]}" ${button_press_current == button_press[i] ? "selected" : ""}>
-                ${button_press[i]}
-            </option>
-           `
-        }
-
-        document.getElementById("popup_container").style.opacity = "100"
-        document.getElementById("popup_container").style.zIndex = "1000"
-        document.getElementById("popup_content").style.zIndex = "1001"
-        
-        document.getElementById("popup_content").innerHTML = ` <div class="w-fit flex m-auto text-md mb-5 mt-2">
-        Change gesture
-            </div>
-                <div id="anc_pinch_settings" style="display: none; margin-bottom: 40px;"> 
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_button_press[0] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_button_press');">Transparency</label><br />
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_button_press[1] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_button_press');">Noise cancellation</label><br />
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_button_press[2] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_button_press');">Off</label>
-            </div>
-            <select id="list_container" class="flex flex-col w-fit m-auto bg-[#1B1D1F] w-[300px] outline-none p-3 border-[#333333] border-[1px] rounded-md" style="width: 300px; padding: 12px; border: #333333 1px solid; background-color: #1B1D1F; outline: none;">
-            ${show_popup}</select>`
-        if (button_press_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
-        document.getElementById("list_container").addEventListener("change", function (e) {
-            document.getElementById("settings_subtitle_button_press").innerHTML = document.getElementById("list_container").value
-            button_press_current = document.getElementById("list_container").value;
-            var index = button_press.indexOf(document.getElementById("list_container").value);
-            var operation = 0;
-            if (index == 0) operation = 32;
-            else if (index == 1) operation = 11;
-            else if (index == 2) operation = 31;
-            else if (index == 3) operation = getANCtoggleFunction(anc_selector_button_press);
-            else if (index == 4) operation = 27;
-            else if (index == 5) operation = 29;
-            else if (index == 6) operation = 34;
-            else if (index == 7) operation = 1;
-            sendGestures(6, 1, operation, 10)
-            document.getElementById("list_container").removeEventListener("change", () => { })
-            closePopUp()
-        })
-    } else if (type == "button_hold") {
-        var show_popup = "";
-        for (var i = 0; i < button_hold.length; i++) {
-            show_popup += `
-            <option id="${button_hold[i]}" ${button_hold_current == button_hold[i] ? "selected" : ""}>
-                ${button_hold[i]}
-            </option>
-           `
-        }
-        document.getElementById("popup_container").style.opacity = "100"
-        document.getElementById("popup_container").style.zIndex = "1000"
-        document.getElementById("popup_content").style.zIndex = "1001"
-
-        document.getElementById("popup_content").innerHTML = ` <div class="w-fit flex m-auto text-md mb-5 mt-2">
-        Change gesture
-            </div>
-                <div id="anc_pinch_settings" style="display: none; margin-bottom: 40px;"> 
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_button_hold[0] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_button_hold');">Transparency</label><br />
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_button_hold[1] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_button_hold');">Noise cancellation</label><br />
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_button_hold[2] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_button_hold');">Off</label>
-            </div>
-            <select id="list_container" class="flex flex-col w-fit m-auto bg-[#1B1D1F] w-[300px] outline-none p-3 border-[#333333] border-[1px] rounded-md" style="width: 300px; padding: 12px; border: #333333 1px solid; background-color: #1B1D1F; outline: none;">
-            ${show_popup}</select>`
-        if (button_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
-        //displayPopUp(show_popup)
-        document.getElementById("list_container").addEventListener("change", function (e) {
-            document.getElementById("settings_subtitle_button_hold").innerHTML = document.getElementById("list_container").value
-            if (current_side == "l") {
-                button_hold_current = document.getElementById("list_container").value;
-                var index = button_hold.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 32;
-                else if (index == 1) operation = 11;
-                else if (index == 2) operation = 31;
-                else if (index == 3) operation = getANCtoggleFunction(anc_selector_button_hold);
-                else if (index == 4) operation = 27;
-                else if (index == 5) operation = 33;
-                else if (index == 6) operation = 29;
-                else if (index == 7) operation = 34;
-                else if (index == 8) operation = 1;
-                sendGestures(6, 7, operation, 10)
-            }
-            document.getElementById("list_container").removeEventListener("change", () => { })
-            closePopUp()
-        })
-    } else if (type == "roller_hold") {
-        var show_popup = "";
-        for (var i = 0; i < roller_hold.length; i++) {
-            show_popup += `
-            <option id="${roller_hold[i]}" ${roller_hold_current == roller_hold[i] ? "selected" : ""}>
-                ${roller_hold[i]}
-            </option>
-           `
-        }
-
-        document.getElementById("popup_container").style.opacity = "100"
-        document.getElementById("popup_container").style.zIndex = "1000"
-        document.getElementById("popup_content").style.zIndex = "1001"
-
-        document.getElementById("popup_content").innerHTML = ` <div class="w-fit flex m-auto text-md mb-5 mt-2">
-        Change gesture
-            </div>
-                <div id="anc_pinch_settings" style="display: none; margin-bottom: 40px;"> 
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_roller[0] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_roller');">Transparency</label><br />
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_roller[1] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_roller');">Noise cancellation</label><br />
-                <label class="text-sm" style="height: 13px;"><input type="checkbox" ${anc_selector_roller[2] == 1 ? "checked" : ""} id="checkbox" class="m-auto mb-5" onclick="checkboxCheck(event, 'anc_selector_roller');">Off</label>
-            </div>
-            <select id="list_container" class="flex flex-col w-fit m-auto bg-[#1B1D1F] w-[300px] outline-none p-3 border-[#333333] border-[1px] rounded-md" style="width: 300px; padding: 12px; border: #333333 1px solid; background-color: #1B1D1F; outline: none;">
-            ${show_popup}</select>`
-        if (roller_hold_current == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
-        document.getElementById("list_container").addEventListener("change", function (e) {
-            document.getElementById("settings_subtitle_roller_hold").innerHTML = document.getElementById("list_container").value
-            if (document.getElementById("list_container").value == "Noise control") document.getElementById("anc_pinch_settings").style.display = "grid";
-            else document.getElementById("anc_pinch_settings").style.display = "none";
-            roller_hold_current = document.getElementById("list_container").value;
-            var index = roller_hold.indexOf(document.getElementById("list_container").value);
-            var operation = 0;
-            if (index == 0) operation = getANCtoggleFunction(anc_selector_roller);
-            else if (index == 1) operation = 1;
-            sendGestures(6, 7, operation, 1)
-            document.getElementById("list_container").removeEventListener("change", () => { })
-            if (document.getElementById("list_container").value != "Noise control") closePopUp()
-        })
-    } 
+    renderGestureChangePopup(type, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
-function checkboxCheck(evt, selected_gesture) {
-    var checkboxes = document.querySelectorAll('[id=checkbox]')
-    var checkboxesChecked = [];
-    for (var i = 0; i < checkboxes.length; i++) {
-        if (checkboxes[i].checked) {
-            checkboxesChecked.push(checkboxes[i]);
-        }
-    }
-    if (checkboxesChecked.length < 2) {
-        return event.target.checked = !event.target.checked
-    } else {
-        event.target.checked = event.target.checked
-        if (selected_gesture == "anc_selector_roller") {
-            var index = Array.prototype.indexOf.call(checkboxes, evt.target);
-            anc_selector_roller[index] = anc_selector_roller[index] == 1 ? 0 : 1;
-            sendGestures(6, 7, getANCtoggleFunction(anc_selector_roller), 1)
-        } else if (selected_gesture == "anc_selector_button_press") {
-            var index = Array.prototype.indexOf.call(checkboxes, evt.target);
-            anc_selector_button_press[index] = anc_selector_button_press[index] == 1 ? 0 : 1;
-            sendGestures(6, 1, getANCtoggleFunction(anc_selector_button_press), 10)
-        } else if (selected_gesture == "anc_selector_button_hold") {
-            var index = Array.prototype.indexOf.call(checkboxes, evt.target);
-            anc_selector_button_hold[index] = anc_selector_button_hold[index] == 1 ? 0 : 1;
-            sendGestures(6, 7, getANCtoggleFunction(anc_selector_button_hold), 10)
-        }
-    }
+function checkboxCheck(evt, slotKey) {
+    checkboxCheckGeneric(evt, slotKey, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
-
-function setANC(typeANC) {
-    if (typeANC == 0) {
-        setAncToNC();
-    } else if (typeANC == 1) {
-        setAncToTransparent();
-    } else if (typeANC == 2) {
-        setAncToOff();
-    } else if (typeANC == 3) {
-        setAncStrengthHigh();
-    } else if (typeANC == 4) {
-        setAncStrengthMid();
-    } else if (typeANC == 5) {
-        setAncStrengthLow();
-    } else if (typeANC == 6) {
-        setAncStrengthAdaptive();
-    }
-
-    var type = 0;
-    if (ANC_type == 1) {
-        type = 2;
-    } else if (ANC_type == 2) {
-        type = 1;
-    } else if (ANC_type == 0) {
-        if (ANC_strength == 1) {
-            type = 3;
-        } else if (ANC_strength == 0) {
-            type = 4;
-        } else if (ANC_strength == 2) {
-            type = 5;
-        } else if (ANC_strength == 3) {
-            type = 6;
-        }
-    }
-    setANCDisplay(type);
-    setANC_BT(type);
-}
-
-function setAncToNC() {
-    document.getElementById("selector").style.marginLeft = "16px"
-    document.getElementById("ANC_on").style.fill = "black"
-    document.getElementById("trans_on").style.fill = "white"
-    document.getElementById("anc_off").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "100"
-
-    ANC_type = 0;
-}
-
-function setAncToTransparent() {
-    document.getElementById("selector").style.marginLeft = "112px"
-    document.getElementById("trans_on").style.fill = "black"
-    document.getElementById("ANC_on").style.fill = "white"
-    document.getElementById("anc_off").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "0"
-
-    ANC_type = 1;
-}
-
-function setAncToOff() {
-    document.getElementById("selector").style.marginLeft = "209px"
-    document.getElementById("anc_off").style.fill = "black"
-    document.getElementById("ANC_on").style.fill = "white"
-    document.getElementById("trans_on").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "0"
-
-    ANC_type = 2;
-}
-
-
-
-function setAncStrengthHigh() {
-    if (!document.getElementById("stage_one_button")) return;
-    document.getElementById("stage_one_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-left: -0.25rem !important; margin-top: -0.25rem !important;"
-    document.getElementById("stage_two_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-    document.getElementById("stage_three_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-
-    ANC_strength = 0;
-}
-
-function setAncStrengthMid() {
-    if (!document.getElementById("stage_one_button")) return;
-    document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
-    document.getElementById("stage_two_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
-    document.getElementById("stage_three_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-
-
-    ANC_strength = 2;
-}
-
-function displayANC(display) { }
-
-function setAncStrengthLow() {
-    if (!document.getElementById("stage_one_button")) return;
-    document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
-    document.getElementById("stage_two_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
-    document.getElementById("stage_three_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
-    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-
-    ANC_strength = 1;
-}
-
-function setAncStrengthAdaptive() {
-    if (!document.getElementById("stage_one_button")) return;
-    document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
-    document.getElementById("stage_two_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
-    document.getElementById("stage_three_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
-    document.getElementById("stage_four_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
-
-    ANC_strength = 3;
-}
-
-
-
-
 
 function setBattery(side, percentage) {
     if (typeof percentage == "undefined") {
@@ -482,69 +160,3 @@ function setBattery(side, percentage) {
     }
 }
 
-function setBassEnhance(state, is_send=false) {
-    console.log("setBassEnhance", state)
-    switch (state) {
-
-        case 1:
-            bass_enhance[0] = 1
-            document.getElementById("selector_bass").style.marginLeft = "65px"
-
-            document.getElementById("bass_on").style.fill = "black"
-
-            document.getElementById("bass_on").style.stroke = "black"
-
-            document.getElementById("bass_off").style.fill = "white"
-
-            document.getElementById("bass_strength_selector").style.opacity = "100"
-
-            break
-
-        case 0:
-            bass_enhance[0] = 0
-            document.getElementById("selector_bass").style.marginLeft = "160px"
-
-            document.getElementById("bass_on").style.fill = "white"
-
-            document.getElementById("bass_on").style.stroke = "white"
-
-            document.getElementById("bass_off").style.fill = "black"
-
-            document.getElementById("bass_strength_selector").style.opacity = "0"
-
-            break
-    }
-    if (is_send)
-        set_enhanced_bass(bass_enhance[0], bass_enhance[1]);
-}
-
-
-
-function setBassLevel(new_level, is_send=false) {
-    if (new_level) level = new_level
-    bass_enhance[1] = level
-    switch (level) {
-        case 1:
-            document.getElementById("bass_strength_length_selector").style.width = "12px"
-            document.getElementById("bass_level_label").innerHTML = "Level 1"
-            break
-        case 2:
-            document.getElementById("bass_strength_length_selector").style.width = "55px"
-            document.getElementById("bass_level_label").innerHTML = "Level 2"
-            break
-        case 3:
-            document.getElementById("bass_strength_length_selector").style.width = "98px"
-            document.getElementById("bass_level_label").innerHTML = "Level 3"
-            break
-        case 4:
-            document.getElementById("bass_strength_length_selector").style.width = "138px"
-            document.getElementById("bass_level_label").innerHTML = "Level 4"
-            break
-        case 5:
-            document.getElementById("bass_strength_length_selector").style.width = "180px"
-            document.getElementById("bass_level_label").innerHTML = "Level 5"
-            break
-    }
-    if (is_send)
-        set_enhanced_bass(bass_enhance[0], bass_enhance[1]);
-}

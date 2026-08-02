@@ -28,12 +28,6 @@ var current_eq;
 
 //---------------------------------------------------------------------------------//
 
-function updateIndicator(){
-    document.getElementById("eq_label_bass").innerText = custom_values[0];
-    document.getElementById("eq_label_mid").innerText = custom_values[1];
-    document.getElementById("eq_label_treble").innerText = custom_values[2];
-}
-
 function EQButtonPress(level) {
     if (level == 6) {
         setAdvancedEQenabled(true);
@@ -48,12 +42,6 @@ function EQButtonPress(level) {
         updateIndicator();
     }else document.getElementById("custom_eq_indicator").style.display = "none";
     setEQfromRead(level);
-}
-
-function setCustomEQ(array) {
-    custom_values = array;
-    setCustom();
-    updateIndicator();
 }
 
 function setEQfromRead(level) {
@@ -88,137 +76,7 @@ function setEQfromRead(level) {
     }
 }
 
-function resetOptions() {
-    options = {
-        tooltips: { enabled: false },
-        onClick: null,
-        elements: {
-            point: {
-                radius: 0
-            }
-        },
-        legend: {
-            display: false
-        },
-        responsive: true,
-        scales: {
-            xAxes: [{
-                gridLines: {
-                    display: false
-                }
-            }],
-            yAxes: [{
-                gridLines: {
-                    display: false
-                },
-                ticks: {
-                    display: false,
-                    min: 0,
-                    max: 10,
-                }
-            }],
-            x: {
-                ticks: {
-                    callback: () => ('')
-                }
-            },
-            y: {
-                display: false,
-                title: {
-                    display: false,
-                    text: 'Value'
-                },
-                suggestedMin: 0,
-                suggestedMax: 200,
-
-            },
-            events: []
-        }
-    }
-}
 resetOptions()
-
-
-function setBalanced(e) {
-    data = {
-        labels: ["", "", ""],
-        datasets: [{
-            backgroundColor: gradient,
-            label: '# of Votes',
-            data: [6, 5, 6],
-            borderWidth: 1,
-        },
-        ]
-    }
-    resetOptions();
-    drawChart(data);
-    clearButtons()
-    var buttons = document.getElementsByClassName("eq-button")
-    buttons[0].style.backgroundColor = "#ffffff";
-    buttons[0].style.color = "#000000";
-    current_eq = 0;
-}
-
-function setBass(e) {
-
-    data = {
-        labels: ["", "", ""],
-        datasets: [{
-            backgroundColor: gradient,
-            label: '# of Votes',
-            data: [10, 3, 4],
-            borderWidth: 1,
-        },
-        ]
-    }
-    resetOptions();
-    drawChart(data);
-    clearButtons()
-    var buttons = document.getElementsByClassName("eq-button")
-    buttons[1].style.backgroundColor = "#ffffff";
-    buttons[1].style.color = "#000000";
-    current_eq = 1;
-}
-
-function setTreble(e) {
-    data = {
-        labels: ["", "", ""],
-        datasets: [{
-            backgroundColor: gradient,
-            label: '# of Votes',
-            data: [3, 3, 10],
-            borderWidth: 1,
-        },
-        ]
-    }
-    resetOptions();
-    drawChart(data);
-    clearButtons()
-    var buttons = document.getElementsByClassName("eq-button")
-    buttons[2].style.backgroundColor = "#ffffff";
-    buttons[2].style.color = "#000000";
-    current_eq = 2;
-}
-
-function setVoice(e) {
-    data = {
-        labels: ["", "", ""],
-        datasets: [{
-            backgroundColor: gradient,
-            label: '# of Votes',
-            data: [3, 10, 3],
-            borderWidth: 1,
-        },
-        ]
-    }
-    resetOptions();
-    drawChart(data);
-    clearButtons()
-    var buttons = document.getElementsByClassName("eq-button")
-    buttons[3].style.backgroundColor = "#ffffff";
-    buttons[3].style.color = "#000000";
-    current_eq = 3;
-}
 
 function setAdvanced(e) {
     data = {

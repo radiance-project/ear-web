@@ -94,89 +94,54 @@ var intro_timeout2;
 }, 500)
 */
 
-function updateGesturesFromArray(array) {
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].gestureDevice == 2) {
-            //LEFT
-            if (array[i].gestureType == 2) {
-                if (array[i].gestureAction == 8) {
-                    left_double_pinch_current = double_pinch[0];
-                } else if (array[i].gestureAction == 9) {
-                    left_double_pinch_current = double_pinch[1];
-                } else if (array[i].gestureAction == 11) {
-                    left_double_pinch_current = double_pinch[2];
-                }
-            } else if (array[i].gestureType == 3) {
-                //triple tap
-                if (array[i].gestureAction == 8) {
-                    left_triple_pinch_current = triple_pinch[0];
-                } else if (array[i].gestureAction == 9) {
-                    left_triple_pinch_current = triple_pinch[1];
-                } else if (array[i].gestureAction == 11) {
-                    left_triple_pinch_current = triple_pinch[2];
-                }
-            } else if (array[i].gestureType == 7) {
-                //tap and hold
-                if (array[i].gestureAction == 18) {
-                    left_pinch_and_hold_current = pinch_and_hold[0];
-                } else if (array[i].gestureAction == 19) {
-                    left_pinch_and_hold_current = pinch_and_hold[1];
-                } else if (array[i].gestureAction == 11) {
-                    left_pinch_and_hold_current = pinch_and_hold[2];
-                }
-            } else if (array[i].gestureType == 9) {
-                if (array[i].gestureAction == 18) {
-                    left_double_pinch_and_hold_current = double_pinch_and_hold[0];
-                } else if (array[i].gestureAction == 19) {
-                    left_double_pinch_and_hold_current = double_pinch_and_hold[1];
-                } else if (array[i].gestureAction == 11) {
-                    left_double_pinch_and_hold_current = double_pinch_and_hold[2];
-                } else if (array[i].gestureAction == 1) {
-                    left_double_pinch_and_hold_current = double_pinch_and_hold[3];
-                }
-            }
-        } else if (array[i].gestureDevice == 3) {
-            //RIGHT
-            if (array[i].gestureType == 2) {
-                if (array[i].gestureAction == 8) {
-                    right_double_pinch_current = double_pinch[0];
-                } else if (array[i].gestureAction == 9) {
-                    right_double_pinch_current = double_pinch[1];
-                } else if (array[i].gestureAction == 11) {
-                    right_double_pinch_current = double_pinch[2];
-                }
-            } else if (array[i].gestureType == 3) {
-                //triple tap
-                if (array[i].gestureAction == 8) {
-                    right_triple_pinch_current = triple_pinch[0];
-                } else if (array[i].gestureAction == 9) {
-                    right_triple_pinch_current = triple_pinch[1];
-                } else if (array[i].gestureAction == 11) {
-                    right_triple_pinch_current = triple_pinch[2];
-                }
-            } else if (array[i].gestureType == 7) {
-                //tap and hold
-                if (array[i].gestureAction == 18) {
-                    right_pinch_and_hold_current = pinch_and_hold[0];
-                } else if (array[i].gestureAction == 19) {
-                    right_pinch_and_hold_current = pinch_and_hold[1];
-                } else if (array[i].gestureAction == 11) {
-                    right_pinch_and_hold_current = pinch_and_hold[2];
-                }
-            } else if (array[i].gestureType == 9) {
-                if (array[i].gestureAction == 18) {
-                    right_double_pinch_and_hold_current = double_pinch_and_hold[0];
-                } else if (array[i].gestureAction == 19) {
-                    right_double_pinch_and_hold_current = double_pinch_and_hold[1];
-                } else if (array[i].gestureAction == 11) {
-                    right_double_pinch_and_hold_current = double_pinch_and_hold[2];
-                } else if (array[i].gestureAction == 1) {
-                    right_double_pinch_and_hold_current = double_pinch_and_hold[3];
-                }
-            }
+var GESTURE_TOPOLOGY = {
+    sides: ["l", "r"],
+    deviceCodes: { l: 2, r: 3 },
+    sidePrefixes: { l: "left", r: "right" },
+    varPrefix: true,
+};
 
-        }
-    }
+var GESTURE_SLOTS = [
+    {
+        key: "double_pinch",
+        type: "double",
+        sendType: 2,
+        options: double_pinch,
+        actionToIndex: { 8: 0, 9: 1, 11: 2 },
+        subtitleId: "settings_subtitle_double",
+        loadSuffix: "<br />Decline incoming calls</div>",
+        changeSuffix: "<br />Decline incoming call",
+    },
+    {
+        key: "triple_pinch",
+        type: "triple",
+        sendType: 3,
+        options: triple_pinch,
+        actionToIndex: { 8: 0, 9: 1, 11: 2 },
+        subtitleId: "settings_subtitle_triple",
+    },
+    {
+        key: "pinch_and_hold",
+        type: "pinch_and_hold",
+        sendType: 7,
+        options: pinch_and_hold,
+        actionToIndex: { 18: 0, 19: 1, 11: 2 },
+        subtitleId: "settings_subtitle_pinch_and_hold",
+        neverCloseOnChange: true,
+    },
+    {
+        key: "double_pinch_and_hold",
+        type: "double_pinch_and_hold",
+        sendType: 9,
+        options: double_pinch_and_hold,
+        actionToIndex: { 18: 0, 19: 1, 11: 2, 1: 3 },
+        subtitleId: "settings_subtitle_double_pinch_and_hold",
+        neverCloseOnChange: true,
+    },
+];
+
+function updateGesturesFromArray(records) {
+    applyGestureRecords(records, GESTURE_TOPOLOGY, GESTURE_SLOTS);
     loadCurrentGestures(current_side, false);
 }
 
@@ -184,158 +149,12 @@ function loadCurrentGestures(side, refresh = true) {
     if (refresh) {
         sendGetGesture();
     }
-    current_side = side
-    //LOAD ALL VALUES BASED ON CURRENT SIDE
-    if (side == "l") {
-        document.getElementById("settings_subtitle_triple").innerHTML = left_triple_pinch_current;
-        document.getElementById("settings_subtitle_pinch_and_hold").innerHTML = left_pinch_and_hold_current;
-        document.getElementById("settings_subtitle_double_pinch_and_hold").innerHTML = left_double_pinch_and_hold_current;
-        document.getElementById("settings_subtitle_double").innerHTML = left_double_pinch_current + "<br />Decline incoming calls</div>";
-    } else if (side == "r") {
-        document.getElementById("settings_subtitle_triple").innerHTML = right_triple_pinch_current;
-        document.getElementById("settings_subtitle_pinch_and_hold").innerHTML = right_pinch_and_hold_current;
-        document.getElementById("settings_subtitle_double_pinch_and_hold").innerHTML = right_double_pinch_and_hold_current;
-        document.getElementById("settings_subtitle_double").innerHTML = right_double_pinch_current + "<br />Decline incoming calls</div>";
-    }
-
+    current_side = side;
+    loadCurrentGesturesGeneric(side, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
 function changeGesture(type) {
-    if (type == "double") {
-        var show_popup = "";
-        for (var i = 0; i < double_pinch.length; i++) {
-            show_popup += `
-            <option id="${double_pinch[i]}" ${current_side == "l" ? left_double_pinch_current == double_pinch[i] ? "selected" : "" : right_double_pinch_current == double_pinch[i] ? "selected" : ""}>
-                ${double_pinch[i]}
-            </option>
-           `
-        }
-        displayPopUp(show_popup)
-        document.getElementById("list_container").addEventListener("change", function (e) {
-            document.getElementById("settings_subtitle_double").innerHTML = document.getElementById("list_container").value + "<br />Decline incoming call"
-            if (current_side == "l") {
-                left_double_pinch_current = document.getElementById("list_container").value;
-                var index = double_pinch.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 8;
-                else if (index == 1) operation = 9;
-                else if (index == 2) operation = 11;
-                sendGestures(2, 2, operation)
-            }
-            if (current_side == "r") {
-                right_double_pinch_current = document.getElementById("list_container").value;
-                var index = double_pinch.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 8;
-                else if (index == 1) operation = 9;
-                else if (index == 2) operation = 11;
-                sendGestures(3, 2, operation)
-            }
-            document.getElementById("list_container").removeEventListener("change", () => { })
-            closePopUp()
-        })
-    } else if (type == "triple") {
-        var show_popup = "";
-        for (var i = 0; i < triple_pinch.length; i++) {
-            show_popup += `
-            <option id="${triple_pinch[i]}" ${current_side == "l" ? left_triple_pinch_current == triple_pinch[i] ? "selected" : "" : right_triple_pinch_current == triple_pinch[i] ? "selected" : ""}>
-                ${triple_pinch[i]}
-            </option>
-           `
-        }
-        displayPopUp(show_popup)
-        document.getElementById("list_container").addEventListener("change", function (e) {
-            document.getElementById("settings_subtitle_triple").innerHTML = document.getElementById("list_container").value
-            if (current_side == "l") {
-                left_triple_pinch_current = document.getElementById("list_container").value;
-                var index = triple_pinch.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 8;
-                else if (index == 1) operation = 9;
-                else if (index == 2) operation = 11;
-                sendGestures(2, 3, operation)
-            }
-            if (current_side == "r") {
-                right_triple_pinch_current = document.getElementById("list_container").value;
-                var index = triple_pinch.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 8;
-                else if (index == 1) operation = 9;
-                else if (index == 2) operation = 11;
-                sendGestures(3, 3, operation)
-            }
-            document.getElementById("list_container").removeEventListener("change", () => { })
-            closePopUp()
-        })
-    } else if (type == "double_pinch_and_hold") {
-        var show_popup = "";
-        for (var i = 0; i < double_pinch_and_hold.length; i++) {
-            show_popup += `
-            <option id="${double_pinch_and_hold[i]}" ${current_side == "l" ? left_double_pinch_and_hold_current == double_pinch_and_hold[i] ? "selected" : "" : right_double_pinch_and_hold_current == double_pinch_and_hold[i] ? "selected" : ""}>
-                ${double_pinch_and_hold[i]}
-            </option>
-           `
-        }
-
-        displayPopUp(show_popup)
-        document.getElementById("list_container").addEventListener("change", function (e) {
-            document.getElementById("settings_subtitle_double_pinch_and_hold").innerHTML = document.getElementById("list_container").value
-            if (current_side == "l") {
-                left_double_pinch_and_hold_current = document.getElementById("list_container").value;
-                var index = double_pinch_and_hold.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 18;
-                else if (index == 1) operation = 19;
-                else if (index == 2) operation = 11;
-                else if (index == 3) operation = 1;
-                sendGestures(2, 9, operation)
-            }
-            if (current_side == "r") {
-                right_double_pinch_and_hold_current = document.getElementById("list_container").value;
-                var index = double_pinch_and_hold.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 18;
-                else if (index == 1) operation = 19;
-                else if (index == 2) operation = 11;
-                else if (index == 3) operation = 1;
-                sendGestures(3, 9, operation)
-            }
-            document.getElementById("list_container").removeEventListener("change", () => { })
-        })
-    } else if (type == "pinch_and_hold") {
-        var show_popup = "";
-        for (var i = 0; i < pinch_and_hold.length; i++) {
-            show_popup += `
-            <option id="${pinch_and_hold[i]}" ${current_side == "l" ? left_pinch_and_hold_current == pinch_and_hold[i] ? "selected" : "" : right_pinch_and_hold_current == pinch_and_hold[i] ? "selected" : ""}>
-                ${pinch_and_hold[i]}
-            </option>
-           `
-        }
-
-        displayPopUp(show_popup)
-        document.getElementById("list_container").addEventListener("change", function (e) {
-            document.getElementById("settings_subtitle_pinch_and_hold").innerHTML = document.getElementById("list_container").value
-            if (current_side == "l") {
-                left_pinch_and_hold_current = document.getElementById("list_container").value;
-                var index = pinch_and_hold.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 18;
-                else if (index == 1) operation = 19;
-                else if (index == 2) operation = 11;
-                sendGestures(2, 7, operation)
-            }
-            if (current_side == "r") {
-                right_pinch_and_hold_current = document.getElementById("list_container").value;
-                var index = pinch_and_hold.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 18;
-                else if (index == 1) operation = 19;
-                else if (index == 2) operation = 11;
-                sendGestures(3, 7, operation)
-            }
-            document.getElementById("list_container").removeEventListener("change", () => { })
-        })
-    }
+    renderGestureChangePopup(type, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
 
@@ -362,8 +181,6 @@ function setAncStrengthMid() {
 
 }
 
-function displayANC(display) { }
-
 function setAncStrengthLow() {
 
 }
@@ -372,28 +189,3 @@ function setAncStrengthAdaptive() {
 
 }
 
-function setBattery(side, percentage) {
-    if (typeof percentage == "undefined") {
-        percentage = "DISCONNECTED";
-    }
-    if (side == "l") {
-        document.getElementById("left_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
-        document.getElementById("left_ear").style.zIndex = percentage == "DISCONNECTED" ? "-1" : "1";
-        document.getElementById("battery-l").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery_bar_l").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery-l").innerHTML = percentage + "% L";
-        document.getElementById("battery_bar_fill_l").style.width = percentage + "%";
-    } else if (side == "r") {
-        document.getElementById("right_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
-        document.getElementById("right_ear").style.zIndex = percentage == "DISCONNECTED" ? "-1" : "1";
-        document.getElementById("battery-r").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery_bar_r").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery-r").innerHTML = percentage + "% R";
-        document.getElementById("battery_bar_fill_r").style.width = percentage + "%";
-    } else if (side == "c") {
-        document.getElementById("battery-c").innerHTML = percentage == "DISCONNECTED" ? percentage : percentage + "% CASE";
-        document.getElementById("case_ear").style.opacity = percentage == "DISCONNECTED" ? "0.5" : "1";
-        document.getElementById("battery_bar_fill_c").style.opacity = percentage == "DISCONNECTED" ? "0" : "1";
-        document.getElementById("battery_bar_fill_c").style.width = percentage + "%";
-    }
-}

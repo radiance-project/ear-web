@@ -75,151 +75,48 @@ intro_timeout = setTimeout(() => {
     }, 2000)
 }, 500)
 
-function updateGesturesFromArray(array) {
-    for (var i = 0; i < array.length; i++) {
-        if (array[i].gestureDevice == 2) {
-            //LEFT
-            if (array[i].gestureType == 3) {
-                //triple tap
-                if (array[i].gestureAction == 8) {
-                    left_triple_tap_current = triple_tap[0];
-                } else if (array[i].gestureAction == 9) {
-                    left_triple_tap_current = triple_tap[1];
-                } else if (array[i].gestureAction == 11) {
-                    left_triple_tap_current = triple_tap[2];
-                } else if (array[i].gestureAction == 1) {
-                    left_triple_tap_current = triple_tap[3];
-                }
-            } else if (array[i].gestureType == 7) {
-                //tap and hold
-                if (array[i].gestureAction == 10) {
-                    left_tap_and_hold_current = tap_and_hold[0];
-                } else if (array[i].gestureAction == 1) {
-                    left_tap_and_hold_current = tap_and_hold[1];
-                }
-            }
-        } else if (array[i].gestureDevice == 3) {
-            //RIGHT
-            if (array[i].gestureType == 3) {
-                //triple tap
-                if (array[i].gestureAction == 8) {
-                    right_triple_tap_current = triple_tap[0];
-                } else if (array[i].gestureAction == 9) {
-                    right_triple_tap_current = triple_tap[1];
-                } else if (array[i].gestureAction == 11) {
-                    right_triple_tap_current = triple_tap[2];
-                } else if (array[i].gestureAction == 1) {
-                    right_triple_tap_current = triple_tap[3];
-                }
-            } else if (array[i].gestureType == 7) {
-                //tap and hold
-                if (array[i].gestureAction == 10) {
-                    right_tap_and_hold_current = tap_and_hold[0];
-                } else if (array[i].gestureAction == 1) {
-                    right_tap_and_hold_current = tap_and_hold[1];
-                }
-            }
-            
-        }
-    }
+var GESTURE_TOPOLOGY = {
+    sides: ["l", "r"],
+    deviceCodes: { l: 2, r: 3 },
+    sidePrefixes: { l: "left", r: "right" },
+    varPrefix: true,
+};
+
+var GESTURE_SLOTS = [
+    {
+        key: "triple_tap",
+        type: "triple",
+        sendType: 3,
+        options: triple_tap,
+        actionToIndex: { 8: 0, 9: 1, 11: 2, 1: 3 },
+        subtitleId: "settings_subtitle_triple",
+    },
+    {
+        key: "tap_and_hold",
+        type: "hold",
+        sendType: 7,
+        options: tap_and_hold,
+        actionToIndex: { 10: 0, 1: 1 },
+        subtitleId: "settings_subtitle_hold",
+        loadSuffix: "<br />Decline incoming call",
+        changeSuffix: "<br />Decline incoming call",
+    },
+];
+
+function updateGesturesFromArray(records) {
+    applyGestureRecords(records, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
 function loadCurrentGestures(side) {
-    sendGetGesture()
-        current_side = side
-        //LOAD ALL VALUES BASED ON CURRENT SIDE
-        if (side == "l") {
-            document.getElementById("settings_subtitle_triple").innerHTML = left_triple_tap_current;
-            document.getElementById("settings_subtitle_hold").innerHTML = left_tap_and_hold_current + "<br />Decline incoming call";
-        } else if (side == "r") {
-            document.getElementById("settings_subtitle_hold").innerHTML = right_tap_and_hold_current + "<br />Decline incoming call";
-            document.getElementById("settings_subtitle_triple").innerHTML = right_triple_tap_current;
-        }
+    sendGetGesture();
+    current_side = side;
+    loadCurrentGesturesGeneric(side, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
 function changeGesture(type) {
-    if (type == "triple") {
-        //GET ARRAY POSITION OF CONTENT OF settings_subtitle_triple and replace it with next element in array
-        var current_gesture = document.getElementById("settings_subtitle_triple").innerHTML;
-       
-        //GENERTE A LIST WITH ALL POSSIBLE GESTURES FROM triple_TAB IN HTML AND MAKE THEM SELECTABLE
-        var show_popup = "";
-        for(var i = 0; i < triple_tap.length; i++) {
-           show_popup += `
-            <option id="${triple_tap[i]}" ${current_side == "l" ? left_triple_tap_current == triple_tap[i] ? "selected" : "" : right_triple_tap_current == triple_tap[i] ? "selected" : ""}>
-                ${triple_tap[i]}
-            </option>
-           `
-        }
-        displayPopUp(show_popup)
-
-        document.getElementById("list_container").addEventListener("change", function(e) {
-            document.getElementById("settings_subtitle_triple").innerHTML = document.getElementById("list_container").value
-            if (current_side == "l") {
-                left_triple_tap_current = document.getElementById("list_container").value;
-                //get index of current gesture
-                var index = triple_tap.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 8;
-                else if (index == 1) operation = 9;
-                else if (index == 2) operation = 11;
-                else if (index == 3) operation = 1;
-                sendGestures(2, 3, operation)
-            }
-            if (current_side == "r") {
-                right_triple_tap_current = document.getElementById("list_container").value;
-                var index = triple_tap.indexOf(document.getElementById("list_container").value);
-                var operation = 0;
-                if (index == 0) operation = 8;
-                else if (index == 1) operation = 9;
-                else if (index == 2) operation = 11;
-                else if (index == 3) operation = 1;
-                sendGestures(3, 3, operation)  
-            }
-            document.getElementById("list_container").removeEventListener("change", () => { })
-            closePopUp()
-        })
-    } else if (type == "hold") {
-                //GET ARRAY POSITION OF CONTENT OF settings_subtitle_triple and replace it with next element in array
-                var current_gesture = document.getElementById("settings_subtitle_triple").innerHTML;
-               
-                //GENERTE A LIST WITH ALL POSSIBLE GESTURES FROM triple_TAB IN HTML AND MAKE THEM SELECTABLE
-                var show_popup = "";
-                for(var i = 0; i < tap_and_hold.length; i++) {
-                   show_popup += `
-                    <option id="${tap_and_hold[i]}" ${current_side == "l" ? left_tap_and_hold_current == tap_and_hold[i] ? "selected" : "" : right_tap_and_hold_current == tap_and_hold[i] ? "selected" : ""}>
-                        ${tap_and_hold[i]}
-                    </option>
-                   `
-                }
-                displayPopUp(show_popup)
-        
-                document.getElementById("list_container").addEventListener("change", function(e) {
-                    document.getElementById("settings_subtitle_hold").innerHTML = document.getElementById("list_container").value +"<br />Decline incoming call"
-                    if (current_side == "l") {
-                        left_tap_and_hold_current = document.getElementById("list_container").value;
-                        //get index of current gesture
-                        var index = tap_and_hold.indexOf(document.getElementById("list_container").value);
-                        var operation = 0;
-                        if (index == 0) operation = 10;
-                        else if (index == 1) operation = 1;
-                        sendGestures(2, 7, operation)
-                    }
-                    if (current_side == "r") {
-                        right_tap_and_hold_current = document.getElementById("list_container").value;
-                        var index = tap_and_hold.indexOf(document.getElementById("list_container").value);
-                        var operation = 0;
-                        if (index == 0) operation = 10;
-                        else if (index == 1) operation = 1;
-                        sendGestures(3, 7, operation)
-                    }
-                    document.getElementById("list_container").removeEventListener("change", () => {})
-                    closePopUp()
-                })
-    }
+    renderGestureChangePopup(type, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
-function displayANC(display) { }
 function setANC(typeANC) {
     switch (typeANC) {
         case 0:
@@ -251,39 +148,6 @@ function setANC(typeANC) {
     setANCDisplay(type);
     setANC_BT(type);
 }
-
-
-function setAncToNC() {
-    document.getElementById("selector").style.marginLeft = "16px"
-    document.getElementById("ANC_on").style.fill = "black"
-    document.getElementById("trans_on").style.fill = "white"
-    document.getElementById("anc_off").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "100"
-
-    ANC_type = 0;
-}
-
-function setAncToTransparent() {
-    document.getElementById("selector").style.marginLeft = "112px"
-    document.getElementById("trans_on").style.fill = "black"
-    document.getElementById("ANC_on").style.fill = "white"
-    document.getElementById("anc_off").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "0"
-
-    ANC_type = 1;
-}
-
-function setAncToOff() {
-    document.getElementById("selector").style.marginLeft = "209px"
-    document.getElementById("anc_off").style.fill = "black"
-    document.getElementById("ANC_on").style.fill = "white"
-    document.getElementById("trans_on").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "0"
-
-    ANC_type = 2;
-}
-
-
 
 function setAncStrengthLow() {
     if (!document.getElementById("stage_one_button")) return;

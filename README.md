@@ -27,6 +27,17 @@ This website is compatible with the following devices:
  - Find my Earbuds 
  - Case Battery Status LED (Ear (1) only)
  
+## Development
+
+Chart.js and the Chart.js drag-data plugin are vendored under `res/js/vendor/` (no CDN dependency). Tailwind CSS is compiled to a static stylesheet at `res/tailwind.css` instead of using the Tailwind CDN JIT compiler at runtime.
+
+If you add new Tailwind classes to any file under `res/`, rebuild the stylesheet before committing:
+```
+npm install
+npm run build:css
+```
+`npm run watch:css` will rebuild on save while developing.
+
 ## Credits and Acknowledgements
 - RapidZapper for the idea and backend work
 - [Bendix](https://www.mrbrickstar.de/) for the frontend work 
