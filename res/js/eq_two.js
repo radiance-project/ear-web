@@ -30,6 +30,11 @@ var current_eq;
 
 function EQButtonPress(level) {
     if (level == 6) {
+        if (typeof isSpatialAudioEqExclusive === "function" && isSpatialAudioEqExclusive()
+            && typeof currentSpatialAudioMode !== "undefined" && currentSpatialAudioMode !== 0) {
+            showMutuallyExclusiveWarning("Advanced EQ", "Spatial Audio");
+            return;
+        }
         setAdvancedEQenabled(true);
     }
     else {

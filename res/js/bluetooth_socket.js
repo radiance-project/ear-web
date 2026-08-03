@@ -226,6 +226,18 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 if (command === 16425) {
                     readHighQualityAudio(rawData);
                 }
+                if (command === 16463) {
+                    readSpatialAudio(rawData);
+                }
+                if (command === 16418) {
+                    readMimiEnable(rawData);
+                }
+                if (command === 16474) {
+                    readAudiodoProfileOn(rawData);
+                }
+                if (command === 57369) {
+                    readAudiodoStatusPush(rawData);
+                }
 
                 if (operationID >= 250) {
                     operationID = 1;
@@ -377,7 +389,8 @@ function read_advanced_eq_status(hexString)
     let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
     let advancedStatus = hexArray[8];
     console.log("advancedEQ " + advancedStatus);
-    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170") { 
+    advancedEQEnabled = advancedStatus === 1;
+    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170") {
         if (advancedStatus === 1) {
             setEQfromRead(6);
         }
@@ -419,8 +432,29 @@ function setListeningMode(level) {
     send(61469, byteArray, "setListeningMode");
 }
 
+// On models flagged "mutuallyExclusive", Spatial Audio and {Bass Enhance, Advanced EQ}
+// can't be active at the same time (confirmed via the native app's eqMutuallyExclusive()/
+// spaceEqExclusive() capability checks, gating a shared "mutuallyExclusive" BT command
+// the EQ screen subscribes to). Enabling either side while the other is active is blocked.
+let bassEnhanceEnabled = false;
+let advancedEQEnabled = false;
+
+function isSpatialAudioEqExclusive() {
+    return !!(modelSpecs && modelSpecs.mutuallyExclusive);
+}
+
+function showMutuallyExclusiveWarning(blockedFeature, activeFeature) {
+    showWarningPopup(`
+        <div class="w-fit flex m-auto text-md mb-2 mt-2 text-white text-center">Attention</div>
+        <div class="text-gray-400 text-sm text-center mb-4" style="width: 250px;">${blockedFeature} is not available when ${activeFeature} is activated.</div>
+        <div class="flex justify-center mt-4">
+            <button class="p-2 pl-6 pr-6 bg-black border-none border-[1px] text-white rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300" onclick="closePopUp()">Okay</button>
+        </div>`);
+}
+
 function set_enhanced_bass(enabled, level) {
     if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B164") {
+        bassEnhanceEnabled = !!enabled;
         level *= 2;
         let byteArray = [0x00, 0x00];
         if (enabled) {
@@ -442,6 +476,7 @@ function read_enhanced_bass(hexString) {
         let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
         let enabled = hexArray[8];
         let level = hexArray[9];
+        bassEnhanceEnabled = enabled === 1;
         setBassEnhance(enabled);
         setBassLevel(level / 2);
     }
@@ -453,6 +488,7 @@ function getAdvancedEQ()
 }
 
 function setAdvancedEQenabled(enabled) {
+    advancedEQEnabled = !!enabled;
     let byteArray = [0x00, 0x00];
     if (enabled) {
         byteArray[0] = 0x01;
@@ -759,6 +795,8 @@ async function getConfigForFirmware() {
             console.log(modelSpecs);
             initDualConnectionIfSupported();
             initAudioCodecIfSupported();
+            initSpatialAudioIfSupported();
+            initPersonalSoundProfileIfSupported();
             return true;
         }
         
@@ -781,6 +819,8 @@ async function getConfigForFirmware() {
                     configFound = true;
                     initDualConnectionIfSupported();
                     initAudioCodecIfSupported();
+                    initSpatialAudioIfSupported();
+                    initPersonalSoundProfileIfSupported();
                     break;
                 }
             } catch (versionError) {
@@ -1113,5 +1153,127 @@ function setHighQualityAudio_BT(index) {
     send(61468, [index], "setHighQualityAudio");
     if (typeof renderAudioCodecUI === "function") {
         renderAudioCodecUI();
+    }
+}
+
+const SPATIAL_AUDIO_MODES = [
+    { name: "Off", bit: null, mode: 0, head: 0 },
+    { name: "Head Tracked", bit: 0x1, mode: 1, head: 1 },
+    { name: "Fixed", bit: 0x2, mode: 1, head: 0 },
+    { name: "Concert", bit: 0x8, mode: 2, head: 0 },
+    { name: "Theatre", bit: 0x10, mode: 3, head: 0 },
+    { name: "Game", bit: 0x20, mode: 4, head: 0 },
+];
+let currentSpatialAudioMode = 0;
+
+function initSpatialAudioIfSupported() {
+    if (!(modelSpecs && modelSpecs.spatialAudio)) {
+        return;
+    }
+    if (typeof injectSpatialAudioUI === "function") {
+        injectSpatialAudioUI();
+    }
+    getSpatialAudio();
+}
+
+function getSpatialAudio() {
+    if (modelSpecs && modelSpecs.spatialAudio) {
+        send(49231, [], "getSpatialAudio");
+    }
+}
+
+function spatialAudioIndexFromWire(mode, head) {
+    if (head === 1) {
+        return 1; // Head Tracked
+    }
+    for (let i = 0; i < SPATIAL_AUDIO_MODES.length; i++) {
+        if (SPATIAL_AUDIO_MODES[i].head === 0 && SPATIAL_AUDIO_MODES[i].mode === mode) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+function readSpatialAudio(hexArray) {
+    let mode = hexArray.length > 8 ? hexArray[8] : 0;
+    let head = hexArray.length > 9 ? hexArray[9] : 0;
+    currentSpatialAudioMode = spatialAudioIndexFromWire(mode, head);
+    if (typeof renderSpatialAudioUI === "function") {
+        renderSpatialAudioUI();
+    }
+}
+
+function setSpatialAudio_BT(index) {
+    currentSpatialAudioMode = index;
+    let entry = SPATIAL_AUDIO_MODES[index];
+    send(61522, [entry.mode, entry.head], "setSpatialAudio");
+    if (typeof renderSpatialAudioUI === "function") {
+        renderSpatialAudioUI();
+    }
+}
+
+let personalSoundProfileEnabled = false;
+
+function personalSoundProfileBackend() {
+    if (modelSpecs && modelSpecs.mimi) {
+        return "mimi";
+    }
+    if (modelSpecs && modelSpecs.audiodo) {
+        return "audiodo";
+    }
+    return null;
+}
+
+function initPersonalSoundProfileIfSupported() {
+    let backend = personalSoundProfileBackend();
+    if (!backend) {
+        return;
+    }
+    if (typeof injectPersonalSoundProfileUI === "function") {
+        injectPersonalSoundProfileUI();
+    }
+    getPersonalSoundProfile();
+}
+
+function getPersonalSoundProfile() {
+    let backend = personalSoundProfileBackend();
+    if (backend === "mimi") {
+        send(49186, [], "getMimiEnable");
+    } else if (backend === "audiodo") {
+        send(49242, [], "getAudiodoProfileOn");
+    }
+}
+
+function readMimiEnable(hexArray) {
+    personalSoundProfileEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    if (typeof setPersonalSoundProfileCheckbox === "function") {
+        setPersonalSoundProfileCheckbox(personalSoundProfileEnabled);
+    }
+}
+
+function readAudiodoProfileOn(hexArray) {
+    personalSoundProfileEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    if (typeof setPersonalSoundProfileCheckbox === "function") {
+        setPersonalSoundProfileCheckbox(personalSoundProfileEnabled);
+    }
+}
+
+function readAudiodoStatusPush(hexArray) {
+    if (personalSoundProfileBackend() !== "audiodo") {
+        return;
+    }
+    personalSoundProfileEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    if (typeof setPersonalSoundProfileCheckbox === "function") {
+        setPersonalSoundProfileCheckbox(personalSoundProfileEnabled);
+    }
+}
+
+function setPersonalSoundProfile_BT(enabled) {
+    let backend = personalSoundProfileBackend();
+    personalSoundProfileEnabled = enabled;
+    if (backend === "mimi") {
+        send(61461, [enabled ? 1 : 0], "setMimiEnable");
+    } else if (backend === "audiodo") {
+        send(61532, [enabled ? 1 : 0], "setAudiodoProfileOn");
     }
 }

@@ -165,6 +165,11 @@ function getANCtoggleFunction(ancList) {
 // default implementation (no per-model overrides)
 function setBassEnhance(state, is_send=false) {
     console.log("setBassEnhance", state)
+    if (is_send && state === 1 && typeof isSpatialAudioEqExclusive === "function" && isSpatialAudioEqExclusive()
+        && typeof currentSpatialAudioMode !== "undefined" && currentSpatialAudioMode !== 0) {
+        showMutuallyExclusiveWarning("Bass Enhance", "Spatial Audio");
+        return;
+    }
     switch (state) {
 
         case 1:
