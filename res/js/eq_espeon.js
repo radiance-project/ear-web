@@ -13,6 +13,15 @@ var custom_values = [0, 0, 0];
 var current_eq;
 
 function EQButtonPress(level, pos) {
+    if (level == 0 && typeof isLdacOpteoExclusive === "function" && isLdacOpteoExclusive()) {
+        showWarningPopup(`
+            <div class="w-fit flex m-auto text-md mb-2 mt-2 text-white text-center">Attention</div>
+            <div class="text-gray-400 text-sm text-center mb-4" style="width: 250px;">Dirac Opteo is not available when LDAC is activated.</div>
+            <div class="flex justify-center mt-4">
+                <button class="p-2 pl-6 pr-6 bg-black border-none border-[1px] text-white rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300" onclick="closePopUp()">Okay</button>
+            </div>`);
+        return;
+    }
     setListeningMode(level);
     if (level == 6) {
         getCustomEQ();

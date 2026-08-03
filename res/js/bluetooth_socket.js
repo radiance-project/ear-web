@@ -107,7 +107,9 @@ function setModelBase() {
     modelBase = modelBase.base;
 }
 
-async function connectSPP(sppPort=null) {
+const REBOOT_RECONNECT_MAX_RETRIES = 6;
+
+async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
     const SPP_UUID = "aeac4a03-dff5-498f-843a-34487cf133eb";
     const FASTPAIR_UUID = "df21fe2c-2515-4fdb-8886-f12c4d67927c";
     if (sppPort === null) {
@@ -119,7 +121,28 @@ async function connectSPP(sppPort=null) {
     if (sppPort) {
         console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
 
-        await sppPort.open({ baudRate: 9600, bufferSize: 2048 });
+        try {
+            await sppPort.open({ baudRate: 9600, bufferSize: 2048 });
+        } catch (openError) {
+            console.error("Failed to open serial port:", openError);
+            if (isRebootRetry && retryCount < REBOOT_RECONNECT_MAX_RETRIES) {
+                console.log(`Device not back yet after reboot, retrying (${retryCount + 1}/${REBOOT_RECONNECT_MAX_RETRIES}) in 5s`);
+                try {
+                    await sppPort.close();
+                } catch (closeError) {
+                    console.error("Failed to close serial port before retry:", closeError);
+                }
+                setTimeout(() => connectSPP(sppPort, true, retryCount + 1), 5000);
+                return;
+            }
+            if (isRebootRetry) {
+                console.error("Device did not come back after reboot, giving up");
+                rebootPopupShown = false;
+                window.location.href = "index.html";
+                return;
+            }
+            throw openError;
+        }
         //on disconnect serial
         setModelBase();
         SPPsocket = sppPort;
@@ -200,6 +223,9 @@ async function connectSPP(sppPort=null) {
                 if (command === 57358) {
                     readDualDeviceEvent(rawData);
                 }
+                if (command === 16425) {
+                    readHighQualityAudio(rawData);
+                }
 
                 if (operationID >= 250) {
                     operationID = 1;
@@ -222,10 +248,10 @@ async function connectSPP(sppPort=null) {
                 console.error("Failed to close serial port:", closeError);
             }
             SPPsocket = null;
-            if (awaitingDualConnectReboot) {
-                awaitingDualConnectReboot = false;
-                console.log("Disconnected for dual-connect reboot, reattempting in 10s");
-                setTimeout(() => connectSPP(sppPort), 10000);
+            if (awaitingReboot) {
+                awaitingReboot = false;
+                console.log("Disconnected for reboot, reattempting in 10s");
+                setTimeout(() => connectSPP(sppPort, true), 10000);
             } else {
                 window.location.href = "index.html";
             }
@@ -732,6 +758,7 @@ async function getConfigForFirmware() {
             modelSpecs = configs[0];
             console.log(modelSpecs);
             initDualConnectionIfSupported();
+            initAudioCodecIfSupported();
             return true;
         }
         
@@ -753,6 +780,7 @@ async function getConfigForFirmware() {
                     console.log(modelSpecs);
                     configFound = true;
                     initDualConnectionIfSupported();
+                    initAudioCodecIfSupported();
                     break;
                 }
             } catch (versionError) {
@@ -910,10 +938,28 @@ function sendGestures(device, typeog, action, typebutton=0x01) {
 let dualConnectEnabled = false;
 let dualConnectList = [];
 
-let awaitingDualConnectReboot = false;
+let awaitingReboot = false;
+let rebootPopupShown = false;
 
-function prepareForDualConnectReboot() {
-    awaitingDualConnectReboot = true;
+function prepareForReboot() {
+    awaitingReboot = true;
+}
+
+function showRebootingPopup() {
+    rebootPopupShown = true;
+    document.getElementById("popup_container").style.opacity = "100";
+    document.getElementById("popup_container").style.zIndex = "1000";
+    document.getElementById("popup_content").style.zIndex = "1001";
+    document.getElementById("popup_content").innerHTML = `
+        <div class="w-fit flex m-auto text-md mb-4 mt-2 text-white text-center">Rebooting...</div>
+        <img src="../assets/loading.svg" alt="loading_animation" class="h-[60px] w-[60px] m-auto" />`;
+}
+
+function closeRebootPopupIfShown() {
+    if (rebootPopupShown) {
+        rebootPopupShown = false;
+        closePopUp();
+    }
 }
 
 function initDualConnectionIfSupported() {
@@ -1029,4 +1075,43 @@ function readDualDeviceEvent(hexArray) {
 
 function setDualConnect_BT(mac, connect) {
     send(61467, [connect ? 1 : 0, ...macBytesFromString(mac)], "setDualConnect");
+}
+
+const AUDIO_CODEC_NAMES = ["AAC", "LHDC", "LDAC"];
+let currentAudioCodec = 0;
+
+function initAudioCodecIfSupported() {
+    if (!(modelSpecs && modelSpecs.highQualityAudio)) {
+        return;
+    }
+    if (typeof injectAudioCodecUI === "function") {
+        injectAudioCodecUI();
+    }
+    getHighQualityAudio();
+}
+
+function getHighQualityAudio() {
+    if (modelSpecs && modelSpecs.highQualityAudio) {
+        send(49193, [], "getHighQualityAudio");
+    }
+}
+
+function readHighQualityAudio(hexArray) {
+    let index = hexArray.length > 8 ? hexArray[8] : 0;
+    if (index < 0 || index >= AUDIO_CODEC_NAMES.length) {
+        index = 0;
+    }
+    currentAudioCodec = index;
+    if (typeof renderAudioCodecUI === "function") {
+        renderAudioCodecUI();
+    }
+    closeRebootPopupIfShown();
+}
+
+function setHighQualityAudio_BT(index) {
+    currentAudioCodec = index;
+    send(61468, [index], "setHighQualityAudio");
+    if (typeof renderAudioCodecUI === "function") {
+        renderAudioCodecUI();
+    }
 }

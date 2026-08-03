@@ -50,22 +50,7 @@ function setDualEnableCheckbox(enabled) {
     if (manageRow) {
         manageRow.style.display = enabled ? "grid" : "none";
     }
-    if (dualConnectRebootPopupShown) {
-        dualConnectRebootPopupShown = false;
-        closePopUp();
-    }
-}
-
-let dualConnectRebootPopupShown = false;
-
-function showDualConnectRebootingPopup() {
-    dualConnectRebootPopupShown = true;
-    document.getElementById("popup_container").style.opacity = "100";
-    document.getElementById("popup_container").style.zIndex = "1000";
-    document.getElementById("popup_content").style.zIndex = "1001";
-    document.getElementById("popup_content").innerHTML = `
-        <div class="w-fit flex m-auto text-md mb-4 mt-2 text-white text-center">Rebooting...</div>
-        <img src="../assets/loading.svg" alt="loading_animation" class="h-[60px] w-[60px] m-auto" />`;
+    closeRebootPopupIfShown();
 }
 
 function toggleDualConnect() {
@@ -88,12 +73,12 @@ function applyDualConnectToggle(enabled) {
     closePopUp();
     let requiresReboot = modelSpecs && modelSpecs.dualConnectionReboot;
     if (requiresReboot) {
-        prepareForDualConnectReboot();
+        prepareForReboot();
     }
     setDualEnable_BT(enabled);
     setDualEnableCheckbox(enabled);
     if (requiresReboot) {
-        showDualConnectRebootingPopup();
+        showRebootingPopup();
     }
     if (enabled) {
         setTimeout(getDualList, 300);
