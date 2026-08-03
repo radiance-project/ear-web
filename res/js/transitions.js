@@ -257,7 +257,7 @@ document.addEventListener('click', function(e) {
             proceedRing(side);
         } else {
             // Starting ring, show warning
-            showWarningPopup(`<div class="w-fit flex m-auto text-md mb-5 mt-2 text-white text-center">Warning: Ringing the device produces a loud sound. Please check if the device is not in use before continuing. Are you sure?</div><div class="flex justify-center mt-4"><button class="bg-[#333333] text-white px-4 py-2 mr-2 rounded border border-[#333333]" onclick="proceedRing('${side}')">Yes</button><button class="bg-[#1B1D1F] text-white px-4 py-2 rounded border border-[#333333]" onclick="closePopUp()">No</button></div>`);
+            showWarningPopup(`<div class="w-fit flex m-auto text-md mb-5 mt-2 text-white text-center">Warning: Ringing the device produces a loud sound. Please check if the device is not in use before continuing. Are you sure?</div><div class="flex justify-center mt-4"><button class="p-2 pl-6 pr-6 mr-2 bg-black border-none border-[1px] text-white rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300" onclick="proceedRing('${side}')">Yes</button><button class="p-2 pl-6 pr-6 bg-black border-none border-[1px] text-white rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300" onclick="closePopUp()">No</button></div>`);
         }
     }
 }, true);

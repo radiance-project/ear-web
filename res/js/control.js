@@ -1,6 +1,4 @@
-function getModelFromFastpair(fastpairID) {
-
-    var models = {
+var FASTPAIR_MODELS = {
         "31D53D": {
             name: "Nothing Ear (1)",
             base: "B181",
@@ -404,9 +402,10 @@ function getModelFromFastpair(fastpairID) {
             duoImg: "",
             isANC: true
         }
-    };
+};
 
-    return models[fastpairID];
+function getModelFromFastpair(fastpairID) {
+    return FASTPAIR_MODELS[fastpairID];
 }
 
 async function updateBudsInfo(imageOnly=false, isHeadphone=false) {

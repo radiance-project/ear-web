@@ -11,16 +11,17 @@
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
     <script src="../js/vendor/chart-2.9.4.min.js"></script>
     <link href="../global.css" rel="stylesheet" />
+    <script src="../js/viewport_scale.js"></script>
     <link href="../tailwind.css" rel="stylesheet" />
 </head>
 
-<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
+<body style="width: 100vw; height: 100vh; margin: 0; background: #21201f; display: flex; align-items: center; justify-content: center; overflow: hidden;">
     <div id="container_one"
          class=" w-fit  text-white rounded-xl overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+         style="font-family: NothingNormal2; min-height: 710px; width: 800px;">
 
         <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2;  height: 710px; width: 800px; margin-top: -20px; ">
+             style="font-family: NothingNormal2;  min-height: 710px; width: 800px; margin-top: -20px; ">
 
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
                 <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>

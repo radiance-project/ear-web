@@ -191,6 +191,15 @@ async function connectSPP(sppPort=null) {
                 if (command === 16462) {
                     read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
                 }
+                if (command === 16423) {
+                    readDualEnable(rawData);
+                }
+                if (command === 16424) {
+                    readDualList(rawData);
+                }
+                if (command === 57358) {
+                    readDualDeviceEvent(rawData);
+                }
 
                 if (operationID >= 250) {
                     operationID = 1;
@@ -207,8 +216,19 @@ async function connectSPP(sppPort=null) {
             } catch (releaseError) {
                 console.error("Failed to release serial reader lock:", releaseError);
             }
+            try {
+                await sppPort.close();
+            } catch (closeError) {
+                console.error("Failed to close serial port:", closeError);
+            }
             SPPsocket = null;
-            window.location.href = "index.html";
+            if (awaitingDualConnectReboot) {
+                awaitingDualConnectReboot = false;
+                console.log("Disconnected for dual-connect reboot, reattempting in 10s");
+                setTimeout(() => connectSPP(sppPort), 10000);
+            } else {
+                window.location.href = "index.html";
+            }
         }
     }
 }
@@ -711,6 +731,7 @@ async function getConfigForFirmware() {
             console.log("Single config found, using default configuration");
             modelSpecs = configs[0];
             console.log(modelSpecs);
+            initDualConnectionIfSupported();
             return true;
         }
         
@@ -731,6 +752,7 @@ async function getConfigForFirmware() {
                     modelSpecs = config;
                     console.log(modelSpecs);
                     configFound = true;
+                    initDualConnectionIfSupported();
                     break;
                 }
             } catch (versionError) {
@@ -883,4 +905,128 @@ function sendGestures(device, typeog, action, typebutton=0x01) {
     byteArray[3] = parseInt(typeog);
     byteArray[4] = parseInt(action);
     send(61443, byteArray);
+}
+
+let dualConnectEnabled = false;
+let dualConnectList = [];
+
+let awaitingDualConnectReboot = false;
+
+function prepareForDualConnectReboot() {
+    awaitingDualConnectReboot = true;
+}
+
+function initDualConnectionIfSupported() {
+    if (!(modelSpecs && modelSpecs.dualConnection)) {
+        return;
+    }
+    if (typeof injectDualConnectUI === "function") {
+        injectDualConnectUI();
+    }
+    getDualEnable();
+    getDualList();
+}
+
+function macBytesFromString(macString) {
+    return macString.split(/[-:]/).map(byte => parseInt(byte, 16));
+}
+
+function macStringFromBytes(bytes) {
+    return Array.from(bytes, byte => byte.toString(16).padStart(2, '0').toUpperCase()).join('-');
+}
+
+function getDualEnable() {
+    if (modelSpecs && modelSpecs.dualConnection) {
+        send(49191, [], "readDualEnable");
+    }
+}
+
+function readDualEnable(hexArray) {
+    console.log("readDualEnable called");
+    dualConnectEnabled = hexArray[8] === 1;
+    if (typeof setDualEnableCheckbox === "function") {
+        setDualEnableCheckbox(dualConnectEnabled);
+    }
+}
+
+function setDualEnable_BT(enabled) {
+    dualConnectEnabled = enabled;
+    send(61466, [enabled ? 1 : 0], "setDualEnable");
+}
+
+const DUAL_LIST_MAX_PAGE_REQUESTS = 20;
+let dualListPageRequests = 0;
+
+function getDualList() {
+    if (modelSpecs && modelSpecs.dualConnection) {
+        dualConnectList = [];
+        dualListPageRequests = 0;
+        requestDualListPage();
+    }
+}
+
+function requestDualListPage() {
+    dualListPageRequests++;
+    send(49192, [dualConnectList.length & 0xff], "readDualList");
+}
+
+function readDualList(hexArray) {
+    console.log("readDualList called");
+    if (hexArray.length < 11) {
+        return;
+    }
+    let deviceCount = hexArray[10];
+    let offset = 11;
+    let addedNewDevice = false;
+    for (let i = 0; i < deviceCount; i++) {
+        if (offset + 8 > hexArray.length) {
+            break;
+        }
+        let flags = hexArray[offset];
+        let isSelf = (flags & 0xf0) !== 0;
+        let isConnected = (flags & 0x0f) !== 0;
+        let macBytes = hexArray.slice(offset + 1, offset + 7);
+        let mac = macStringFromBytes(macBytes);
+        let nameLength = hexArray[offset + 7] & 0x7f;
+        let nameBytes = hexArray.slice(offset + 8, offset + 8 + nameLength);
+        let name = new TextDecoder("utf-8").decode(new Uint8Array(nameBytes));
+        let device = { mac, name, isSelf, isConnected };
+        let existingIndex = dualConnectList.findIndex(item => item.mac === mac);
+        if (existingIndex >= 0) {
+            dualConnectList[existingIndex] = device;
+        } else {
+            dualConnectList.push(device);
+            addedNewDevice = true;
+        }
+        offset += 8 + nameLength;
+    }
+    if (addedNewDevice && dualListPageRequests < DUAL_LIST_MAX_PAGE_REQUESTS) {
+        requestDualListPage();
+    }
+    if (typeof renderDualConnectList === "function") {
+        renderDualConnectList();
+    }
+}
+
+function readDualDeviceEvent(hexArray) {
+    console.log("readDualDeviceEvent called");
+    if (hexArray.length < 16) {
+        return;
+    }
+    let isConnected = hexArray[8] === 1;
+    let macBytes = hexArray.slice(9, 15);
+    let mac = macStringFromBytes(macBytes);
+    let existingIndex = dualConnectList.findIndex(item => item.mac === mac);
+    if (existingIndex >= 0) {
+        dualConnectList[existingIndex].isConnected = isConnected;
+        if (typeof renderDualConnectList === "function") {
+            renderDualConnectList();
+        }
+    } else {
+        getDualList();
+    }
+}
+
+function setDualConnect_BT(mac, connect) {
+    send(61467, [connect ? 1 : 0, ...macBytesFromString(mac)], "setDualConnect");
 }

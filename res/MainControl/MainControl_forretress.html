@@ -11,15 +11,16 @@
     <script src="../js/vendor/chart-2.9.4.min.js"></script>
     <script src="../js/vendor/chartjs-plugin-dragdata-1.1.3.min.js"></script>
     <link href="../global.css" rel="stylesheet" />
+    <script src="../js/viewport_scale.js"></script>
     <link href="../tailwind.css" rel="stylesheet" />
 </head>
 
-<body style="width: 800px; height: 710px; position: absolute; background: #21201f; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); ">
+<body style="width: 100vw; height: 100vh; margin: 0; background: #21201f; display: flex; align-items: center; justify-content: center; overflow: hidden;">
     <div id="container_one"
          class=" w-fit text-white overflow-hidden float-right ease-in-out duration-300"
-         style="font-family: NothingNormal2; height: 710px; width: 800px;">
+         style="font-family: NothingNormal2; min-height: 710px; width: 800px;">
         <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
-             style="font-family: NothingNormal2; height: 710px; width: 800px; margin-top: -20px; ">
+             style="font-family: NothingNormal2; min-height: 710px; width: 800px; margin-top: -20px; ">
             <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
                 <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
                 <div id="popup_content" class="z-[-10]">
@@ -100,7 +101,7 @@
 
                     <div class="grid gap-4 grid-cols-2 grid-rows-1 m-5 -mt-3 mb-4" id="eq_container_t" class="relative">
                         <div id="pages_container" class="ease-in-out duration-300" style="opacity: 100; width: 305px;">
-                            <div id="eq_container" class="mt-12 bg-[#1B1D1F] ease-in-out duration-300 rounded-xl pt-2 pb-2 " style="height: 290px;">
+                            <div id="eq_container" class="mt-12 bg-[#1B1D1F] ease-in-out duration-300 rounded-xl pt-2 pb-2 ">
                                 <div id="eq_container_t" class="relative">
                                     <!-- PAGE 1 -->
                                     <div id="page_1_container" class="ease-in-out duration-300">
@@ -184,7 +185,7 @@
                                         <div id="settings_title" class="w-fit flex m-auto text-md mb-5 mt-2">
                                             QUICK SETTINGS
                                         </div>
-                                        <div class="p-5 -mt-5">
+                                        <div class="p-5 -mt-5 flex flex-col gap-2">
                                             <div class="settings-switch-container overflow-hidde">
                                                 <div id="lowlatencyswitchbutton" class="settings-switch-button">
                                                     <div id="lowlatencyswitchindicator" class="settings-switch-indicator">
@@ -195,7 +196,7 @@
                                                 <div class="settings-switch-label">Low Latency Mode</div>
                                             </div>
                                             <div id="seperator" class="">
-                                                <div class="h-[2px] bg-gray-500 w-full rounded-xl mt-5" style="opacity: 0.5;">
+                                                <div class="h-[2px] bg-gray-500 w-full rounded-xl mt-2" style="opacity: 0.5;">
                                                 </div>
                                             </div>
                                             <div class="grid grid-cols-2 grid-rows-2 -ml-5 mt-2">
@@ -321,6 +322,7 @@
     <script type="text/javascript" src="../js/control.js?v=20260101"></script>
     <script src="../js/forretress.js"></script>
     <script src="../js/bluetooth_socket.js"></script>
+    <script src="../js/dual_connect.js"></script>
     <script src="../js/versionUtils.js"></script>
     <script type="text/javascript">
         window.addEventListener('load', () => {

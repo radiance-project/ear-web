@@ -1231,6 +1231,28 @@ video {
     max-width: 50%;
 }
 
+#dual_connect_list_container {
+    scrollbar-width: thin;
+    scrollbar-color: #333333 #1B1D1F;
+}
+
+    #dual_connect_list_container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #dual_connect_list_container::-webkit-scrollbar-track {
+        background: #1B1D1F;
+    }
+
+    #dual_connect_list_container::-webkit-scrollbar-thumb {
+        background-color: #333333;
+        border-radius: 10000px;
+    }
+
+        #dual_connect_list_container::-webkit-scrollbar-thumb:hover {
+            background-color: #4d4d4d;
+        }
+
 #clever-bot {
     background: linear-gradient(70deg, rgba(0,0,0, 1) 50%, rgba(23, 23, 23, 0.2) 90%), url(./assets/gradient_image.webp);
     height: 300px;
