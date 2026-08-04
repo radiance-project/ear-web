@@ -181,6 +181,9 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 if (command === 16452) {
                     readCustomEQ(rawData);
                 }
+                if (command === 16461) {
+                    readAdvancedEQValue(rawData);
+                }
                 if (command === 16415 || command === 16464) {
                     readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
                 }
@@ -494,6 +497,73 @@ function setAdvancedEQenabled(enabled) {
         byteArray[0] = 0x01;
     }
     send(61519, byteArray);
+}
+
+// Advanced EQ band values (SET_ADVANCE_CUSTOM_EQ_VALUE/GET_ADVANCE_CUSTOM_EQ_VALUE,
+// confirmed via the native app's EQEntity: [profileIndex(1)][bandCount(1)][totalGain(4 float)]
+// then per band 13 bytes: [filterType(1)][gain(4 float)][frequency(4 float)][quality(4 float)]).
+// Default center/min/max frequencies per band, per the native app's EQEntity.DEFAULT_FREQUENCY.
+const ADVANCED_EQ_BAND_RANGES = [
+    { center: 55, min: 20, max: 99 },
+    { center: 110, min: 100, max: 199 },
+    { center: 220, min: 200, max: 399 },
+    { center: 440, min: 400, max: 999 },
+    { center: 1320, min: 1000, max: 2999 },
+    { center: 3300, min: 3000, max: 5999 },
+    { center: 6600, min: 6000, max: 11999 },
+    { center: 13200, min: 12000, max: 20000 },
+];
+const ADVANCED_EQ_BAND_FREQUENCIES = ADVANCED_EQ_BAND_RANGES.map(r => r.center);
+let currentAdvancedEQBands = null;
+
+function getAdvancedEQValue(profileIndex = 255) {
+    send(49229, [profileIndex], "getAdvancedEQValue");
+}
+
+function readAdvancedEQValue(hexArray) {
+    let offset = 8;
+    if (hexArray.length < offset + 6) {
+        return;
+    }
+    let bandCount = hexArray[offset + 1];
+    offset += 6; // profileIndex(1) + bandCount(1) + totalGain(4)
+    let bands = [];
+    for (let i = 0; i < bandCount && offset + 13 <= hexArray.length; i++) {
+        bands.push({
+            filterType: hexArray[offset],
+            gain: fromFormatFloatForEQ(hexArray.slice(offset + 1, offset + 5)),
+            frequency: fromFormatFloatForEQ(hexArray.slice(offset + 5, offset + 9)),
+            quality: fromFormatFloatForEQ(hexArray.slice(offset + 9, offset + 13)),
+        });
+        offset += 13;
+    }
+    currentAdvancedEQBands = bands;
+    if (typeof renderAdvancedEQUI === "function") {
+        renderAdvancedEQUI();
+    }
+}
+
+function setAdvancedEQValue_BT(bands) {
+    // bands: array of {gain, frequency, quality}
+    let maxGain = Math.max(0, ...bands.map(b => b.gain));
+    let totalGain = -maxGain;
+    let packet = new Uint8Array(2 + 4 + bands.length * 13);
+    let offset = 0;
+    packet[offset++] = 0; // profileIndex
+    packet[offset++] = bands.length;
+    packet.set(floatToReversedBytes(totalGain), offset);
+    offset += 4;
+    for (const band of bands) {
+        packet[offset++] = 1; // PEAK
+        packet.set(floatToReversedBytes(band.gain), offset);
+        offset += 4;
+        packet.set(floatToReversedBytes(band.frequency), offset);
+        offset += 4;
+        packet.set(floatToReversedBytes(band.quality), offset);
+        offset += 4;
+    }
+    currentAdvancedEQBands = bands.map(band => ({ filterType: 1, gain: band.gain, frequency: band.frequency, quality: band.quality }));
+    send(61520, Array.from(packet), "setAdvancedEQValue");
 }
 
 function formatFloatForEQ(f, total) {

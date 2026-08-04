@@ -328,7 +328,7 @@
                                     <div id="eq_label_treble" style="margin-left: 57px;">-3</div>
                                 </div>
                                 <div id="advancedEQmsg" style="width: 100%; height: 100px; overflow: hidden; display: none;text-align:center">
-                                    <p>Advanced EQ is enabled.</p>
+                                    <p style="cursor: pointer;" onclick="openAdvancedEQPanel()">Advanced EQ is enabled. Tap to edit.</p>
                                 </div>
                                 <div id="chart" style="width:100%; height: 100px; overflow: hidden;">
                                     <canvas id="myChart"></canvas>
@@ -377,6 +377,7 @@
     <script src="../js/gestures_common.js"></script>
     <script src="../js/eq_common.js"></script>
     <script src="../js/eq_two.js"></script>
+    <script src="../js/advanced_eq.js"></script>
     <script type="text/javascript" src="../js/control.js?v=20260101"></script>
     <script src="../js/two.js"></script>
     <script src="../js/bluetooth_socket.js"></script>

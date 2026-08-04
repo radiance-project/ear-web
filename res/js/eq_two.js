@@ -84,23 +84,14 @@ function setEQfromRead(level) {
 resetOptions()
 
 function setAdvanced(e) {
-    data = {
-        labels: ["", "", ""],
-        datasets: [{
-            backgroundColor: gradient,
-            label: '# of Votes',
-            data: [3, 10, 3],
-            borderWidth: 1,
-        },
-        ]
-    }
-    resetOptions();
-    drawChart(data);
     clearButtons()
     var buttons = document.getElementsByClassName("eq-button")
     buttons[5].style.backgroundColor = "#ffffff";
     buttons[5].style.color = "#000000";
     current_eq = 5;
+    if (typeof getAdvancedEQValue === "function") {
+        getAdvancedEQValue();
+    }
 }
 
 async function drawChart(data) {
