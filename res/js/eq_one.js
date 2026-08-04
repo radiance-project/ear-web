@@ -5,52 +5,8 @@ var current_eq;
 
 //---------------------------------------------------------------------------------//
 
-var options = {
-    tooltips: { enabled: false },
-    onClick: null,
-    elements: {
-        point: {
-            radius: 0
-        }
-    },
-    legend: {
-        display: false
-    },
-    responsive: true,
-    scales: {
-        xAxes: [{
-            gridLines: {
-                display: false
-            }
-        }],
-        yAxes: [{
-            gridLines: {
-                display: false
-            },
-            ticks: {
-                display: false,
-                min: 0,
-                max: 10,
-            }
-        }],
-        x: {
-            ticks: {
-                callback: () => ('')
-            }
-        },
-        y: {
-            display: false,
-            title: {
-                display: false,
-                text: 'Value'
-            },
-            suggestedMin: 0,
-            suggestedMax: 200,
-
-        },
-        events: []
-    }
-}
+var options;
+resetOptions();
 var chart;
 
 var ctx = document.getElementById("myChart").getContext("2d"); 
@@ -177,13 +133,4 @@ async function drawChart(data) {
         data: data,
         options: { ...options, ...extra_options },
     });
-}
-
-function clearButtons(){
-    var buttons = document.getElementsByClassName("eq-button");
-    for (let i = 0; i < buttons.length; i++) {
-        let button = buttons[i];
-        button.style.backgroundColor = "#000000";
-        button.style.color = "#ffffff";
-    }
 }

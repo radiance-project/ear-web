@@ -27,23 +27,6 @@ var ANC_type = 1;
 var ANC_strength = 0;
 
 
-async function ringBudLeft(e) {
-    var e = document.getElementById("ring_button-l").classList
-    if (e.contains("ringing-l")) {
-        e.remove("ringing-l")
-        document.getElementById("ring_button-l").style.backgroundColor = ""
-        document.getElementById("ring_button-l").style.color = ""
-        document.getElementById("ring_button-l").innerText = "Ring"
-        ringBuds(0, true)
-    } else {
-        e.add("ringing-l")
-        document.getElementById("ring_button-l").style.backgroundColor = "#7f1d1d"
-        document.getElementById("ring_button-l").style.color = "#ffffff"
-        document.getElementById("ring_button-l").innerText = "STOP"
-        ringBuds(1, true)
-    }
-}
-
 //---------------------------------------------------------------------------------//
 
 
