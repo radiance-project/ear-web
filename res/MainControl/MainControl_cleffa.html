@@ -24,12 +24,7 @@
          style="font-family: NothingNormal2; min-height: 710px; width: 800px;">
         <div id="container_two" class=" w-fit backdrop-blur-2xl text-white ease-in-out duration-300"
              style="font-family: NothingNormal2; min-height: 710px; width: 800px; margin-top: -20px; ">
-            <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
-                <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
-                <div id="popup_content" class="z-[-10]">
-                    ERROR: There was an error displaying this popup. Please report it to the developers with steps to reproduce the error
-                </div>
-            </div>
+            <div id="popup_container_placeholder"></div>
 
             <section class="w-full h-8 absolute" style="z-index: 300;">
                 <div id="draggable" class="w-[750px] h-8 absolute"></div>
@@ -243,60 +238,7 @@
                                     <!-- END PAGE 2 -->
                                     <!-- START PAGE 3 -->
                                     <div id="page_3_container" class="ease-in-out duration-300" style="margin-top: -200px;position: relative; z-index: -1; opacity: 0;">
-                                        <div id="settings_title" class="w-fit flex m-auto text-md mb-5 mt-2">
-                                            QUICK SETTINGS
-                                        </div>
-                                        <div class="p-5 -mt-5 flex flex-col gap-2">
-                                            <div class="settings-switch-container overflow-hidden">
-                                                <div id="inearswitchbutton" class="settings-switch-button">
-                                                    <div id="inearswitchindicator" class="settings-switch-indicator">
-                                                        <input type="checkbox" id="in_ear" class="settings-switch-checkbox" onclick="setInEar()"
-                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
-                                                    </div>
-                                                </div>
-                                                <div class="settings-switch-label">In Ear Detection</div>
-                                            </div>
-                                            <div class="settings-switch-container overflow-hidde">
-                                                <div id="lowlatencyswitchbutton" class="settings-switch-button">
-                                                    <div id="lowlatencyswitchindicator" class="settings-switch-indicator">
-                                                        <input type="checkbox" id="low_latency" class="settings-switch-checkbox" onclick="setLatencyMode()"
-                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
-                                                    </div>
-                                                </div>
-                                                <div class="settings-switch-label">Low Latency Mode</div>
-                                            </div>
-                                            <div class="grid grid-cols-2 grid-rows-1" style="margin-left: -10px; cursor: pointer;" onclick="showEarTipTestDialog()">
-                                                <div id="settinjgs-switch-label" class="settings-switch-label" style="margin-top: 3px;">Ear tip test</div>
-                                                <div id="arrow-icon">
-                                                    <img src="../assets/arrow_right.svg" alt="arrow-right" style="width: 20px; height: 20px; float: right;">
-                                                </div>
-                                            </div>
-                                            <div id="seperator" class="">
-                                                <div class="h-[2px] bg-gray-500 w-full rounded-xl mt-2" style="opacity: 0.5;">
-                                                </div>
-                                            </div>
-                                            <div class="grid grid-cols-2 grid-rows-2 -ml-5 mt-2">
-                                                <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
-                                                    Firmware Version
-                                                </div>
-                                                <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
-                                                    1.0.0
-                                                </div>
-                                            </div>
-                                            <div class="rounded-xl pt-5 pb-5 mt-1 grid grid-cols-2 grid-rows-1 -ml-16" id="case_ear">
-                                                <div id="setting_title" class=" text-sm ml-5 text-gray-200">
-                                                    <img id="case-img" src="../assets/ear_one_white_case.webp" class='mr-2 h-20 -mt-5 -mb-5 float-right' />
-                                                </div>
-                                                <div id="settings_subtitle" class="text-sm ml-5 text-white">
-                                                    <div id="battery-c" class='text-center'>
-                                                        40% CASE
-                                                    </div>
-                                                    <div id="battery_bar" class='w-20 m-auto mt-2 rounded-md bg-gray-600'>
-                                                        <div id="battery_bar_fill_c" class="bg-white h-2 w-1/2 rounded-md"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <div id="quick_settings_container" data-qs-variant="full"></div>
                                     </div>
                                     <!-- END PAGE 2 -->
                                     <!-- END PAGE 2 -->

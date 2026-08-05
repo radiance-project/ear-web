@@ -142,10 +142,173 @@ function injectAncUI() {
     }
 }
 
+// Verified byte-identical copies of shared static markup, extracted from the original
+// MainControl_*.html files before this change.
+//
+// POPUP_SCAFFOLD_HTML: the popup_container/popup_background/popup_content shell used by
+// showWarningPopup/closePopUp/displayPopUp/showEarTipTestDialog (see transitions.js,
+// device_common.js). Identical across all 15 device pages.
+//
+// QUICK_SETTINGS_*_HTML: the PAGE 2/3 "QUICK SETTINGS" panel content (In Ear Detection,
+// Low Latency Mode, Ear tip test row, firmware version, case battery). FULL was shared
+// identically by two, cleffa, twos, espeon, girafarig, gligar. HEADPHONE (no case battery)
+// was shared identically by crobat, forretress. BASIC (no case battery, no in-ear toggle)
+// was shared identically by sticks, one. donphan, corsola, elekid, hoothoot each have a
+// small real difference (extra toggle, spacing, wrapper class) so are left as static HTML.
+const POPUP_SCAFFOLD_HTML = `            <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
+                <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
+                <div id="popup_content" class="z-[-10]">
+                    ERROR: There was an error displaying this popup. Please report it to the developers with steps to reproduce the error
+                </div>
+            </div>`;
+
+const QUICK_SETTINGS_FULL_HTML = `                                        <div id="settings_title" class="w-fit flex m-auto text-md mb-5 mt-2">
+                                            QUICK SETTINGS
+                                        </div>
+                                        <div class="p-5 -mt-5 flex flex-col gap-2">
+                                            <div class="settings-switch-container overflow-hidden">
+                                                <div id="inearswitchbutton" class="settings-switch-button">
+                                                    <div id="inearswitchindicator" class="settings-switch-indicator">
+                                                        <input type="checkbox" id="in_ear" class="settings-switch-checkbox" onclick="setInEar()"
+                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
+                                                    </div>
+                                                </div>
+                                                <div class="settings-switch-label">In Ear Detection</div>
+                                            </div>
+                                            <div class="settings-switch-container overflow-hidde">
+                                                <div id="lowlatencyswitchbutton" class="settings-switch-button">
+                                                    <div id="lowlatencyswitchindicator" class="settings-switch-indicator">
+                                                        <input type="checkbox" id="low_latency" class="settings-switch-checkbox" onclick="setLatencyMode()"
+                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
+                                                    </div>
+                                                </div>
+                                                <div class="settings-switch-label">Low Latency Mode</div>
+                                            </div>
+                                            <div class="grid grid-cols-2 grid-rows-1" style="margin-left: -10px; cursor: pointer;" onclick="showEarTipTestDialog()">
+                                                <div id="settinjgs-switch-label" class="settings-switch-label" style="margin-top: 3px;">Ear tip test</div>
+                                                <div id="arrow-icon">
+                                                    <img src="../assets/arrow_right.svg" alt="arrow-right" style="width: 20px; height: 20px; float: right;">
+                                                </div>
+                                            </div>
+                                            <div id="seperator" class="">
+                                                <div class="h-[2px] bg-gray-500 w-full rounded-xl mt-2" style="opacity: 0.5;">
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-2 grid-rows-2 -ml-5 mt-2">
+                                                <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
+                                                    Firmware Version
+                                                </div>
+                                                <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
+                                                    1.0.0
+                                                </div>
+                                            </div>
+                                            <div class="rounded-xl pt-5 pb-5 mt-1 grid grid-cols-2 grid-rows-1 -ml-16" id="case_ear">
+                                                <div id="setting_title" class=" text-sm ml-5 text-gray-200">
+                                                    <img id="case-img" src="../assets/ear_one_white_case.webp" class='mr-2 h-20 -mt-5 -mb-5 float-right' />
+                                                </div>
+                                                <div id="settings_subtitle" class="text-sm ml-5 text-white">
+                                                    <div id="battery-c" class='text-center'>
+                                                        40% CASE
+                                                    </div>
+                                                    <div id="battery_bar" class='w-20 m-auto mt-2 rounded-md bg-gray-600'>
+                                                        <div id="battery_bar_fill_c" class="bg-white h-2 w-1/2 rounded-md"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>`;
+
+const QUICK_SETTINGS_HEADPHONE_HTML = `                                        <div id="settings_title" class="w-fit flex m-auto text-md mb-5 mt-2">
+                                            QUICK SETTINGS
+                                        </div>
+                                        <div class="p-5 -mt-5 flex flex-col gap-2">
+                                            <div class="settings-switch-container overflow-hidde">
+                                                <div id="lowlatencyswitchbutton" class="settings-switch-button">
+                                                    <div id="lowlatencyswitchindicator" class="settings-switch-indicator">
+                                                        <input type="checkbox" id="low_latency" class="settings-switch-checkbox" onclick="setLatencyMode()"
+                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
+                                                    </div>
+                                                </div>
+                                                <div class="settings-switch-label">Low Latency Mode</div>
+                                            </div>
+                                            <div id="seperator" class="">
+                                                <div class="h-[2px] bg-gray-500 w-full rounded-xl mt-2" style="opacity: 0.5;">
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-2 grid-rows-2 -ml-5 mt-2">
+                                                <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
+                                                    Firmware Version
+                                                </div>
+                                                <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
+                                                    1.0.0
+                                                </div>
+                                            </div>
+                                        </div>`;
+
+const QUICK_SETTINGS_BASIC_HTML = `                                        <div id="settings_title" class="w-fit flex m-auto text-md mb-5 mt-2">
+                                            QUICK SETTINGS
+                                        </div>
+                                        <div class="p-5 -mt-5">
+                                            <div class="settings-switch-container overflow-hidden">
+                                                <div id="inearswitchbutton" class="settings-switch-button">
+                                                    <div id="inearswitchindicator" class="settings-switch-indicator">
+                                                        <input type="checkbox" id="in_ear" class="settings-switch-checkbox" onclick="setInEar()"
+                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
+                                                    </div>
+                                                </div>
+                                                <div class="settings-switch-label">In Ear Detection</div>
+                                            </div>
+                                            <div class="settings-switch-container overflow-hidde">
+                                                <div id="lowlatencyswitchbutton" class="settings-switch-button">
+                                                    <div id="lowlatencyswitchindicator" class="settings-switch-indicator">
+                                                        <input type="checkbox" id="low_latency" class="settings-switch-checkbox" onclick="setLatencyMode()"
+                                                               style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
+                                                    </div>
+                                                </div>
+                                                <div class="settings-switch-label">Low Latency Mode</div>
+                                            </div>
+                                            <div id="seperator" class="">
+                                                <div class="h-[2px] bg-gray-500 w-full rounded-xl mt-5" style="opacity: 0.5;">
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-2 grid-rows-2 -ml-5 mt-5">
+                                                <div id="setting_title" class="text-[12px] ml-5 text-gray-200 w-max">
+                                                    Firmware Version
+                                                </div>
+                                                <div id="settings_subtitle_firmware" class="text-[12px] ml-5 text-gray-500 flex" style="justify-content: right;">
+                                                    1.0.0
+                                                </div>
+                                            </div>
+                                        </div>`;
+
+// default implementation (no per-model overrides)
+function injectSharedStaticUI() {
+    let popup = document.getElementById("popup_container_placeholder");
+    if (popup) popup.outerHTML = POPUP_SCAFFOLD_HTML;
+
+    let ancContainer = document.getElementById("anc_widget_container");
+    if (ancContainer) injectAncUI();
+
+    let qs = document.getElementById("quick_settings_container");
+    if (qs) {
+        let variant = qs.dataset.qsVariant;
+        if (variant === "full") {
+            qs.innerHTML = QUICK_SETTINGS_FULL_HTML;
+        } else if (variant === "headphone") {
+            qs.innerHTML = QUICK_SETTINGS_HEADPHONE_HTML;
+        } else if (variant === "basic") {
+            qs.innerHTML = QUICK_SETTINGS_BASIC_HTML;
+        }
+    }
+}
+
 function hideDeviceLoadingOverlay() {
     let overlay = document.getElementById("device_loading_overlay");
     if (overlay) overlay.style.display = "none";
 }
+
+// Runs immediately (not gated on Bluetooth/modelSpecs): all of the above is static markup
+// selected purely by which placeholders exist on this page, not by device config data.
+injectSharedStaticUI();
 
 setTimeout(hideDeviceLoadingOverlay, 10000);
 

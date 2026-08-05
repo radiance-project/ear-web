@@ -868,7 +868,6 @@ async function getConfigForFirmware() {
             initAudioCodecIfSupported();
             initSpatialAudioIfSupported();
             initPersonalSoundProfileIfSupported();
-            injectAncUI();
             return true;
         }
         
@@ -893,7 +892,6 @@ async function getConfigForFirmware() {
                     initAudioCodecIfSupported();
                     initSpatialAudioIfSupported();
                     initPersonalSoundProfileIfSupported();
-                    injectAncUI();
                     break;
                 }
             } catch (versionError) {
