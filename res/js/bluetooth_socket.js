@@ -817,11 +817,12 @@ async function getConfigForFirmware() {
     // Input validation
     if (!modelBase?.trim() || !firmwareVersion?.trim()) {
         console.error("Model base or firmware version is not set. Cannot get config.");
+        hideDeviceLoadingOverlay();
         return false;
     }
-    
+
     console.log(`Getting config for model: ${modelBase}, firmware: ${firmwareVersion}`);
-    
+
     try {
         // Load configuration data
         const response = await fetch("/js/ear_config_file.json");
@@ -867,6 +868,7 @@ async function getConfigForFirmware() {
             initAudioCodecIfSupported();
             initSpatialAudioIfSupported();
             initPersonalSoundProfileIfSupported();
+            injectAncUI();
             return true;
         }
         
@@ -891,6 +893,7 @@ async function getConfigForFirmware() {
                     initAudioCodecIfSupported();
                     initSpatialAudioIfSupported();
                     initPersonalSoundProfileIfSupported();
+                    injectAncUI();
                     break;
                 }
             } catch (versionError) {
@@ -905,10 +908,12 @@ async function getConfigForFirmware() {
         
         console.log("Configuration loaded successfully");
         return true;
-        
+
     } catch (error) {
         console.error("Failed to get config for firmware:", error);
         return false;
+    } finally {
+        hideDeviceLoadingOverlay();
     }
 }
 

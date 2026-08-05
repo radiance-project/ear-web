@@ -30,14 +30,11 @@ function injectPersonalSoundProfileUI() {
     // Anchor before the first nav-style row (Ear tip test / Manage devices / Audio Quality /
     // Spatial Audio - whichever exists) so this toggle groups with the other checkbox rows
     // instead of landing after them when the page has no Ear tip test row to anchor on.
-    let navRow = document.querySelector(
-        '[onclick*="showEarTipTestDialog"], #dual_connect_manage_row, #audio_codec_row, #spatial_audio_row'
+    insertBeforeAnchorRow(
+        '[onclick*="showEarTipTestDialog"], #dual_connect_manage_row, #audio_codec_row, #spatial_audio_row',
+        toggleHtml,
+        seperator
     );
-    if (navRow) {
-        navRow.insertAdjacentHTML("beforebegin", toggleHtml);
-    } else {
-        seperator.insertAdjacentHTML("beforebegin", toggleHtml);
-    }
 }
 
 function setPersonalSoundProfileCheckbox(enabled) {

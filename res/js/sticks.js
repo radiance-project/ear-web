@@ -117,8 +117,6 @@ function changeGesture(type) {
     renderGestureChangePopup(type, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
-function setAncStrengthMid(typeANC) { }
-function setAncStrengthHigh(typeANC) { }
 function setANC(typeANC) {
     switch (typeANC) {
         case 0:
@@ -148,24 +146,6 @@ function displayANC(display) {
         switchPage(1, true);
         document.querySelector("#page_selector").style.display = "none";
     }
-}
-
-
-function setAncToNC() {
-    document.getElementById("selector").style.marginLeft = "64px"
-    document.getElementById("ANC_on").style.fill = "black"
-    document.getElementById("anc_off").style.fill = "white"
-
-    ANC_type = 0;
-}
-
-
-function setAncToOff() {
-    document.getElementById("selector").style.marginLeft = "159px"
-    document.getElementById("anc_off").style.fill = "black"
-    document.getElementById("ANC_on").style.fill = "white"
-
-    ANC_type = 2;
 }
 
 

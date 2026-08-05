@@ -40,13 +40,10 @@ function injectAudioCodecUI() {
         </div>`;
 
     let dualConnectRow = document.getElementById("dual_connect_manage_row");
-    let earTipTestRow = document.querySelector('[onclick*="showEarTipTestDialog"]');
     if (dualConnectRow) {
         dualConnectRow.insertAdjacentHTML("afterend", rowHtml);
-    } else if (earTipTestRow) {
-        earTipTestRow.insertAdjacentHTML("beforebegin", rowHtml);
     } else {
-        seperator.insertAdjacentHTML("beforebegin", rowHtml);
+        insertBeforeAnchorRow('[onclick*="showEarTipTestDialog"]', rowHtml, seperator);
     }
     renderAudioCodecUI();
 }

@@ -36,12 +36,7 @@ function injectSpatialAudioUI() {
             </div>
         </div>`;
 
-    let earTipTestRow = document.querySelector('[onclick*="showEarTipTestDialog"]');
-    if (earTipTestRow) {
-        earTipTestRow.insertAdjacentHTML("beforebegin", rowHtml);
-    } else {
-        seperator.insertAdjacentHTML("beforebegin", rowHtml);
-    }
+    insertBeforeAnchorRow('[onclick*="showEarTipTestDialog"]', rowHtml, seperator);
     renderSpatialAudioUI();
 }
 

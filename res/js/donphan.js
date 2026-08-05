@@ -146,30 +146,3 @@ function setANC(typeANC) {
     setANC_BT(type);
 }
 
-function setAncToNC() {
-    document.getElementById("selector").style.marginLeft = "16px"
-    document.getElementById("ANC_on").style.fill = "black"
-    document.getElementById("trans_on").style.fill = "white"
-    document.getElementById("anc_off").style.fill = "white"
-
-    ANC_type = 0;
-}
-
-function setAncToTransparent() {
-    document.getElementById("selector").style.marginLeft = "112px"
-    document.getElementById("trans_on").style.fill = "black"
-    document.getElementById("ANC_on").style.fill = "white"
-    document.getElementById("anc_off").style.fill = "white"
-
-    ANC_type = 1;
-}
-
-function setAncToOff() {
-    document.getElementById("selector").style.marginLeft = "209px"
-    document.getElementById("anc_off").style.fill = "black"
-    document.getElementById("ANC_on").style.fill = "white"
-    document.getElementById("trans_on").style.fill = "white"
-
-    ANC_type = 2;
-}
-

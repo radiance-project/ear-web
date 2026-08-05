@@ -32,12 +32,7 @@ function injectDualConnectUI() {
             </div>
         </div>`;
 
-    let earTipTestRow = document.querySelector('[onclick*="showEarTipTestDialog"]');
-    if (earTipTestRow) {
-        earTipTestRow.insertAdjacentHTML("beforebegin", toggleHtml);
-    } else {
-        seperator.insertAdjacentHTML("beforebegin", toggleHtml);
-    }
+    insertBeforeAnchorRow('[onclick*="showEarTipTestDialog"]', toggleHtml, seperator);
     seperator.insertAdjacentHTML("beforebegin", manageHtml);
 }
 

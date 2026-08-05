@@ -123,35 +123,3 @@ function changeGesture(type) {
     renderGestureChangePopup(type, GESTURE_TOPOLOGY, GESTURE_SLOTS);
 }
 
-
-//left as stub for general calls.
-function setAncToNC() {
-
-}
-
-function setAncToTransparent() {
-
-}
-
-function setAncToOff() {
-
-}
-
-
-
-function setAncStrengthHigh() {
-
-}
-
-function setAncStrengthMid() {
-
-}
-
-function setAncStrengthLow() {
-
-}
-
-function setAncStrengthAdaptive() {
-
-}
-

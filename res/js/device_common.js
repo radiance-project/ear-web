@@ -2,7 +2,153 @@
 // Loaded before the per-model <model>.js file, which may redefine any of these for devices
 // with different UI (e.g. no ANC-strength selector, extra ring button, no bass enhance, etc.).
 
-// default implementation; overridden in: crobat, elekid, forretress, one, sticks
+const ANC_LEVEL_TRANSPARENCY = 0x10;
+const ANC_LEVEL_STRENGTH_BASE = 0x04;     // unlocks High + Low (2-stage selector)
+const ANC_LEVEL_STRENGTH_MID = 0x02;      // + Mid (3-stage selector)
+const ANC_LEVEL_STRENGTH_ADAPTIVE = 0x08; // + Adaptive (4-stage selector)
+
+function ancSupported() {
+    return !!(modelSpecs && modelSpecs.ancLevel != null);
+}
+function ancHasTransparency() {
+    return !!(modelSpecs && modelSpecs.ancLevel & ANC_LEVEL_TRANSPARENCY);
+}
+function ancHasStrengthControl() {
+    return !!(modelSpecs && modelSpecs.ancLevel & ANC_LEVEL_STRENGTH_BASE);
+}
+function ancHasMidStrength() {
+    return !!(modelSpecs && modelSpecs.ancLevel & ANC_LEVEL_STRENGTH_MID);
+}
+function ancHasAdaptiveStrength() {
+    return !!(modelSpecs && modelSpecs.ancLevel & ANC_LEVEL_STRENGTH_ADAPTIVE);
+}
+
+const ANC_WIDGET_FULL_HTML = `                                        <div class="w-fit flex m-auto text-md mb-5 mt-2">
+                                            NOISE CONTROL
+                                        </div>
+                                        <div id="selector"
+                                             class="w-20 p-2 bg-white rounded-full h-[38px] -mb-[58px] ml-4 z-1 relative ease-in-out duration-200">
+                                        </div>
+                                        <div class="w-fit grid grid-cols-3 grid-rows-1 bg-black gap-4 m-auto mt-5 rounded-full ml">
+                                            <div id="one"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setANC(0)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="ANC_on" style="width: 23px; fill: white !important;">
+                                                    <use xlink:href="../assets/anc_on_icon.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                            <div id="two"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setANC(1)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="trans_on" style="width: 23px; fill: white !important;">
+                                                    <use xlink:href="../assets/anc_transparent_icon.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                            <div id="three"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setANC(2)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="anc_off" style="width:23px; fill: white !important;">
+                                                    <use xlink:href="../assets/anc_off_icon.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="w-fit grid grid-cols-3 grid-rows-1 gap-4 m-auto text-[10px] mt-2">
+                                            <div id="desc_one" class=" text-center w-20">NOISE<br />CANCELLATION</div>
+                                            <div id="desc_two" class="text-center w-20">TRANSPARENCY</div>
+                                            <div id="desc_three" class=" text-center w-20">Off</div>
+                                        </div>
+                                        <div id="anc_strength_selector" class="ease-in-out duration-300">
+                                            <div class="grid ease-out duration-200 grid-cols-4 grid-rows-1 bg-black m-auto mt-2 rounded-full h-5 opacity-100" style="gap: 2rem; width: 190px;">
+                                                <div id="stage_one"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setANC(3)">
+                                                    <div id="stage_one_button"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full"></div>
+                                                </div>
+                                                <div id="stage_two"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setANC(4)">
+                                                    <div id="stage_two_button"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full ">
+                                                    </div>
+                                                </div>
+                                                <div id="stage_three"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setANC(5)">
+                                                    <div id="stage_three_button"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full ">
+                                                    </div>
+                                                </div>
+                                                <div id="stage_four"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setANC(6)">
+                                                    <div id="stage_four_button"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-4 grid-rows-1 ease-out duration-200 m-auto text-[10px] opacity-100" style="margin-left: 45px; width: 190px; gap: 40px;">
+                                                <div id="desc_one" class="p-2 text-center ">HIGH</div>
+                                                <div id="desc_two" class="p-2 text-center " style="margin-left: 4px;">MID</div>
+                                                <div id="desc_two" class="p-2 text-center " style="margin-left: 3px;">LOW</div>
+                                                <div id="desc_two" class="p-2 text-left" style="margin-left: -13px">ADAPTIVE</div>
+                                            </div>
+
+                                        </div>`;
+
+const ANC_WIDGET_BASIC_HTML = `                                        <div class="w-fit flex m-auto text-md mb-5 mt-2">
+                                            NOISE CONTROL
+                                        </div>
+                                        <div id="selector"
+                                             class="w-20 p-2 bg-white rounded-full h-[38px] -mb-[58px] ml-4 z-1 relative ease-in-out duration-200">
+                                        </div>
+                                        <div class="w-fit grid grid-cols-3 grid-rows-1 bg-black gap-4 m-auto mt-5 rounded-full ml">
+                                            <div id="one"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setANC(0)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="ANC_on" style="width: 23px; fill: white !important;">
+                                                    <use xlink:href="../assets/anc_on_icon.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                            <div id="two"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setANC(1)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="trans_on" style="width: 23px; fill: white !important;">
+                                                    <use xlink:href="../assets/anc_transparent_icon.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                            <div id="three"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setANC(2)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="anc_off" style="width:23px; fill: white !important;">
+                                                    <use xlink:href="../assets/anc_off_icon.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="w-fit grid grid-cols-3 grid-rows-1 gap-4 m-auto text-[10px] mt-2">
+                                            <div id="desc_one" class=" text-center w-20">NOISE<br />CANCELLATION</div>
+                                            <div id="desc_two" class="text-center w-20">TRANSPARENCY</div>
+                                            <div id="desc_three" class=" text-center w-20">Off</div>
+                                        </div>`;
+
+function injectAncUI() {
+    let container = document.getElementById("anc_widget_container");
+    if (!container) return;
+    let variant = container.dataset.ancVariant;
+    if (variant === "full") {
+        container.innerHTML = ANC_WIDGET_FULL_HTML;
+    } else if (variant === "basic") {
+        container.innerHTML = ANC_WIDGET_BASIC_HTML;
+    }
+}
+
+function hideDeviceLoadingOverlay() {
+    let overlay = document.getElementById("device_loading_overlay");
+    if (overlay) overlay.style.display = "none";
+}
+
+setTimeout(hideDeviceLoadingOverlay, 10000);
+
 function setBattery(side, percentage) {
     if (typeof percentage == "undefined") {
         percentage = "DISCONNECTED";
@@ -29,77 +175,71 @@ function setBattery(side, percentage) {
     }
 }
 
-// default implementation; overridden in: donphan, flaaffy, sticks
 function setAncToOff() {
-    document.getElementById("selector").style.marginLeft = "209px"
+    if (!ancSupported()) return; 
+    document.getElementById("selector").style.marginLeft = ancHasTransparency() ? "209px" : "159px"
     document.getElementById("anc_off").style.fill = "black"
     document.getElementById("ANC_on").style.fill = "white"
-    document.getElementById("trans_on").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "0"
+    if (ancHasTransparency()) document.getElementById("trans_on").style.fill = "white"
+    if (ancHasStrengthControl()) document.getElementById("anc_strength_selector").style.opacity = "0"
 
     ANC_type = 2;
 }
 
-// default implementation; overridden in: donphan, flaaffy, sticks
 function setAncToNC() {
-    document.getElementById("selector").style.marginLeft = "16px"
+    if (!ancSupported()) return;
+    document.getElementById("selector").style.marginLeft = ancHasTransparency() ? "16px" : "64px"
     document.getElementById("ANC_on").style.fill = "black"
-    document.getElementById("trans_on").style.fill = "white"
+    if (ancHasTransparency()) document.getElementById("trans_on").style.fill = "white"
     document.getElementById("anc_off").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "100"
+    if (ancHasStrengthControl()) document.getElementById("anc_strength_selector").style.opacity = "100"
 
     ANC_type = 0;
 }
 
-// default implementation; overridden in: donphan, flaaffy
 function setAncToTransparent() {
-    if (!document.getElementById("trans_on")) return; // e.g. sticks has no transparency-mode UI
+    if (!ancHasTransparency()) return;
     document.getElementById("selector").style.marginLeft = "112px"
     document.getElementById("trans_on").style.fill = "black"
     document.getElementById("ANC_on").style.fill = "white"
     document.getElementById("anc_off").style.fill = "white"
-    document.getElementById("anc_strength_selector").style.opacity = "0"
+    if (ancHasStrengthControl()) document.getElementById("anc_strength_selector").style.opacity = "0"
 
     ANC_type = 1;
 }
 
-// default implementation; overridden in: corsola, flaaffy, one, sticks
 function setAncStrengthHigh() {
-    if (!document.getElementById("stage_one_button")) return;
+    if (!ancHasStrengthControl()) return;
     document.getElementById("stage_one_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-left: -0.25rem !important; margin-top: -0.25rem !important;"
     document.getElementById("stage_two_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
     document.getElementById("stage_three_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
+    if (ancHasAdaptiveStrength()) document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
 
     ANC_strength = 0;
 }
 
-// default implementation; overridden in: corsola, flaaffy, sticks
 function setAncStrengthMid() {
-    if (!document.getElementById("stage_one_button")) return;
+    if (!ancHasMidStrength()) return;
     document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_two_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
     document.getElementById("stage_three_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
-
+    if (ancHasAdaptiveStrength()) document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
 
     ANC_strength = 2;
 }
 
-// default implementation; overridden in: corsola, flaaffy, one
 function setAncStrengthLow() {
-    if (!document.getElementById("stage_one_button")) return;
+    if (!ancHasStrengthControl()) return;
     document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_two_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_three_button").style = "height: 0.75rem !important; width: 0.75rem !important; margin-right: -0.25rem !important; margin-top: -0.25rem !important;"
-    document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
+    if (ancHasAdaptiveStrength()) document.getElementById("stage_four_button").style = "height: 0.25rem; width: 0.25rem; margin-left: 0px; margin-top: 0px;"
 
     ANC_strength = 1;
 }
 
-// default implementation; overridden in: flaaffy
 function setAncStrengthAdaptive() {
-    if (!document.getElementById("stage_one_button")) return;
+    if (!ancHasAdaptiveStrength()) return;
     document.getElementById("stage_one_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_two_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
     document.getElementById("stage_three_button").style = "height: 0.25rem !important; width: 0.25rem !important; margin-left: 0px !important; margin-top: 0px !important;"
@@ -255,6 +395,15 @@ function setPersonalAncCheckbox(isEnabled) {
         document.getElementById("personalizedANC").checked = true;
     } else {
         document.getElementById("personalizedANC").checked = false;
+    }
+}
+
+function insertBeforeAnchorRow(anchorSelector, html, seperator) {
+    let anchorRow = document.querySelector(anchorSelector);
+    if (anchorRow) {
+        anchorRow.insertAdjacentHTML("beforebegin", html);
+    } else {
+        seperator.insertAdjacentHTML("beforebegin", html);
     }
 }
 
