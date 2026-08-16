@@ -232,9 +232,6 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 if (command === 16463) {
                     readSpatialAudio(rawData);
                 }
-                if (command === 28754) {
-                    readSpatialAudio(rawData);
-                }
                 if (command === 16418) {
                     readMimiEnable(rawData);
                 }
