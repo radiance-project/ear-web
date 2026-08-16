@@ -81,6 +81,10 @@ function selectAudioCodec(index) {
         closePopUp();
         return;
     }
+    if (typeof longPowerModeEnabled !== "undefined" && longPowerModeEnabled) {
+        showMutuallyExclusiveWarning("Audio Codec", "Long Battery Life Mode");
+        return;
+    }
     let warning = index === 2
         ? "This codec may reduce battery life. Interference and compatibility issues may occur, which could result in choppy audio."
         : "";

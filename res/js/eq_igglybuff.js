@@ -1,0 +1,184 @@
+var ctx = document.getElementById("myChart").getContext("2d");
+
+var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+gradient.addColorStop(0, 'rgb(255,0,0, 20%)');
+gradient.addColorStop(1, 'rgba(95,100,106, 0%)');
+
+
+var options;
+var chart;
+
+var custom_values = [0, 0, 0];
+
+var current_eq;
+
+// While Long Battery Life Mode is on, the device forces AAC and turns off spatial audio/bass
+// boost itself (per the official app's "long_battery_life_mode_desc" string) - EQ presets are
+// blocked here to match, same one-directional guard style as eq_espeon.js's Dirac/LDAC check
+// (block the secondary feature, don't block turning the primary one off).
+function EQButtonPress(level, pos) {
+    if (typeof longPowerModeEnabled !== "undefined" && longPowerModeEnabled) {
+        showMutuallyExclusiveWarning("EQ", "Long Battery Life Mode");
+        return;
+    }
+    if (typeof currentAntiLeakageMode !== "undefined" && currentAntiLeakageMode === 2) {
+        showMutuallyExclusiveWarning("EQ", "Anti-leakage mode (Audio + Calls)");
+        return;
+    }
+    setListeningMode(level);
+    if (level == 6) {
+        getCustomEQ();
+        document.getElementById("custom_eq_indicator").style.display = "grid";
+        updateIndicator();
+    } else document.getElementById("custom_eq_indicator").style.display = "none";
+    setEQfromRead(level, pos);
+}
+
+function setEQfromRead(level, pos) {
+    console.log("eqlevel: " + level);
+    var buttons = document.getElementsByClassName("eq-button")
+    clearButtons();
+    if (level == 3) {
+        document.querySelector("#chart").style.display = "none";
+        document.getElementById("custom_eq_indicator").style.display = "none";
+        pos = 0;
+    } else if (level == 1) {
+        document.querySelector("#chart").style.display = "none";
+        document.getElementById("custom_eq_indicator").style.display = "none";
+        pos = 1;
+    } else if (level == 2) {
+        document.querySelector("#chart").style.display = "none";
+        document.getElementById("custom_eq_indicator").style.display = "none";
+        pos = 2;
+    } else if (level == 5) {
+        document.querySelector("#chart").style.display = "none";
+        document.getElementById("custom_eq_indicator").style.display = "none";
+        pos = 3;
+    } else if (level == 4) {
+        document.querySelector("#chart").style.display = "none";
+        document.getElementById("custom_eq_indicator").style.display = "none";
+        pos = 4;
+    } else if (level == 6) {
+        clearButtons();
+        getCustomEQ();
+        document.getElementById("custom_eq_indicator").style.display = "grid";
+        document.querySelector("#chart").style.display = "grid";
+        setCustom(document.getElementById("buttonEQCustom"));
+        updateIndicator();
+        pos = 5;
+    }
+    buttons[pos].style.backgroundColor = "#ffffff";
+    buttons[pos].style.color = "#000000";
+}
+
+resetOptions()
+
+
+function setCustom(e) {
+    data = {
+        labels: ["Bass", "Medium", "Treble"],
+        datasets: [{
+            backgroundColor: gradient,
+            label: '# of Votes',
+            data: custom_values,
+            borderWidth: 1,
+        },
+        ]
+    }
+    resetOptions();
+    options = {
+        tooltips: { enabled: false },
+        onClick: (e) => {
+
+        },
+        legend: {
+            display: false
+        },
+        responsive: true,
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    // display: false
+                }
+            }],
+            yAxes: [{
+                gridLines: {
+                    display: false
+                },
+                ticks: {
+                    display: false,
+                    min: 6,
+                    max: -6,
+                }
+            }],
+            x: {
+                ticks: {
+                    callback: () => ('')
+                }
+            },
+            y: {
+                display: false,
+                title: {
+                    display: false,
+                    text: 'Value'
+                },
+                suggestedMin: 0,
+                suggestedMax: 200,
+
+            },
+            events: []
+        },
+        dragData: true,
+        dragX: false,
+        dragDataRound: 1,
+        dragOptions: {
+            round: 0,
+            showTooltip: false,
+        },
+        onDragEnd: function (e, datasetIndex, index, value) {
+            const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
+            // Substitute the appropriate scale IDs
+            var dataY = chart.scales[Object.keys(chart.scales)[1]].getValueForPixel(canvasPosition.y)
+            var dataX = chart.scales[Object.keys(chart.scales)[0]].getValueForPixel(canvasPosition.x)
+            if (dataY > 6) dataY = 6;
+            if (dataY < -6) dataY = -6;
+            chart.data.datasets[0].data[dataX] = dataY;
+            chart.update();
+            custom_values = chart.data.datasets[0].data;
+            //round all values in custom_values to 1 decimal place
+            custom_values = [Math.round(custom_values[0]), Math.round(custom_values[1]), Math.round(custom_values[2])]
+            setCustomEQ_BT([custom_values[1], custom_values[2], custom_values[0]]);
+            updateIndicator();
+        },
+        hover: {
+            onHover: function (e) {
+                // indicate that a datapoint is draggable by showing the 'grab' cursor when hovered
+                const point = this.getElementAtEvent(e)
+                if (point.length) e.target.style.cursor = 'grab'
+                else e.target.style.cursor = 'default'
+            }
+        }
+    }
+    drawChart(data);
+    clearButtons()
+    var buttons = document.getElementsByClassName("eq-button");
+    buttons[5].style.backgroundColor = "#ffffff";
+    buttons[5].style.color = "#000000";
+    current_eq = 6;
+}
+
+
+
+async function drawChart(data) {
+    if (chart) {
+        chart.destroy();
+      }
+
+      var extra_options = { responsive: true, maintainAspectRatio: false}
+
+    chart = new Chart("myChart", {
+        type: 'line',
+        data: data,
+        options: {...options, ...extra_options},
+    });
+}

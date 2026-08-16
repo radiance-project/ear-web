@@ -1,8 +1,10 @@
 // Dual connection (multipoint) management UI.
-// Injects a settings toggle + "Manage devices" row into the existing QUICK SETTINGS
-// panel (anchored on the #seperator element present on every model page), and a
-// management popup built on top of the app's existing #popup_container mechanism
-// (see transitions.js: showWarningPopup / closePopUp).
+// Injects a settings toggle into the existing QUICK SETTINGS panel (anchored on the
+// #seperator element present on every model page). The "Manage devices" submenu is reached
+// from that same row rather than a separate one - tapping the label (as opposed to the
+// switch itself) opens the management popup (see transitions.js: showWarningPopup /
+// closePopUp), and a right-arrow only appears once the toggle is on to signal there's more
+// to tap into.
 // Only activated for models flagged "dualConnection" in ear_config_file.json, via
 // initDualConnectionIfSupported() in bluetooth_socket.js.
 
@@ -15,25 +17,26 @@ function injectDualConnectUI() {
         return;
     }
     let toggleHtml = `
-        <div id="dual_connect_switch_container" class="settings-switch-container overflow-hidden">
-            <div class="settings-switch-button">
+        <div id="dual_connect_switch_container" class="settings-switch-container overflow-hidden" style="margin-left: -10px;">
+            <div class="settings-switch-button" style="margin-left: 10px;">
                 <div class="settings-switch-indicator">
                     <input type="checkbox" id="dual_connect_enable" class="settings-switch-checkbox" onclick="toggleDualConnect()"
                            style="opacity: 0; width: 300px; height:300px; cursor: pointer; margin-top: -6px; margin-left: -35px" />
                 </div>
             </div>
-            <div class="settings-switch-label">Dual Connection</div>
-        </div>`;
-    let manageHtml = `
-        <div id="dual_connect_manage_row" class="grid grid-cols-2 grid-rows-1" style="margin-left: -10px; cursor: pointer; display: none;" onclick="openDualConnectManager()">
-            <div class="settings-switch-label" style="margin-top: 3px;">Manage devices</div>
-            <div>
-                <img src="../assets/arrow_right.svg" alt="arrow-right" style="width: 20px; height: 20px; float: right;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex: 1; position: relative; z-index: 1; cursor: pointer;" onclick="openDualConnectManagerIfEnabled()">
+                <div class="settings-switch-label">Dual Connection</div>
+                <img id="dual_connect_arrow" src="../assets/arrow_right.svg" alt="arrow-right" style="width: 20px; height: 20px; display: none;">
             </div>
         </div>`;
 
     insertBeforeAnchorRow('[onclick*="showEarTipTestDialog"]', toggleHtml, seperator);
-    seperator.insertAdjacentHTML("beforebegin", manageHtml);
+}
+
+function openDualConnectManagerIfEnabled() {
+    if (dualConnectEnabled) {
+        openDualConnectManager();
+    }
 }
 
 function setDualEnableCheckbox(enabled) {
@@ -41,9 +44,9 @@ function setDualEnableCheckbox(enabled) {
     if (checkbox) {
         checkbox.checked = enabled;
     }
-    let manageRow = document.getElementById("dual_connect_manage_row");
-    if (manageRow) {
-        manageRow.style.display = enabled ? "grid" : "none";
+    let arrow = document.getElementById("dual_connect_arrow");
+    if (arrow) {
+        arrow.style.display = enabled ? "inline" : "none";
     }
     closeRebootPopupIfShown();
 }

@@ -77,6 +77,10 @@ function selectSpatialAudioMode(index) {
         showMutuallyExclusiveWarning("Spatial Audio", advancedEQEnabled ? "Advanced EQ" : "Bass Enhance");
         return;
     }
+    if (index !== 0 && typeof longPowerModeEnabled !== "undefined" && longPowerModeEnabled) {
+        showMutuallyExclusiveWarning("Spatial Audio", "Long Battery Life Mode");
+        return;
+    }
     setSpatialAudio_BT(index);
 }
 
