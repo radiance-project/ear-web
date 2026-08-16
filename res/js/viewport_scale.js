@@ -1,21 +1,21 @@
 (function () {
     const DESIGN_MARGIN = 20; // breathing room so the widget doesn't touch the window edges
+    const baselineDPR = window.devicePixelRatio || 1;
 
     function applyScale() {
         let container = document.getElementById("container_one");
         if (!container) {
             return;
         }
-        // Reset to measure natural (unscaled) size first.
-        container.style.transform = "";
         let naturalWidth = container.offsetWidth;
         let naturalHeight = container.offsetHeight;
         if (!naturalWidth || !naturalHeight) {
             return;
         }
-        let availableWidth = window.innerWidth - DESIGN_MARGIN * 2;
-        let availableHeight = window.innerHeight - DESIGN_MARGIN * 2;
-        let scale = Math.min(availableWidth / naturalWidth, availableHeight / naturalHeight, 1);
+        let zoomFactor = (window.devicePixelRatio || 1) / baselineDPR;
+        let availableWidth = window.innerWidth * zoomFactor - DESIGN_MARGIN * 2;
+        let availableHeight = window.innerHeight * zoomFactor - DESIGN_MARGIN * 2;
+        let scale = Math.min(availableWidth / naturalWidth, availableHeight / naturalHeight);
         if (!isFinite(scale) || scale <= 0) {
             scale = 1;
         }

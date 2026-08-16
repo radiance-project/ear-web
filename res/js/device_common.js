@@ -155,8 +155,8 @@ function injectAncUI() {
 // was shared identically by crobat, forretress. BASIC (no case battery, no in-ear toggle)
 // was shared identically by sticks, one. donphan, corsola, elekid, hoothoot each have a
 // small real difference (extra toggle, spacing, wrapper class) so are left as static HTML.
-const POPUP_SCAFFOLD_HTML = `            <div id="popup_container" class="h-screen w-full absolute z-[-10] opacity-0 ease-in-out duration-300">
-                <div id="popup_background" class="h-screen w-full bg-black opacity-[0.5]" onclick="closePopUp()"></div>
+const POPUP_SCAFFOLD_HTML = `            <div id="popup_container" class="absolute inset-0 z-[-10] opacity-0 ease-in-out duration-300">
+                <div id="popup_background" class="absolute inset-0 bg-black opacity-[0.5]" onclick="closePopUp()"></div>
                 <div id="popup_content" class="z-[-10]">
                     ERROR: There was an error displaying this popup. Please report it to the developers with steps to reproduce the error
                 </div>
