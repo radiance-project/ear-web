@@ -1,6 +1,11 @@
 
 function transToLeftGest(side) {
     current_side = side;
+    let caseGestureImg = document.getElementById("case_gesture_img")
+    if (caseGestureImg) {
+        caseGestureImg.style.opacity = "0"
+        caseGestureImg.style.zIndex = "-10"
+    }
     if (current_side == "l") {
         leftEarBattery.style.opacity = "0"
 
@@ -118,12 +123,18 @@ function transBackToLeft(e) {
     document.getElementById("eq_container_t").style.zIndex = "10"
 
     leftEarPeace.style.marginTop = "0px"
-    if (e == "MainControl") leftEarPeace.style.marginLeft = "40px"
+    if (e == "MainControl") leftEarPeace.style.marginLeft = "auto"
     else leftEarPeace.style.marginLeft = "0px"
     if (typeof rightEarPeace === 'undefined' || rightEarPeace === null) {
         leftEarPeace.style.marginLeft = "0px"
     }
     document.getElementById("test").style.zIndex = "-10"
+
+    let caseGestureImg = document.getElementById("case_gesture_img")
+    if (caseGestureImg) {
+        caseGestureImg.style.opacity = "0"
+        caseGestureImg.style.zIndex = "-10"
+    }
 
     //SAME FOR RIGHT EARPEACE
     if (typeof rightEarPeace !== 'undefined' && rightEarPeace !== null) {

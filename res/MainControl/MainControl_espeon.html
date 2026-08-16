@@ -39,30 +39,69 @@
             <div id="cont" style="margin-top: 20px;">
                 <div id="test" class="top-16 left-10 absolute ease-in-out duration-300"
                      style="opacity: 0; width: 300px; z-index: -10">
-                    Customisable
-                    <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
-                         onclick="changeGesture('double', 'l')">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">DOUBLE TAP</div>
-                        <div id="settings_subtitle_double" class="text-sm ml-5 text-gray-500"></div>
+                    <div id="test_ear_rows">
+                        Customisable
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="changeGesture('double', 'l')">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">DOUBLE TAP</div>
+                            <div id="settings_subtitle_double" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="changeGesture('triple', 'l')">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">TRIPLE TAP</div>
+                            <div id="settings_subtitle_triple" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="changeGesture('tap_and_hold', 'l')">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">TAP & HOLD</div>
+                            <div id="settings_subtitle_tap_and_hold" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="changeGesture('double_tap_and_hold', 'l')">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">DOUBLE TAP & HOLD</div>
+                            <div id="settings_subtitle_double_tap_and_hold" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div id="ring_button">
+                            <button className="p-4 pl-7 pr-7 border-[#1B1D1F] border-[1px] rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300">Ring</button>
+                        </div>
                     </div>
-                    <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
-                         onclick="changeGesture('triple', 'l')">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">TRIPLE TAP</div>
-                        <div id="settings_subtitle_triple" class="text-sm ml-5 text-gray-500"></div>
+                    <div id="test_case_rows" style="display: none;">
+                        Customisable
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="changeGesture('case_single_press')">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">SINGLE PRESS</div>
+                            <div id="settings_subtitle_case_single_press" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="openCaseDoublePressPanel()">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">DOUBLE PRESS</div>
+                            <div id="settings_subtitle_case_double_press" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="openCaseTriplePressPanel()">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">TRIPLE PRESS</div>
+                            <div id="settings_subtitle_case_triple_press" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="changeGesture('case_press_hold')">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">PRESS & HOLD</div>
+                            <div id="settings_subtitle_case_press_hold" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
+                             onclick="changeGesture('case_rotate')">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">ROTATE</div>
+                            <div id="settings_subtitle_case_rotate" class="text-sm ml-5 text-gray-500"></div>
+                        </div>
+                        <section class="mt-10">Not customisable</section>
+                        <div class="mt-1 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4">
+                            <div id="setting_title" class=" text-sm ml-5 text-gray-200">DOUBLE PRESS & HOLD</div>
+                            <div id="settings_subtitle" class="text-sm ml-5 text-gray-500">
+                                Lock / Unlock the knob
+                            </div>
+                        </div>
                     </div>
-                    <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
-                         onclick="changeGesture('tap_and_hold', 'l')">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">TAP & HOLD</div>
-                        <div id="settings_subtitle_tap_and_hold" class="text-sm ml-5 text-gray-500"></div>
-                    </div>
-                    <div class="mt-2 bg-[#1B1D1F] rounded-xl pt-5 pb-5 mt-4" style="cursor: pointer;"
-                         onclick="changeGesture('double_tap_and_hold', 'l')">
-                        <div id="setting_title" class=" text-sm ml-5 text-gray-200">DOUBLE TAP & HOLD</div>
-                        <div id="settings_subtitle_double_tap_and_hold" class="text-sm ml-5 text-gray-500"></div>
-                    </div>
-                    <div id="ring_button">
-                        <button className="p-4 pl-7 pr-7 border-[#1B1D1F] border-[1px] rounded-full mr-3 hover:bg-[#1B1D1F] ease-in-out duration-300">Ring</button>
-                    </div>
+                    <img id="case_gesture_img" class="ease-in-out duration-300"
+                         style="position: absolute; left: 320px; top: 40px; height: 220px; width: auto; opacity: 0; z-index: -10;" />
                 </div>
                 <!-- <IoSettingsOutline class="text-white h-7 w-7 mt-5 ml-5 -mb-12 absolute ease-in-out duration-300 cursor-pointer hover:text-[#1B1D1F]" id="settings_icon" /> -->
                 <div style="margin: 20px; margin-top: -20px;">
@@ -208,6 +247,7 @@
     <script src="../js/eq_espeon.js"></script>
     <script type="text/javascript" src="../js/control.js?v=20260101"></script>
     <script src="../js/espeon.js"></script>
+    <script src="../js/smart_knob.js"></script>
     <script src="../js/bluetooth_socket.js"></script>
     <script src="../js/dual_connect.js"></script>
     <script src="../js/audio_codec.js"></script>

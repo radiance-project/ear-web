@@ -109,6 +109,9 @@ var GESTURE_SLOTS = [
 
 function updateGesturesFromArray(records) {
     applyGestureRecords(records, GESTURE_TOPOLOGY, GESTURE_SLOTS);
+    if (typeof CASE_TOPOLOGY !== "undefined") {
+        applyGestureRecords(records, CASE_TOPOLOGY, CASE_SLOTS);
+    }
     loadCurrentGestures(current_side, false);
 }
 
@@ -118,13 +121,27 @@ function loadCurrentGestures(side, refresh = true) {
     }
     current_side = side;
     loadCurrentGesturesGeneric(side, GESTURE_TOPOLOGY, GESTURE_SLOTS);
+    if (typeof CASE_TOPOLOGY !== "undefined") {
+        loadCurrentGesturesGeneric(side, CASE_TOPOLOGY, CASE_SLOTS);
+    }
+    if (typeof toggleCaseGestureRows === "function") {
+        toggleCaseGestureRows(side === "case");
+    }
 }
 
 function changeGesture(type) {
-    renderGestureChangePopup(type, GESTURE_TOPOLOGY, GESTURE_SLOTS);
+    if (current_side === "case" && typeof CASE_TOPOLOGY !== "undefined") {
+        renderGestureChangePopup(type, CASE_TOPOLOGY, CASE_SLOTS);
+    } else {
+        renderGestureChangePopup(type, GESTURE_TOPOLOGY, GESTURE_SLOTS);
+    }
 }
 
 function checkboxCheck(evt, slotKey) {
-    checkboxCheckGeneric(evt, slotKey, GESTURE_TOPOLOGY, GESTURE_SLOTS);
+    if (current_side === "case" && typeof CASE_TOPOLOGY !== "undefined") {
+        checkboxCheckGeneric(evt, slotKey, CASE_TOPOLOGY, CASE_SLOTS);
+    } else {
+        checkboxCheckGeneric(evt, slotKey, GESTURE_TOPOLOGY, GESTURE_SLOTS);
+    }
 }
 
