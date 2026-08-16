@@ -97,6 +97,7 @@ async function initDevice() {
     await new Promise(resolve => setTimeout(resolve, 100));
     get_enhanced_bass();
     await new Promise(resolve => setTimeout(resolve, 100));
+    hideDeviceLoadingOverlay();
 }
 
 
@@ -838,7 +839,6 @@ async function getConfigForFirmware() {
     // Input validation
     if (!modelBase?.trim() || !firmwareVersion?.trim()) {
         console.error("Model base or firmware version is not set. Cannot get config.");
-        hideDeviceLoadingOverlay();
         return false;
     }
 
@@ -959,8 +959,6 @@ async function getConfigForFirmware() {
     } catch (error) {
         console.error("Failed to get config for firmware:", error);
         return false;
-    } finally {
-        hideDeviceLoadingOverlay();
     }
 }
 
