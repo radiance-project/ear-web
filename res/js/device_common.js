@@ -280,7 +280,176 @@ const QUICK_SETTINGS_BASIC_HTML = `                                        <div 
                                             </div>
                                         </div>`;
 
+const BASS_PANEL_HTML = `
+                                        <div class="w-fit flex m-auto text-md mb-5 mt-2">
+
+                                            %%BASS_TITLE%%
+
+                                        </div>
+
+                                        <div id="selector_bass"
+                                             class="w-20 p-2 bg-white rounded-full h-[38px] -mb-[59px] ml-[65px] z-1 relative ease-in-out duration-200">
+
+                                        </div>
+
+                                        <div class="w-fit grid grid-cols-2 grid-rows-1 bg-black gap-4 m-auto mt-5 rounded-full ml">
+
+                                            <div id="one"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setBassEnhance(1, 1)">
+
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="bass_on" style="width: 23px; stroke: black !important; fill:black !important;">
+
+                                                    <use xlink:href="../assets/ear_bass_enhance_on.svg#load"></use>
+
+                                                </svg>
+
+                                            </div>
+
+                                            <div id="two"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setBassEnhance(0, 1)">
+
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="bass_off" style="width: 23px; fill: white !important;">
+
+                                                    <use xlink:href="../assets/ear_bass_enhance_off.svg#load"></use>
+
+                                                </svg>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="w-fit grid grid-cols-2 grid-rows-1 gap-4 m-auto text-[10px] mt-2">
+
+                                            <div id="desc_one" class=" text-center w-20">ON</div>
+
+                                            <div id="desc_two" class=" text-center w-20">Off</div>
+
+                                        </div>
+
+                                        <div id="bass_strength_selector" class="ease-in-out duration-300 mt-[30px] m-auto mt-2 w-fit ">
+
+                                            <div id="bass_strength_length_selector" class="h-[12px] rounded-xl ml-[5px] ease-in-out duration-200 bg-white -mb-[16px] relative" style="width: 12px;"></div>
+
+                                            <div class="grid ease-out duration-200 grid-cols-5 grid-rows-1 bg-black rounded-full opacity-100 pr-[10px]" style="gap: 2rem; width: 190px;">
+
+                                                <div id="stage_one"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(1, 1)">
+
+                                                    <div id="stage_one_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full"></div>
+
+                                                </div>
+
+                                                <div id="stage_two"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(2, 1)">
+
+                                                    <div id="stage_two_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full ">
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div id="stage_three"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(3, 1)">
+
+                                                    <div id="stage_three_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full ">
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div id="stage_four"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(4, 1)">
+
+                                                    <div id="stage_four_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full">
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div id="stage_five"
+                                                     class="p-2 text-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(5, 1)">
+
+                                                    <div id="stage_five_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="m-auto w-full text-[13px] text-center mt-2 opacity-100" id="bass_level_label">
+                                                Level 1
+                                            </div>
+                                        </div>`;
+
+
 // default implementation (no per-model overrides)
+const HEADER_EARBUD_HTML = `                        <div id="image-container"
+                             class='justify-center items-center flex relative ease-in-out duration-300'>
+                            <div id="left_ear" class='w-52 ease-in-out duration-300'>
+                                <img src="../assets/nothing_connected2.webp"
+                                     class='h-44 duration-500 ease-in-out relative cursor-pointer'
+                                     onclick="transToLeftGest('l'); loadCurrentGestures('l')" id="left_ear_peace"
+                                     style="z-Index:100; margin: auto; transform: scale(0.85);" />
+                                <div id="left_ear_battery" class="ease-in-out duration-300" style="opacity: 100; margin-top: -10px;">
+                                    <div id="battery-l" class='text-center'>
+                                        L
+                                    </div>
+                                    <div id="battery_bar_l" class='w-20 m-auto mt-2 rounded-md bg-gray-600'>
+                                        <div id="battery_bar_fill_l" class="bg-white h-2 w-1/2 rounded-md"></div>
+                                    </div>
+                                    <div id="ring_button_l" class="text-center m-auto w-fit -mb-8 mt-3 ease-in-out duration-300" onclick="ringBudLeft()">
+                                        <div id="ring_button-l" class="p-1 pl-7 -mr-32 pr-7 border-red-900 border-[2px] text-red-900 cursor-pointer font-bold  rounded-full mr-3 text-sm hover:bg-red-900 hover:text-white ease-in-out duration-300" style="margin-right: 0px;">Ring</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="right_ear" class='w-52 w-34 ease-in-out duration-300'>
+                                <img src="../assets/nothing_connected.webp"
+                                     class='h-44 w-34 margin-auto duration-[2s] ease-in-out cursor-pointer'
+                                     onclick="transToLeftGest('r'); loadCurrentGestures('r')" id="right_ear_peace" style="margin: auto; transform: scale(0.85);" />
+                                <div id="right_ear_battery" class="ease-in-out duration-300" style="opacity: 100; margin-top: -10px;">
+                                    <div id="battery-r" class='text-center'>
+                                        R
+                                    </div>
+                                    <div id="battery_bar_r" class='w-20 m-auto mt-2 rounded-md bg-gray-600'>
+                                        <div id="battery_bar_fill_r" class="bg-white h-2 w-1/2 rounded-md"></div>
+                                    </div>
+                                    <div id="ring_button_r" class="text-center m-auto ml-14 w-fit -mb-8 mt-3 ease-in-out duration-300" onclick="ringBudRight()">
+                                        <div id="ring_button-r" class="p-1 pl-7 -mr-32 pr-7 border-red-900 border-[2px] text-red-900 cursor-pointer font-bold rounded-full text-sm hover:bg-red-900 hover:text-white ease-in-out duration-300" style="margin-right: 0px;">Ring</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+const HEADER_HEADPHONE_HTML = `                        <div id="image-container"
+                             class='justify-center items-center flex relative ease-in-out duration-300'>
+                            <div id="left_ear" class='w-52 ease-in-out duration-300 flex flex-col items-center'>
+                                <img src="../assets/nothing_connected2.webp"
+                                     class='h-44 duration-500 ease-in-out relative cursor-pointer'
+                                     onclick="transToLeftGest('l'); loadCurrentGestures('l')" id="left_ear_peace"
+                                     style="z-Index:100; transform: scale(0.85);" />
+                                <div id="left_ear_battery" class="ease-in-out duration-300" style="opacity: 100; margin-top: -10px;">
+                                    <div id="battery-l" class='text-center'>
+                                        L
+                                    </div>
+                                    <div id="battery_bar_l" class='w-20 m-auto mt-2 rounded-md bg-gray-600'>
+                                        <div id="battery_bar_fill_l" class="bg-white h-2 w-1/2 rounded-md"></div>
+                                    </div>
+                                    <div id="ring_button_l" class="text-center m-auto w-fit -mb-8 mt-3 ease-in-out duration-300" onclick="ringBudLeft()">
+                                        <div id="ring_button-l" class="p-1 pl-7 -mr-32 pr-7 border-red-900 border-[2px] text-red-900 cursor-pointer font-bold  rounded-full mr-3 text-sm hover:bg-red-900 hover:text-white ease-in-out duration-300" style="margin-right: 0px;">Ring</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
 function injectSharedStaticUI() {
     let popup = document.getElementById("popup_container_placeholder");
     if (popup) popup.outerHTML = POPUP_SCAFFOLD_HTML;
@@ -298,6 +467,17 @@ function injectSharedStaticUI() {
         } else if (variant === "basic") {
             qs.innerHTML = QUICK_SETTINGS_BASIC_HTML;
         }
+    }
+
+    let bass = document.getElementById("bass_enhance_container");
+    if (bass) {
+        let title = bass.dataset.bassVariant === "ultra" ? "ULTRA BASS" : "BASS ENHANCE";
+        bass.innerHTML = BASS_PANEL_HTML.replace("%%BASS_TITLE%%", title);
+    }
+
+    let header = document.getElementById("header_images_placeholder");
+    if (header) {
+        header.outerHTML = header.dataset.headerVariant === "headphone" ? HEADER_HEADPHONE_HTML : HEADER_EARBUD_HTML;
     }
 }
 
@@ -511,6 +691,7 @@ function setBassEnhance(state, is_send=false) {
 function setBassLevel(new_level, is_send=false) {
     if (new_level) level = new_level
     bass_enhance[1] = level
+    console.log("setBassLevel", level)
     switch (level) {
         case 1:
             document.getElementById("bass_strength_length_selector").style.width = "12px"
@@ -580,9 +761,9 @@ function showEarTipTestDialog() {
     class='justify-center items-center flex relative ease-in-out duration-300' style="margin-left: -28px;">
 <div id="left_ear" class='w-52 ease-in-out duration-300'>
     <img src="../assets/ear_two_white_left.webp"
-            class='h-44 ml-[40px] duration-500 ease-in-out relative cursor-pointer'
+            class='h-44 duration-500 ease-in-out relative cursor-pointer'
             id="left_ear_peace"
-            style="z-Index:100; margin: 0 0 0 40px; transform: scale(0.85);" />
+            style="z-Index:100; margin: auto; transform: scale(0.85);" />
     <div id="not_left_ear_battery" class="ease-in-out duration-300" style="opacity: 100; margin-top: -10px;">
         <div id="not-battery-l" class='text-center' style="margin-left: 45px">
             L <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19"><path d="M9.5,0C6.9804,0 4.5641,1.0008 2.7824,2.7824C1.0008,4.564 0,6.9805 0,9.4999C0,12.0193 1.0008,14.4357 2.7824,16.2174C4.5641,17.999 6.9806,18.9998 9.5,18.9998C12.0194,18.9998 14.4359,17.999 16.2175,16.2174C17.9991,14.4358 19,12.0193 19,9.4999C19,7.8324 18.5611,6.1941 17.7273,4.7498C16.8935,3.3056 15.6941,2.1063 14.25,1.2725C12.8058,0.4388 11.1676,0 9.5,0ZM14.8923,7.8253L9.1922,13.0502C9.0117,13.2158 8.7742,13.3052 8.5295,13.2999C8.2847,13.2945 8.0514,13.195 7.8784,13.0218L5.0283,10.1717C4.845,9.9947 4.7405,9.7516 4.7382,9.4968C4.736,9.2418 4.8364,8.9969 5.0164,8.8167C5.1966,8.6365 5.4417,8.5363 5.6965,8.5384C5.9512,8.5406 6.1946,8.6451 6.3716,8.8285L8.5785,11.0353L13.608,6.4248C13.8581,6.1955 14.2115,6.1169 14.5353,6.2189C14.8591,6.3207 15.1039,6.5875 15.1775,6.919C15.2512,7.2502 15.1423,7.5958 14.8923,7.8253Z" fill="gray"/></svg>
