@@ -1,407 +1,522 @@
 var FASTPAIR_MODELS = {
-        "31D53D": {
-            name: "Nothing Ear (1)",
-            base: "B181",
-            leftImg: "../assets/ear_one_white_left.webp",
-            caseImg: "../assets/ear_one_white_case.webp",
-            rightImg: "../assets/ear_one_white_right.webp",
-            duoImg: "../assets/ear_one_white_duo.webp",
-            isANC: true
-        },
-        "624011": {
-            name: "Nothing Ear (1)",
-            base: "B181",
-            leftImg: "../assets/ear_one_black_left.webp",
-            caseImg: "../assets/ear_one_black_case.webp",
-            rightImg: "../assets/ear_one_black_right.webp",
-            duoImg: "../assets/ear_one_black_duo.webp",
-            isANC: true
-        },
-        "1016DD": {
-            name: "Nothing Ear (stick)",
-            base: "B157",
-            leftImg: "../assets/ear_stick_left.webp",
-            caseImg: "../assets/ear_stick_case_none.webp",
-            rightImg: "../assets/ear_stick_right.webp",
-            duoImg: "../assets/ear_stick_white_duo.webp",
-            isANC: false
-        },
-        "DEE8C0": {
-            name: "Nothing Ear (2)",
-            base: "B155",
-            leftImg: "../assets/ear_two_white_left.webp",
-            caseImg: "../assets/ear_two_white_case.webp",
-            rightImg: "../assets/ear_two_white_right.webp",
-            duoImg: "../assets/ear_two_white_duo.webp",
-            isANC: true
-        },
-        "ACC520": {
-            name: "Nothing Ear (2)",
-            base: "B155",
-            leftImg: "../assets/ear_two_black_left.webp",
-            caseImg: "../assets/ear_two_black_case.webp",
-            rightImg: "../assets/ear_two_black_right.webp",
-            duoImg: "../assets/ear_two_black_duo.webp",
-            isANC: true
-        },
-        "5F8F82": {
-            name: "CMF Buds Pro",
-            base: "B163",
-            leftImg: "../assets/ear_corsola_orange_left.webp",
-            caseImg: "../assets/ear_corsola_orange_case.webp",
-            rightImg: "../assets/ear_corsola_orange_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "ADD2C4": {
-            name: "CMF Buds Pro",
-            base: "B163",
-            leftImg: "../assets/ear_corsola_black_left.webp",
-            caseImg: "../assets/ear_corsola_black_case.webp",
-            rightImg: "../assets/ear_corsola_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "2EB1CA": {
-            name: "CMF Buds Pro",
-            base: "B163",
-            leftImg: "../assets/ear_corsola_white_left.webp",
-            caseImg: "../assets/ear_corsola_white_case.webp",
-            rightImg: "../assets/ear_corsola_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "A20444": {
-            name: "Nothing Ear",
-            base: "B171",
-            leftImg: "../assets/ear_twos_black_left.webp",
-            caseImg: "../assets/ear_twos_black_case.webp",
-            rightImg: "../assets/ear_twos_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "FEB1C7": {
-            name: "Nothing Ear",
-            base: "B171",
-            leftImg: "../assets/ear_twos_white_left.webp",
-            caseImg: "../assets/ear_twos_white_case.webp",
-            rightImg: "../assets/ear_twos_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "03464E": {
-            name: "Nothing Ear (a)",
-            base: "B162",
-            leftImg: "../assets/ear_color_black_left.webp",
-            caseImg: "../assets/ear_color_black_case.webp",
-            rightImg: "../assets/ear_color_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "5E3FBC": {
-            name: "Nothing Ear (a)",
-            base: "B162",
-            leftImg: "../assets/ear_color_white_left.webp",
-            caseImg: "../assets/ear_color_white_case.webp",
-            rightImg: "../assets/ear_color_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "8B6380": {
-            name: "Nothing Ear (a)",
-            base: "B162",
-            leftImg: "../assets/ear_color_yellow_left.webp",
-            caseImg: "../assets/ear_color_yellow_case.webp",
-            rightImg: "../assets/ear_color_yellow_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "4DFC4A": {
-            name: "CMF Neckband Pro",
-            base: "B164",
-            leftImg: "../assets/crobat_orange.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "../assets/crobat_orange.webp",
-            isANC: true
-        },
-        "26C190": {
-            name: "CMF Neckband Pro",
-            base: "B164",
-            leftImg: "../assets/crobat_white.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "../assets/crobat_white.webp",
-            isANC: true
-        },
-        "AE35FD": {
-            name: "CMF Neckband Pro",
-            base: "B164",
-            leftImg: "../assets/crobat_black.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "../assets/crobat_black.webp",
-            isANC: true
-        },
-        "150A27": {
-            name: "CMF Buds",
-            base: "B168",
-            leftImg: "../assets/donphan_black_left.webp",
-            caseImg: "../assets/donphan_black_case.webp",
-            rightImg: "../assets/donphan_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "ACCE54": {
-            name: "CMF Buds",
-            base: "B168",
-            leftImg: "../assets/donphan_white_left.webp",
-            caseImg: "../assets/donphan_white_case.webp",
-            rightImg: "../assets/donphan_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "D35E18": {
-            name: "CMF Buds",
-            base: "B168",
-            leftImg: "../assets/donphan_orange_left.webp",
-            caseImg: "../assets/donphan_orange_case.webp",
-            rightImg: "../assets/donphan_orange_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "F29566": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            leftImg: "../assets/espeon_black_left.webp",
-            caseImg: "../assets/espeon_black_case.webp",
-            rightImg: "../assets/espeon_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "CA36A6": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            leftImg: "../assets/espeon_white_left.webp",
-            caseImg: "../assets/espeon_white_case.webp",
-            rightImg: "../assets/espeon_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "A7B220": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            leftImg: "../assets/espeon_orange_left.webp",
-            caseImg: "../assets/espeon_orange_case.webp",
-            rightImg: "../assets/espeon_orange_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "2B353E": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            leftImg: "../assets/espeon_blue_left.webp",
-            caseImg: "../assets/espeon_blue_case.webp",
-            rightImg: "../assets/espeon_blue_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "FC3AAF": {
-            name: "Nothing Ear (open)",
-            base: "B174",
-            leftImg: "../assets/flaffy_white_left.webp",
-            caseImg: "../assets/flaffy_white_case.webp",
-            rightImg: "../assets/flaffy_white_right.webp",
-            duoImg: "",
-            isANC: false
-        },
-        "4AEB6E": {
-            name: "CMF Buds 2 Plus",
-            base: "B184",
-            leftImg: "../assets/b184_white_left.webp",
-            caseImg: "../assets/b184_white_case.webp",
-            rightImg: "../assets/b184_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "5C587F": {
-            name: "CMF Buds 2 Plus",
-            base: "B184",
-            leftImg: "../assets/b184_blue_left.webp",
-            caseImg: "../assets/b184_blue_case.webp",
-            rightImg: "../assets/b184_blue_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "19EF24": {
-            name: "CMF Buds 2",
-            base: "B179",
-            leftImg: "../assets/b179_black_left.webp",
-            caseImg: "../assets/b179_black_case.webp",
-            rightImg: "../assets/b179_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "FF2AB0": {
-            name: "CMF Buds 2",
-            base: "B179",
-            leftImg: "../assets/b179_green_left.webp",
-            caseImg: "../assets/b179_green_case.webp",
-            rightImg: "../assets/b179_green_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "D9AB5D": {
-            name: "CMF Buds 2",
-            base: "B179",
-            leftImg: "../assets/b179_orange_left.webp",
-            caseImg: "../assets/b179_orange_case.webp",
-            rightImg: "../assets/b179_orange_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "70F8E3": {
-            name: "CMF Buds 2a",
-            base: "B185",
-            leftImg: "../assets/b185_black_left.webp",
-            caseImg: "../assets/b185_black_case.webp",
-            rightImg: "../assets/b185_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "ED5412": {
-            name: "CMF Buds 2a",
-            base: "B185",
-            leftImg: "../assets/b185_white_left.webp",
-            caseImg: "../assets/b185_white_case.webp",
-            rightImg: "../assets/b185_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "509CAE": {
-            name: "CMF Buds 2a",
-            base: "B185",
-            leftImg: "../assets/b185_orange_left.webp",
-            caseImg: "../assets/b185_orange_case.webp",
-            rightImg: "../assets/b185_orange_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "C19ECD": {
-            name: "Nothing Headphone (1)",
-            base: "B170",
-            leftImg: "../assets/b170_black_left.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "",
-            isANC: true
-        },
-        "2D6FDA": {
-            name: "Nothing Headphone (1)",
-            base: "B170",
-            leftImg: "../assets/b170_grey_left.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "",
-            isANC: true
-        },
-        "C34F3B": {
-            name: "Nothing Ear (a)",
-            base: "B162",
-            altBase: "B183",
-            leftImg: "../assets/ear_color_black_left.webp",
-            caseImg: "../assets/ear_color_black_case.webp",
-            rightImg: "../assets/ear_color_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "404D6D": {
-            name: "Nothing Ear (a)",
-            base: "B162",
-            altBase: "B183",
-            leftImg: "../assets/ear_color_white_left.webp",
-            caseImg: "../assets/ear_color_white_case.webp",
-            rightImg: "../assets/ear_color_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "839E9A": {
-            name: "Nothing Ear (a)",
-            base: "B162",
-            altBase: "B183",
-            leftImg: "../assets/ear_color_yellow_left.webp",
-            caseImg: "../assets/ear_color_yellow_case.webp",
-            rightImg: "../assets/ear_color_yellow_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "2F45F5": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            altBase: "B187",
-            leftImg: "../assets/espeon_black_left.webp",
-            caseImg: "../assets/espeon_black_case.webp",
-            rightImg: "../assets/espeon_black_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "E1BE45": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            altBase: "B187",
-            leftImg: "../assets/espeon_white_left.webp",
-            caseImg: "../assets/espeon_white_case.webp",
-            rightImg: "../assets/espeon_white_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "1253C0": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            altBase: "B187",
-            leftImg: "../assets/espeon_orange_left.webp",
-            caseImg: "../assets/espeon_orange_case.webp",
-            rightImg: "../assets/espeon_orange_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "0F1A4F": {
-            name: "CMF Buds Pro 2",
-            base: "B172",
-            altBase: "B187",
-            leftImg: "../assets/espeon_blue_left.webp",
-            caseImg: "../assets/espeon_blue_case.webp",
-            rightImg: "../assets/espeon_blue_right.webp",
-            duoImg: "",
-            isANC: true
-        },
-        "1EFB39": {
-            name: "CMF Headphone Pro",
-            base: "B175",
-            leftImg: "../assets/b175_black_left.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "",
-            isANC: true
-        },
-        "73C9EB": {
-            name: "CMF Headphone Pro",
-            base: "B175",
-            leftImg: "../assets/b175_white_left.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "",
-            isANC: true
-        },
-        "563DA5": {
-            name: "CMF Headphone Pro",
-            base: "B175",
-            leftImg: "../assets/b175_green_left.webp",
-            caseImg: "",
-            rightImg: "",
-            duoImg: "",
-            isANC: true
-        }
+    "31D53D": {
+        "name": "Nothing ear (1)",
+        "base": "B181",
+        "leftImg": "../assets/b181_white_left.webp",
+        "caseImg": "../assets/b181_white_case.webp",
+        "rightImg": "../assets/b181_white_right.webp",
+        "duoImg": "../assets/b181_white_duo.webp"
+    },
+    "624011": {
+        "name": "Nothing ear (1)",
+        "base": "B181",
+        "leftImg": "../assets/b181_black_left.webp",
+        "caseImg": "../assets/b181_black_case.webp",
+        "rightImg": "../assets/b181_black_right.webp",
+        "duoImg": "../assets/b181_black_duo.webp"
+    },
+    "1016DD": {
+        "name": "Ear (Stick)",
+        "base": "B157",
+        "leftImg": "../assets/b157_white_left.webp",
+        "caseImg": "../assets/b157_white_case.webp",
+        "rightImg": "../assets/b157_white_right.webp",
+        "duoImg": "../assets/b157_white_duo.webp"
+    },
+    "ACC520": {
+        "name": "Ear (2)",
+        "base": "B155",
+        "leftImg": "../assets/b155_white_left.webp",
+        "caseImg": "../assets/b155_white_case.webp",
+        "rightImg": "../assets/b155_white_right.webp",
+        "duoImg": "../assets/b155_white_duo.webp"
+    },
+    "DEE8C0": {
+        "name": "Ear (2)",
+        "base": "B155",
+        "leftImg": "../assets/b155_black_left.webp",
+        "caseImg": "../assets/b155_black_case.webp",
+        "rightImg": "../assets/b155_black_right.webp",
+        "duoImg": "../assets/b155_black_duo.webp"
+    },
+    "FEB1C7": {
+        "name": "Nothing Ear",
+        "base": "B171",
+        "leftImg": "../assets/b171_white_left.webp",
+        "caseImg": "../assets/b171_white_case.webp",
+        "rightImg": "../assets/b171_white_right.webp",
+        "duoImg": "../assets/b171_white_duo.webp"
+    },
+    "A20444": {
+        "name": "Nothing Ear",
+        "base": "B171",
+        "leftImg": "../assets/b171_black_left.webp",
+        "caseImg": "../assets/b171_black_case.webp",
+        "rightImg": "../assets/b171_black_right.webp",
+        "duoImg": "../assets/b171_black_duo.webp"
+    },
+    "5E3FBC": {
+        "name": "Nothing Ear (a)",
+        "base": "B162",
+        "leftImg": "../assets/b162_white_left.webp",
+        "caseImg": "../assets/b162_white_case.webp",
+        "rightImg": "../assets/b162_white_right.webp",
+        "duoImg": "../assets/b162_white_duo.webp"
+    },
+    "03464E": {
+        "name": "Nothing Ear (a)",
+        "base": "B162",
+        "leftImg": "../assets/b162_black_left.webp",
+        "caseImg": "../assets/b162_black_case.webp",
+        "rightImg": "../assets/b162_black_right.webp",
+        "duoImg": "../assets/b162_black_duo.webp"
+    },
+    "8B6380": {
+        "name": "Nothing Ear (a)",
+        "base": "B162",
+        "leftImg": "../assets/b162_yellow_left.webp",
+        "caseImg": "../assets/b162_yellow_case.webp",
+        "rightImg": "../assets/b162_yellow_right.webp",
+        "duoImg": "../assets/b162_yellow_duo.webp"
+    },
+    "FC3AAF": {
+        "name": "Nothing Ear (open)",
+        "base": "B174",
+        "leftImg": "../assets/b174_white_left.webp",
+        "caseImg": "../assets/b174_white_case.webp",
+        "rightImg": "../assets/b174_white_right.webp",
+        "duoImg": "../assets/b174_white_duo.webp"
+    },
+    "5F8F82": {
+        "name": "Buds Pro",
+        "base": "B163",
+        "leftImg": "../assets/b163_orange_left.webp",
+        "caseImg": "../assets/b163_orange_case.webp",
+        "rightImg": "../assets/b163_orange_right.webp",
+        "duoImg": "../assets/b163_orange_duo.webp"
+    },
+    "2EB1CA": {
+        "name": "Buds Pro",
+        "base": "B163",
+        "leftImg": "../assets/b163_white_left.webp",
+        "caseImg": "../assets/b163_white_case.webp",
+        "rightImg": "../assets/b163_white_right.webp",
+        "duoImg": "../assets/b163_white_duo.webp"
+    },
+    "ADD2C4": {
+        "name": "Buds Pro",
+        "base": "B163",
+        "leftImg": "../assets/b163_black_left.webp",
+        "caseImg": "../assets/b163_black_case.webp",
+        "rightImg": "../assets/b163_black_right.webp",
+        "duoImg": "../assets/b163_black_duo.webp"
+    },
+    "4DFC4A": {
+        "name": "Neckband Pro",
+        "base": "B164",
+        "leftImg": "../assets/b164_orange_left.webp",
+        "caseImg": "../assets/b164_orange_case.webp",
+        "rightImg": "../assets/b164_orange_right.webp",
+        "duoImg": "../assets/b164_orange_duo.webp"
+    },
+    "26C190": {
+        "name": "Neckband Pro",
+        "base": "B164",
+        "leftImg": "../assets/b164_white_left.webp",
+        "caseImg": "../assets/b164_white_case.webp",
+        "rightImg": "../assets/b164_white_right.webp",
+        "duoImg": "../assets/b164_white_duo.webp"
+    },
+    "AE35FD": {
+        "name": "Neckband Pro",
+        "base": "B164",
+        "leftImg": "../assets/b164_black_left.webp",
+        "caseImg": "../assets/b164_black_case.webp",
+        "rightImg": "../assets/b164_black_right.webp",
+        "duoImg": "../assets/b164_black_duo.webp"
+    },
+    "D35E18": {
+        "name": "CMF Buds",
+        "base": "B168",
+        "leftImg": "../assets/b168_orange_left.webp",
+        "caseImg": "../assets/b168_orange_case.webp",
+        "rightImg": "../assets/b168_orange_right.webp",
+        "duoImg": "../assets/b168_orange_duo.webp"
+    },
+    "ACCE54": {
+        "name": "CMF Buds",
+        "base": "B168",
+        "leftImg": "../assets/b168_white_left.webp",
+        "caseImg": "../assets/b168_white_case.webp",
+        "rightImg": "../assets/b168_white_right.webp",
+        "duoImg": "../assets/b168_white_duo.webp"
+    },
+    "150A27": {
+        "name": "CMF Buds",
+        "base": "B168",
+        "leftImg": "../assets/b168_black_left.webp",
+        "caseImg": "../assets/b168_black_case.webp",
+        "rightImg": "../assets/b168_black_right.webp",
+        "duoImg": "../assets/b168_black_duo.webp"
+    },
+    "F29566": {
+        "name": "CMF Buds Pro 2",
+        "base": "B172",
+        "leftImg": "../assets/b172_black_left.webp",
+        "caseImg": "../assets/b172_black_case.webp",
+        "rightImg": "../assets/b172_black_right.webp",
+        "duoImg": "../assets/b172_black_duo.webp"
+    },
+    "CA36A6": {
+        "name": "CMF Buds Pro 2",
+        "base": "B172",
+        "leftImg": "../assets/b172_white_left.webp",
+        "caseImg": "../assets/b172_white_case.webp",
+        "rightImg": "../assets/b172_white_right.webp",
+        "duoImg": "../assets/b172_white_duo.webp"
+    },
+    "A7B220": {
+        "name": "CMF Buds Pro 2",
+        "base": "B172",
+        "leftImg": "../assets/b172_orange_left.webp",
+        "caseImg": "../assets/b172_orange_case.webp",
+        "rightImg": "../assets/b172_orange_right.webp",
+        "duoImg": "../assets/b172_orange_duo.webp"
+    },
+    "2B353E": {
+        "name": "CMF Buds Pro 2",
+        "base": "B172",
+        "leftImg": "../assets/b172_blue_left.webp",
+        "caseImg": "../assets/b172_blue_case.webp",
+        "rightImg": "../assets/b172_blue_right.webp",
+        "duoImg": "../assets/b172_blue_duo.webp"
+    },
+    "C34F3B": {
+        "name": "Nothing Ear (a)",
+        "base": "B183",
+        "altBase": "B162",
+        "leftImg": "../assets/b183_black_left.webp",
+        "caseImg": "../assets/b183_black_case.webp",
+        "rightImg": "../assets/b183_black_right.webp",
+        "duoImg": "../assets/b183_black_duo.webp"
+    },
+    "404D6D": {
+        "name": "Nothing Ear (a)",
+        "base": "B183",
+        "altBase": "B162",
+        "leftImg": "../assets/b183_white_left.webp",
+        "caseImg": "../assets/b183_white_case.webp",
+        "rightImg": "../assets/b183_white_right.webp",
+        "duoImg": "../assets/b183_white_duo.webp"
+    },
+    "839E9A": {
+        "name": "Nothing Ear (a)",
+        "base": "B183",
+        "altBase": "B162",
+        "leftImg": "../assets/b183_yellow_left.webp",
+        "caseImg": "../assets/b183_yellow_case.webp",
+        "rightImg": "../assets/b183_yellow_right.webp",
+        "duoImg": "../assets/b183_yellow_duo.webp"
+    },
+    "19EF24": {
+        "name": "CMF Buds 2",
+        "base": "B179",
+        "leftImg": "../assets/b179_black_left.webp",
+        "caseImg": "../assets/b179_black_case.webp",
+        "rightImg": "../assets/b179_black_right.webp",
+        "duoImg": "../assets/b179_black_duo.webp"
+    },
+    "FF2AB0": {
+        "name": "CMF Buds 2",
+        "base": "B179",
+        "leftImg": "../assets/b179_green_left.webp",
+        "caseImg": "../assets/b179_green_case.webp",
+        "rightImg": "../assets/b179_green_right.webp",
+        "duoImg": "../assets/b179_green_duo.webp"
+    },
+    "D9AB5D": {
+        "name": "CMF Buds 2",
+        "base": "B179",
+        "leftImg": "../assets/b179_orange_left.webp",
+        "caseImg": "../assets/b179_orange_case.webp",
+        "rightImg": "../assets/b179_orange_right.webp",
+        "duoImg": "../assets/b179_orange_duo.webp"
+    },
+    "5C587F": {
+        "name": "CMF Buds 2 Plus",
+        "base": "B184",
+        "leftImg": "../assets/b184_blue_left.webp",
+        "caseImg": "../assets/b184_blue_case.webp",
+        "rightImg": "../assets/b184_blue_right.webp",
+        "duoImg": "../assets/b184_blue_duo.webp"
+    },
+    "4AEB6E": {
+        "name": "CMF Buds 2 Plus",
+        "base": "B184",
+        "leftImg": "../assets/b184_white_left.webp",
+        "caseImg": "../assets/b184_white_case.webp",
+        "rightImg": "../assets/b184_white_right.webp",
+        "duoImg": "../assets/b184_white_duo.webp"
+    },
+    "70F8E3": {
+        "name": "CMF Buds 2a",
+        "base": "B185",
+        "leftImg": "../assets/b185_black_left.webp",
+        "caseImg": "../assets/b185_black_case.webp",
+        "rightImg": "../assets/b185_black_right.webp",
+        "duoImg": "../assets/b185_black_duo.webp"
+    },
+    "ED5412": {
+        "name": "CMF Buds 2a",
+        "base": "B185",
+        "leftImg": "../assets/b185_white_left.webp",
+        "caseImg": "../assets/b185_white_case.webp",
+        "rightImg": "../assets/b185_white_right.webp",
+        "duoImg": "../assets/b185_white_duo.webp"
+    },
+    "509CAE": {
+        "name": "CMF Buds 2a",
+        "base": "B185",
+        "leftImg": "../assets/b185_orange_left.webp",
+        "caseImg": "../assets/b185_orange_case.webp",
+        "rightImg": "../assets/b185_orange_right.webp",
+        "duoImg": "../assets/b185_orange_duo.webp"
+    },
+    "2F45F5": {
+        "name": "CMF Buds Pro 2",
+        "base": "B187",
+        "altBase": "B172",
+        "leftImg": "../assets/b187_black_left.webp",
+        "caseImg": "../assets/b187_black_case.webp",
+        "rightImg": "../assets/b187_black_right.webp",
+        "duoImg": "../assets/b187_black_duo.webp"
+    },
+    "E1BE45": {
+        "name": "CMF Buds Pro 2",
+        "base": "B187",
+        "altBase": "B172",
+        "leftImg": "../assets/b187_white_left.webp",
+        "caseImg": "../assets/b187_white_case.webp",
+        "rightImg": "../assets/b187_white_right.webp",
+        "duoImg": "../assets/b187_white_duo.webp"
+    },
+    "1253C0": {
+        "name": "CMF Buds Pro 2",
+        "base": "B187",
+        "altBase": "B172",
+        "leftImg": "../assets/b187_orange_left.webp",
+        "caseImg": "../assets/b187_orange_case.webp",
+        "rightImg": "../assets/b187_orange_right.webp",
+        "duoImg": "../assets/b187_orange_duo.webp"
+    },
+    "0F1A4F": {
+        "name": "CMF Buds Pro 2",
+        "base": "B187",
+        "altBase": "B172",
+        "leftImg": "../assets/b187_blue_left.webp",
+        "caseImg": "../assets/b187_blue_case.webp",
+        "rightImg": "../assets/b187_blue_right.webp",
+        "duoImg": "../assets/b187_blue_duo.webp"
+    },
+    "C19ECD": {
+        "name": "Nothing Headphone (1)",
+        "base": "B170",
+        "leftImg": "../assets/b170_black_left.webp",
+        "caseImg": "../assets/b170_black_case.webp",
+        "rightImg": "../assets/b170_black_right.webp",
+        "duoImg": "../assets/b170_black_duo.webp"
+    },
+    "2D6FDA": {
+        "name": "Nothing Headphone (1)",
+        "base": "B170",
+        "leftImg": "../assets/b170_grey_left.webp",
+        "caseImg": "../assets/b170_grey_case.webp",
+        "rightImg": "../assets/b170_grey_right.webp",
+        "duoImg": "../assets/b170_grey_duo.webp"
+    },
+    "7D46E5": {
+        "name": "Nothing Ear (3)",
+        "base": "B173",
+        "altBase": "B201",
+        "leftImg": "../assets/b173_black_left.webp",
+        "caseImg": "../assets/b173_black_case.webp",
+        "rightImg": "../assets/b173_black_right.webp",
+        "duoImg": "../assets/b173_black_duo.webp"
+    },
+    "C1EBFD": {
+        "name": "Nothing Ear (3)",
+        "base": "B173",
+        "altBase": "B201",
+        "leftImg": "../assets/b173_white_left.webp",
+        "caseImg": "../assets/b173_white_case.webp",
+        "rightImg": "../assets/b173_white_right.webp",
+        "duoImg": "../assets/b173_white_duo.webp"
+    },
+    "563DA5": {
+        "name": "CMF Headphone Pro",
+        "base": "B175",
+        "leftImg": "../assets/b175_green_left.webp",
+        "caseImg": "../assets/b175_green_case.webp",
+        "rightImg": "../assets/b175_green_right.webp",
+        "duoImg": "../assets/b175_green_duo.webp"
+    },
+    "73C9EB": {
+        "name": "CMF Headphone Pro",
+        "base": "B175",
+        "leftImg": "../assets/b175_white_left.webp",
+        "caseImg": "../assets/b175_white_case.webp",
+        "rightImg": "../assets/b175_white_right.webp",
+        "duoImg": "../assets/b175_white_duo.webp"
+    },
+    "1EFB39": {
+        "name": "CMF Headphone Pro",
+        "base": "B175",
+        "leftImg": "../assets/b175_black_left.webp",
+        "caseImg": "../assets/b175_black_case.webp",
+        "rightImg": "../assets/b175_black_right.webp",
+        "duoImg": "../assets/b175_black_duo.webp"
+    },
+    "BFD53B": {
+        "name": "Nothing Headphone (a)",
+        "base": "B186",
+        "leftImg": "../assets/b186_black_left.webp",
+        "caseImg": "../assets/b186_black_case.webp",
+        "rightImg": "../assets/b186_black_right.webp",
+        "duoImg": "../assets/b186_black_duo.webp"
+    },
+    "DE8953": {
+        "name": "Nothing Headphone (a)",
+        "base": "B186",
+        "leftImg": "../assets/b186_white_left.webp",
+        "caseImg": "../assets/b186_white_case.webp",
+        "rightImg": "../assets/b186_white_right.webp",
+        "duoImg": "../assets/b186_white_duo.webp"
+    },
+    "97EF75": {
+        "name": "Nothing Headphone (a)",
+        "base": "B198",
+        "altBase": "B186",
+        "leftImg": "../assets/b198_yellow_left.webp",
+        "caseImg": "../assets/b198_yellow_case.webp",
+        "rightImg": "../assets/b198_yellow_right.webp",
+        "duoImg": "../assets/b198_yellow_duo.webp"
+    },
+    "98D02B": {
+        "name": "Nothing Headphone (a)",
+        "base": "B186",
+        "leftImg": "../assets/b186_pink_left.webp",
+        "caseImg": "../assets/b186_pink_case.webp",
+        "rightImg": "../assets/b186_pink_right.webp",
+        "duoImg": "../assets/b186_pink_duo.webp"
+    },
+    "6F6C71": {
+        "name": "Nothing Headphone (a)",
+        "base": "B198",
+        "altBase": "B186",
+        "leftImg": "../assets/b198_black_left.webp",
+        "caseImg": "../assets/b198_black_case.webp",
+        "rightImg": "../assets/b198_black_right.webp",
+        "duoImg": "../assets/b198_black_duo.webp"
+    },
+    "810478": {
+        "name": "Nothing Headphone (a)",
+        "base": "B198",
+        "altBase": "B186",
+        "leftImg": "../assets/b198_white_left.webp",
+        "caseImg": "../assets/b198_white_case.webp",
+        "rightImg": "../assets/b198_white_right.webp",
+        "duoImg": "../assets/b198_white_duo.webp"
+    },
+    "79B3A9": {
+        "name": "Nothing Headphone (a)",
+        "base": "B198",
+        "altBase": "B186",
+        "leftImg": "../assets/b198_yellow_left.webp",
+        "caseImg": "../assets/b198_yellow_case.webp",
+        "rightImg": "../assets/b198_yellow_right.webp",
+        "duoImg": "../assets/b198_yellow_duo.webp"
+    },
+    "A292C6": {
+        "name": "Nothing Headphone (a)",
+        "base": "B198",
+        "altBase": "B186",
+        "leftImg": "../assets/b198_pink_left.webp",
+        "caseImg": "../assets/b198_pink_case.webp",
+        "rightImg": "../assets/b198_pink_right.webp",
+        "duoImg": "../assets/b198_pink_duo.webp"
+    },
+    "CC3444": {
+        "name": "Nothing Ear (open)",
+        "base": "B174",
+        "leftImg": "../assets/b174_blue_left.webp",
+        "caseImg": "../assets/b174_blue_case.webp",
+        "rightImg": "../assets/b174_blue_right.webp",
+        "duoImg": "../assets/b174_blue_duo.webp"
+    },
+    "7B2328": {
+        "name": "Nothing Ear (3a)",
+        "base": "B190",
+        "leftImg": "../assets/b190_white_left.webp",
+        "caseImg": "../assets/b190_white_case.webp",
+        "rightImg": "../assets/b190_white_right.webp",
+        "duoImg": "../assets/b190_white_duo.webp"
+    },
+    "E9C3BE": {
+        "name": "Nothing Ear (3a)",
+        "base": "B190",
+        "leftImg": "../assets/b190_black_left.webp",
+        "caseImg": "../assets/b190_black_case.webp",
+        "rightImg": "../assets/b190_black_right.webp",
+        "duoImg": "../assets/b190_black_duo.webp"
+    },
+    "148887": {
+        "name": "Nothing Ear (3a)",
+        "base": "B190",
+        "leftImg": "../assets/b190_pink_left.webp",
+        "caseImg": "../assets/b190_pink_case.webp",
+        "rightImg": "../assets/b190_pink_right.webp",
+        "duoImg": "../assets/b190_pink_duo.webp"
+    },
+    "DB45D3": {
+        "name": "Nothing Ear (3a)",
+        "base": "B190",
+        "leftImg": "../assets/b190_yellow_left.webp",
+        "caseImg": "../assets/b190_yellow_case.webp",
+        "rightImg": "../assets/b190_yellow_right.webp",
+        "duoImg": "../assets/b190_yellow_duo.webp"
+    },
+    "8F28ED": {
+        "name": "CMF Clip Pro",
+        "base": "B189",
+        "leftImg": "../assets/b189_blue_left.webp",
+        "caseImg": "../assets/b189_blue_case.webp",
+        "rightImg": "../assets/b189_blue_right.webp",
+        "duoImg": "../assets/b189_blue_duo.webp"
+    },
+    "E6673A": {
+        "name": "CMF Clip Pro",
+        "base": "B189",
+        "leftImg": "../assets/b189_orange_left.webp",
+        "caseImg": "../assets/b189_orange_case.webp",
+        "rightImg": "../assets/b189_orange_right.webp",
+        "duoImg": "../assets/b189_orange_duo.webp"
+    },
+    "DCD2CB": {
+        "name": "CMF Clip Pro",
+        "base": "B189",
+        "leftImg": "../assets/b189_white_left.webp",
+        "caseImg": "../assets/b189_white_case.webp",
+        "rightImg": "../assets/b189_white_right.webp",
+        "duoImg": "../assets/b189_white_duo.webp"
+    },
+    "DA1280": {
+        "name": "CMF Clip Pro",
+        "base": "B189",
+        "leftImg": "../assets/b189_black_left.webp",
+        "caseImg": "../assets/b189_black_case.webp",
+        "rightImg": "../assets/b189_black_right.webp",
+        "duoImg": "../assets/b189_black_duo.webp"
+    }
 };
 
 function getModelFromFastpair(fastpairID) {
