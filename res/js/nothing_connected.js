@@ -36,6 +36,10 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_crobat";
     } else if (model.base == "B175") {
         window.location.href = "MainControl_forretress";
+    } else if (model.base == "B173") {
+        window.location.href = "MainControl_feraligator";
+    } else if (model.base == "B189") {
+        window.location.href = "MainControl_igglybuff";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }

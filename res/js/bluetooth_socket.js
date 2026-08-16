@@ -232,6 +232,9 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 if (command === 16463) {
                     readSpatialAudio(rawData);
                 }
+                if (command === 28754) {
+                    readSpatialAudio(rawData);
+                }
                 if (command === 16418) {
                     readMimiEnable(rawData);
                 }
@@ -240,6 +243,24 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 }
                 if (command === 57369) {
                     readAudiodoStatusPush(rawData);
+                }
+                if (command === 16478) {
+                    readSuperMicEnable(rawData);
+                }
+                if (command === 16479) {
+                    readCallTransparencyEnable(rawData);
+                }
+                if (command === 16480) {
+                    readWalkieTalkieMode(rawData);
+                }
+                if (command === 16484) {
+                    readMicMode(rawData);
+                }
+                if (command === 16487) {
+                    readLongPowerMode(rawData);
+                }
+                if (command === 16497) {
+                    readAntiLeakageMode(rawData);
                 }
 
                 if (operationID >= 250) {
@@ -401,13 +422,13 @@ function read_advanced_eq_status(hexString)
 }
 
 function getEQ() {
-    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175") {
+    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
         send(49183, [], "readEQ");
     }
 }
 
 function getListeningMode() {
-    if (modelBase === "B172" || modelBase === "B168" || modelBase === "B179" || modelBase === "B184" || modelBase === "B185" || modelBase === "B175") {
+    if (modelBase === "B172" || modelBase === "B168" || modelBase === "B179" || modelBase === "B184" || modelBase === "B185" || modelBase === "B175" || modelBase === "B189") {
         send(49232, [], "readListeningMode");
     }
 }
@@ -427,7 +448,7 @@ function setEQ(level) {
 }
 
 function setListeningMode(level) {
-    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175") {
+    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
         return;
     }
     let byteArray = [0x00, 0x00];
@@ -455,10 +476,13 @@ function showMutuallyExclusiveWarning(blockedFeature, activeFeature) {
         </div>`);
 }
 
+const BASS_LEVEL_WIRE_B189 = [0, 5, 10]; // UI position -> wire byte
+
 function set_enhanced_bass(enabled, level) {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B164") {
+    console.log("set_enhanced_bass called with enabled: " + enabled + " and level: " + level);
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189") {
         bassEnhanceEnabled = !!enabled;
-        level *= 2;
+        level = modelBase === "B189" ? (BASS_LEVEL_WIRE_B189[level] ?? 0) : level * 2;
         let byteArray = [0x00, 0x00];
         if (enabled) {
             byteArray[0] = 0x01;
@@ -469,19 +493,19 @@ function set_enhanced_bass(enabled, level) {
 }
 
 function get_enhanced_bass() {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189") {
         send(49230, [], "readEnhancedBass");
     }
 }
 
 function read_enhanced_bass(hexString) {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189") {
         let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
         let enabled = hexArray[8];
         let level = hexArray[9];
         bassEnhanceEnabled = enabled === 1;
         setBassEnhance(enabled);
-        setBassLevel(level / 2);
+        setBassLevel(modelBase === "B189" ? BASS_LEVEL_WIRE_B189.indexOf(level) : level / 2);
     }
 }
 
@@ -842,23 +866,23 @@ async function getConfigForFirmware() {
         
         // Find matching model configuration
         modelSpecs = firmwareConfig.find(config => config.id === modelBase);
-        
+
         if (!modelSpecs) {
             console.warn(`No configuration found for model: ${modelBase}`);
             return false;
         }
-        
+
         console.log(`Found config for modelBase: ${modelBase}`);
         console.log(modelSpecs);
-        
+
         // Handle configuration selection
         const configs = modelSpecs.configs;
-        
+
         if (!Array.isArray(configs) || configs.length === 0) {
             console.warn("No configs array found in model configuration");
             return false;
         }
-        
+
         // If only one config, use it directly
         if (configs.length === 1) {
             console.log("Single config found, using default configuration");
@@ -868,6 +892,20 @@ async function getConfigForFirmware() {
             initAudioCodecIfSupported();
             initSpatialAudioIfSupported();
             initPersonalSoundProfileIfSupported();
+            initSuperMicIfSupported();
+            initCallTransparencyIfSupported();
+            initWalkieTalkieModeIfSupported();
+            initLongPowerModeIfSupported();
+            initAntiLeakageIfSupported();
+            if (typeof injectCaseButtonUI === "function") {
+                injectCaseButtonUI();
+            }
+            if (typeof injectSmartKnobUI === "function") {
+                injectSmartKnobUI();
+            }
+            if (typeof injectSmartDialUI === "function") {
+                injectSmartDialUI();
+            }
             return true;
         }
         
@@ -892,6 +930,20 @@ async function getConfigForFirmware() {
                     initAudioCodecIfSupported();
                     initSpatialAudioIfSupported();
                     initPersonalSoundProfileIfSupported();
+                    initSuperMicIfSupported();
+                    initCallTransparencyIfSupported();
+                    initWalkieTalkieModeIfSupported();
+                    initLongPowerModeIfSupported();
+                    initAntiLeakageIfSupported();
+                    if (typeof injectCaseButtonUI === "function") {
+                        injectCaseButtonUI();
+                    }
+                    if (typeof injectSmartKnobUI === "function") {
+                        injectSmartKnobUI();
+                    }
+                    if (typeof injectSmartDialUI === "function") {
+                        injectSmartDialUI();
+                    }
                     break;
                 }
             } catch (versionError) {
@@ -917,7 +969,7 @@ async function getConfigForFirmware() {
 
 
 function launchEarFitTest() {
-    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179") {
+    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B173") {
         send(61460, [0x01]);
     }
 }
@@ -930,7 +982,7 @@ function readEarFitTestResult(hexstring) {
 } 
 
 function sendInEarRead() {
-    if (modelBase !== "B174" && modelBase !== "B185" && modelBase !== "B175") {
+    if (modelBase !== "B174" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
         send(49166, [], "readInEar");
     }
 }
@@ -1270,7 +1322,9 @@ function spatialAudioIndexFromWire(mode, head) {
 function readSpatialAudio(hexArray) {
     let mode = hexArray.length > 8 ? hexArray[8] : 0;
     let head = hexArray.length > 9 ? hexArray[9] : 0;
+    console.log(`readSpatialAudio: mode=${mode}, head=${head}`);
     currentSpatialAudioMode = spatialAudioIndexFromWire(mode, head);
+    console.log(`currentSpatialAudioMode index: ${currentSpatialAudioMode}`);
     if (typeof renderSpatialAudioUI === "function") {
         renderSpatialAudioUI();
     }
@@ -1279,6 +1333,7 @@ function readSpatialAudio(hexArray) {
 function setSpatialAudio_BT(index) {
     currentSpatialAudioMode = index;
     let entry = SPATIAL_AUDIO_MODES[index];
+    console.log(`setSpatialAudio_BT: index=${index}, mode=${entry.mode}, head=${entry.head}`);
     send(61522, [entry.mode, entry.head], "setSpatialAudio");
     if (typeof renderSpatialAudioUI === "function") {
         renderSpatialAudioUI();
@@ -1348,5 +1403,171 @@ function setPersonalSoundProfile_BT(enabled) {
         send(61461, [enabled ? 1 : 0], "setMimiEnable");
     } else if (backend === "audiodo") {
         send(61532, [enabled ? 1 : 0], "setAudiodoProfileOn");
+    }
+}
+
+let superMicEnabled = false;
+let callTransparencyEnabled = false;
+let walkieTalkieModeEnabled = false;
+
+function initSuperMicIfSupported() {
+    if (!(modelSpecs && modelSpecs.superMic)) {
+        return;
+    }
+    if (typeof injectSuperMicUI === "function") {
+        injectSuperMicUI();
+    }
+    getSuperMicEnable();
+    getMicMode();
+}
+
+function getSuperMicEnable() {
+    if (modelSpecs && modelSpecs.superMic) {
+        send(49246, [], "getSuperMicEnable");
+    }
+}
+
+function readSuperMicEnable(hexArray) {
+    superMicEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    if (typeof setSuperMicCheckbox === "function") {
+        setSuperMicCheckbox(superMicEnabled);
+    }
+}
+
+function setSuperMicEnable_BT(enabled) {
+    superMicEnabled = enabled;
+    send(61535, [enabled ? 1 : 0], "setSuperMicEnable");
+}
+
+function initCallTransparencyIfSupported() {
+    if (!(modelSpecs && modelSpecs.callTransparency)) {
+        return;
+    }
+    if (typeof injectCallTransparencyUI === "function") {
+        injectCallTransparencyUI();
+    }
+    getCallTransparencyEnable();
+}
+
+function getCallTransparencyEnable() {
+    if (modelSpecs && modelSpecs.callTransparency) {
+        send(49247, [], "getCallTransparencyEnable");
+    }
+}
+
+function readCallTransparencyEnable(hexArray) {
+    callTransparencyEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    if (typeof setCallTransparencyCheckbox === "function") {
+        setCallTransparencyCheckbox(callTransparencyEnabled);
+    }
+}
+
+function setCallTransparencyEnable_BT(enabled) {
+    callTransparencyEnabled = enabled;
+    send(61536, [enabled ? 1 : 0], "setCallTransparencyEnable");
+}
+
+function initWalkieTalkieModeIfSupported() {
+    if (!(modelSpecs && modelSpecs.walkieTalkieMode)) {
+        return;
+    }
+    getWalkieTalkieMode();
+}
+
+function getWalkieTalkieMode() {
+    if (modelSpecs && modelSpecs.walkieTalkieMode) {
+        send(49248, [], "getWalkieTalkieMode");
+    }
+}
+
+function readWalkieTalkieMode(hexArray) {
+    walkieTalkieModeEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    if (typeof setWalkieTalkieModeCheckbox === "function") {
+        setWalkieTalkieModeCheckbox(walkieTalkieModeEnabled);
+    }
+}
+
+let longPowerModeEnabled = false;
+
+function initLongPowerModeIfSupported() {
+    if (!(modelSpecs && modelSpecs.longPowerMode)) {
+        return;
+    }
+    if (typeof injectLongPowerModeUI === "function") {
+        injectLongPowerModeUI();
+    }
+    getLongPowerMode();
+}
+
+function getLongPowerMode() {
+    if (modelSpecs && modelSpecs.longPowerMode) {
+        send(49255, [], "getLongPowerMode");
+    }
+}
+
+function readLongPowerMode(hexArray) {
+    longPowerModeEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    if (typeof setLongPowerModeCheckbox === "function") {
+        setLongPowerModeCheckbox(longPowerModeEnabled);
+    }
+}
+
+function setLongPowerMode_BT(enabled) {
+    longPowerModeEnabled = enabled;
+    send(61544, [enabled ? 1 : 0], "setLongPowerMode");
+}
+
+function initAntiLeakageIfSupported() {
+    if (!(modelSpecs && modelSpecs.supportLeakageProtection)) {
+        return;
+    }
+    if (typeof injectAntiLeakageUI === "function") {
+        injectAntiLeakageUI();
+    }
+    getAntiLeakageMode();
+}
+
+function getAntiLeakageMode() {
+    if (modelSpecs && modelSpecs.supportLeakageProtection) {
+        send(49265, [], "getScenarioMode");
+    }
+}
+
+function readAntiLeakageMode(hexArray) {
+    if (hexArray.length > 8) {
+        currentAntiLeakageMode = hexArray[8];
+    }
+    if (typeof renderAntiLeakageRow === "function") {
+        renderAntiLeakageRow();
+    }
+}
+
+function setAntiLeakageMode_BT(mode) {
+    currentAntiLeakageMode = mode;
+    send(61557, [mode], "setScenarioMode");
+}
+
+function setWalkieTalkieMode_BT(enabled) {
+    walkieTalkieModeEnabled = enabled;
+    send(61537, [enabled ? 1 : 0], "setWalkieTalkieMode");
+}
+
+function getMicMode() {
+    if (modelSpecs && modelSpecs.superMic) {
+        send(49252, [], "getMicMode");
+    }
+}
+
+function setMicMode_BT(mode) {
+    currentMicMode = mode;
+    send(61541, [mode], "setMicMode");
+}
+
+function readMicMode(hexArray) {
+    if (hexArray.length > 8 && typeof micModeOptions !== "undefined" && micModeOptions) {
+        currentMicMode = hexArray[8];
+        if (typeof renderMicModeRow === "function") {
+            renderMicModeRow();
+        }
     }
 }
