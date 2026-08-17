@@ -40,6 +40,8 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_feraligator";
     } else if (model.base == "B189") {
         window.location.href = "MainControl_igglybuff";
+    } else if (model.base == "B186") {
+        window.location.href = "MainControl_hoppip";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }

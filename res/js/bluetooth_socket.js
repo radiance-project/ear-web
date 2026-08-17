@@ -173,6 +173,7 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 let header = rawData.slice(0, 6);
                 let command = getCommand(header);
                 console.log(command);
+                try {
                 if (command === 57345 || command===16391) {
                     readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
                 }
@@ -259,6 +260,9 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 }
                 if (command === 16497) {
                     readAntiLeakageMode(rawData);
+                }
+                } catch (packetError) {
+                    console.error("Error handling packet for command " + command + ":", packetError);
                 }
 
                 if (operationID >= 250) {
@@ -412,7 +416,7 @@ function read_advanced_eq_status(hexString)
     let advancedStatus = hexArray[8];
     console.log("advancedEQ " + advancedStatus);
     advancedEQEnabled = advancedStatus === 1;
-    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170") {
+    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170" || modelBase === "B186") {
         if (advancedStatus === 1) {
             setEQfromRead(6);
         }
@@ -476,11 +480,15 @@ function showMutuallyExclusiveWarning(blockedFeature, activeFeature) {
 
 const BASS_LEVEL_WIRE_B189 = [0, 5, 10]; // UI position -> wire byte
 
+function usesThreeStageBass() {
+    return modelBase === "B189" || modelBase === "B186";
+}
+
 function set_enhanced_bass(enabled, level) {
     console.log("set_enhanced_bass called with enabled: " + enabled + " and level: " + level);
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         bassEnhanceEnabled = !!enabled;
-        level = modelBase === "B189" ? (BASS_LEVEL_WIRE_B189[level] ?? 0) : level * 2;
+        level = usesThreeStageBass() ? (BASS_LEVEL_WIRE_B189[level] ?? 0) : level * 2;
         let byteArray = [0x00, 0x00];
         if (enabled) {
             byteArray[0] = 0x01;
@@ -491,19 +499,19 @@ function set_enhanced_bass(enabled, level) {
 }
 
 function get_enhanced_bass() {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         send(49230, [], "readEnhancedBass");
     }
 }
 
 function read_enhanced_bass(hexString) {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
         let enabled = hexArray[8];
         let level = hexArray[9];
         bassEnhanceEnabled = enabled === 1;
         setBassEnhance(enabled);
-        setBassLevel(modelBase === "B189" ? BASS_LEVEL_WIRE_B189.indexOf(level) : level / 2);
+        setBassLevel(usesThreeStageBass() ? BASS_LEVEL_WIRE_B189.indexOf(level) : level / 2);
     }
 }
 
@@ -793,7 +801,7 @@ function ringBuds(isRing, isLeft = false) {
         } else {
             byteArray[0] = 0x00;
         }
-    } else if (modelBase === "B170" || modelBase === "B164") {
+    } else if (modelBase === "B170" || modelBase === "B164" || modelBase === "B186") {
         byteArray = [0x06, 0x00];
         if (isRing) {
             byteArray[1] = 0x01;
@@ -977,7 +985,7 @@ function readEarFitTestResult(hexstring) {
 } 
 
 function sendInEarRead() {
-    if (modelBase !== "B174" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
+    if (modelBase !== "B174" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189" && modelBase !== "B186") {
         send(49166, [], "readInEar");
     }
 }
