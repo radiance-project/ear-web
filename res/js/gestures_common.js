@@ -24,6 +24,11 @@
 //       neverCloseOnChange: false,      // true only for flaaffy's double_pinch_and_hold quirk
 //       alwaysCloseOnChange: false,     // true for elekid's button_press/button_hold, which close
 //                                       // even when the new value is "Noise control"
+//       syncBothSides: false,           // true only for jumpluff's pinch_both_buds slot - a
+//                                       // gesture that isn't tied to either ear (confirmed via
+//                                       // the decompiled app sending it to both device codes
+//                                       // together); writes/updates every topology side on
+//                                       // change instead of just the currently-viewed one.
 //     }
 // and then delegates its own updateGesturesFromArray/loadCurrentGestures/changeGesture/
 // checkboxCheck into the generic functions below.
@@ -156,7 +161,7 @@ function renderGestureChangePopup(type, topology, slots) {
         }
         for (var s = 0; s < topology.sides.length; s++) {
             var side = topology.sides[s];
-            if (current_side != side) continue;
+            if (!slot.syncBothSides && current_side != side) continue;
             window[gestureCurrentVarName(topology, side, slot)] = value;
             var index = options.indexOf(value);
             var operation = 0;

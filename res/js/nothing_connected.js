@@ -42,6 +42,8 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_igglybuff";
     } else if (model.base == "B186") {
         window.location.href = "MainControl_hoppip";
+    } else if (model.base == "B190") {
+        window.location.href = "MainControl_jumpluff";
     } else {
         document.getElementById("scan_button-c").innerText = "Incompatible Device";
     }
