@@ -177,7 +177,7 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 if (command === 57345 || command===16391) {
                     readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
                 }
-                if (command === 57347) {
+                if (command === 57347 || command === 24579) {
                     readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
                 }
                 if (command === 16452) {
@@ -185,6 +185,12 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 }
                 if (command === 16461) {
                     readAdvancedEQValue(rawData);
+                }
+                if (command === 16492) {
+                    readThirdDriverEQMode(rawData);
+                }
+                if (command === 16493) {
+                    readThirdDriverEQValue(rawData);
                 }
                 if (command === 16415 || command === 16464) {
                     readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
@@ -240,8 +246,14 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                 if (command === 16474) {
                     readAudiodoProfileOn(rawData);
                 }
-                if (command === 57369) {
+                if (command === 57369 || command === 24601) {
                     readAudiodoStatusPush(rawData);
+                }
+                if (command === 57385 || command === 24617) {
+                    readAudiodoSpatialPush(rawData);
+                }
+                if (command === 16488 || command === 57372 || command === 24604) {
+                    readFlatEq(rawData);
                 }
                 if (command === 16478) {
                     readSuperMicEnable(rawData);
@@ -416,7 +428,7 @@ function read_advanced_eq_status(hexString)
     let advancedStatus = hexArray[8];
     console.log("advancedEQ " + advancedStatus);
     advancedEQEnabled = advancedStatus === 1;
-    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170" || modelBase === "B186") {
+    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170" || modelBase === "B186" || modelBase === "B192") {
         if (advancedStatus === 1) {
             setEQfromRead(6);
         }
@@ -473,6 +485,39 @@ function showMutuallyExclusiveWarning(blockedFeature, activeFeature) {
     showWarningPopup(`
         <div class="w-fit flex m-auto text-md mb-2 mt-2 text-white text-center">Attention</div>
         <div class="text-gray-400 text-sm text-center mb-4" style="width: 250px;">${blockedFeature} is not available when ${activeFeature} is activated.</div>
+        <div class="flex justify-center mt-4">
+            <button class="p-2 pl-6 pr-6 bg-black border-none border-[1px] text-white rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300" onclick="closePopUp()">Okay</button>
+        </div>`);
+}
+
+let flatEqEnabled = false;
+
+function initFlatEqIfSupported() {
+    if (!(modelSpecs && modelSpecs.supportStudio)) {
+        return;
+    }
+    send(49256, [], "getFlatEq");
+}
+
+function readFlatEq(hexArray) {
+    if (!(modelSpecs && modelSpecs.supportStudio)) {
+        return;
+    }
+    flatEqEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    console.log("readFlatEq: " + flatEqEnabled);
+    if (typeof applyFlatEqUI === "function") {
+        applyFlatEqUI();
+    }
+}
+
+function isFlatEqBlocking() {
+    return flatEqEnabled;
+}
+
+function showFlatEqBlockedPopup() {
+    showWarningPopup(`
+        <div class="w-fit flex m-auto text-md mb-2 mt-2 text-white text-center">Flat EQ is enabled</div>
+        <div class="text-gray-400 text-sm text-center mb-4" style="width: 250px;">Other audio features (such as Equalizer, Spatial Audio, and Transparency mode) are disabled in this mode. To turn off Flat EQ, slide the switch on the left earcup.</div>
         <div class="flex justify-center mt-4">
             <button class="p-2 pl-6 pr-6 bg-black border-none border-[1px] text-white rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300" onclick="closePopUp()">Okay</button>
         </div>`);
@@ -548,12 +593,17 @@ let currentAdvancedEQBands = null;
 
 function getAdvancedEQValue(profileIndex = 255) {
     send(49229, [profileIndex], "getAdvancedEQValue");
+    if (supportsThirdDriverEQ()) {
+        getThirdDriverEQ();
+    }
 }
 
-function readAdvancedEQValue(hexArray) {
+// Shared by the main Advanced EQ and the Precision driver EQ: both payloads are
+// [profileIndex(1)][bandCount(1)][totalGain(f32)] + per band [filterType(1)][gain][frequency][quality].
+function parseAdvancedEQBandsPayload(hexArray) {
     let offset = 8;
     if (hexArray.length < offset + 6) {
-        return;
+        return null;
     }
     let bandCount = hexArray[offset + 1];
     offset += 6; // profileIndex(1) + bandCount(1) + totalGain(4)
@@ -567,16 +617,10 @@ function readAdvancedEQValue(hexArray) {
         });
         offset += 13;
     }
-    currentAdvancedEQBands = bands;
-    if (typeof renderAdvancedEQUI === "function") {
-        renderAdvancedEQUI();
-    }
+    return bands;
 }
 
-function setAdvancedEQValue_BT(bands) {
-    // bands: array of {gain, frequency, quality}
-    let maxGain = Math.max(0, ...bands.map(b => b.gain));
-    let totalGain = -maxGain;
+function buildAdvancedEQBandsPacket(bands, totalGain) {
     let packet = new Uint8Array(2 + 4 + bands.length * 13);
     let offset = 0;
     packet[offset++] = 0; // profileIndex
@@ -592,8 +636,91 @@ function setAdvancedEQValue_BT(bands) {
         packet.set(floatToReversedBytes(band.quality), offset);
         offset += 4;
     }
+    return Array.from(packet);
+}
+
+function readAdvancedEQValue(hexArray) {
+    let bands = parseAdvancedEQBandsPayload(hexArray);
+    if (!bands) {
+        return;
+    }
+    currentAdvancedEQBands = bands;
+    if (typeof renderAdvancedEQUI === "function") {
+        renderAdvancedEQUI();
+    }
+}
+
+function setAdvancedEQValue_BT(bands) {
+    // bands: array of {gain, frequency, quality}
+    let maxGain = Math.max(0, ...bands.map(b => b.gain));
+    let totalGain = -maxGain;
     currentAdvancedEQBands = bands.map(band => ({ filterType: 1, gain: band.gain, frequency: band.frequency, quality: band.quality }));
-    send(61520, Array.from(packet), "setAdvancedEQValue");
+    send(61520, buildAdvancedEQBandsPacket(bands, totalGain), "setAdvancedEQValue");
+}
+
+// Precision driver ("third driver") EQ 
+const THIRD_DRIVER_EQ_FREQ_MIN = 5000;
+const THIRD_DRIVER_EQ_FREQ_MAX = 15000;
+let currentThirdDriverEQBands = null;
+let thirdDriverEQModeEnableSent = false;
+
+function supportsThirdDriverEQ() {
+    return !!(modelSpecs && modelSpecs.supportMiddleEq);
+}
+
+function getThirdDriverEQ() {
+    send(49260, [], "getThirdDriverEQMode");
+    send(49261, [255], "getThirdDriverEQValue");
+}
+
+function readThirdDriverEQMode(hexArray) {
+    let enabled = hexArray.length > 8 && hexArray[8] === 1;
+    console.log("readThirdDriverEQMode: " + enabled);
+    if (!enabled && supportsThirdDriverEQ() && !thirdDriverEQModeEnableSent) {
+        thirdDriverEQModeEnableSent = true;
+        send(61548, [1], "setThirdDriverEQMode");
+    }
+}
+
+function readThirdDriverEQValue(hexArray) {
+    let bands = parseAdvancedEQBandsPayload(hexArray);
+    if (!bands) {
+        return;
+    }
+    currentThirdDriverEQBands = bands;
+    if (typeof renderAdvancedEQUI === "function") {
+        renderAdvancedEQUI();
+    }
+}
+
+function dualWaveTotalGain(mainBands, driverBands) {
+    let peak = Math.max(0, ...mainBands.map(b => b.gain), ...driverBands.map(b => b.gain));
+    let useNative = true;
+    if (firmwareVersion) {
+        try {
+            useNative = VersionUtils.compareVersion(firmwareVersion, "1.0.1.46") >= 0;
+        } catch (e) {
+            useNative = true;
+        }
+    }
+    if (useNative) {
+        let whole = Math.trunc(peak);
+        return whole > 0 ? -whole : 0;
+    }
+    return Math.min(0, 6 - peak);
+}
+
+function setAdvancedAndThirdDriverEQ_BT(mainBands, driverBands) {
+    let totalGain = dualWaveTotalGain(mainBands, driverBands);
+    currentAdvancedEQBands = mainBands.map(band => ({ filterType: 1, gain: band.gain, frequency: band.frequency, quality: band.quality }));
+    currentThirdDriverEQBands = driverBands.map(band => ({
+        filterType: 1,
+        gain: band.gain,
+        frequency: Math.min(THIRD_DRIVER_EQ_FREQ_MAX, Math.max(THIRD_DRIVER_EQ_FREQ_MIN, band.frequency)),
+        quality: band.quality,
+    }));
+    send(61520, buildAdvancedEQBandsPacket(currentAdvancedEQBands, totalGain), "setAdvancedEQValue");
+    send(61549, buildAdvancedEQBandsPacket(currentThirdDriverEQBands, totalGain), "setThirdDriverEQValue");
 }
 
 function formatFloatForEQ(f, total) {
@@ -801,7 +928,7 @@ function ringBuds(isRing, isLeft = false) {
         } else {
             byteArray[0] = 0x00;
         }
-    } else if (modelBase === "B170" || modelBase === "B164" || modelBase === "B186") {
+    } else if (modelBase === "B170" || modelBase === "B164" || modelBase === "B186" || modelBase === "B192") {
         byteArray = [0x06, 0x00];
         if (isRing) {
             byteArray[1] = 0x01;
@@ -902,6 +1029,7 @@ async function getConfigForFirmware() {
             initWalkieTalkieModeIfSupported();
             initLongPowerModeIfSupported();
             initAntiLeakageIfSupported();
+            initFlatEqIfSupported();
             if (typeof injectCaseButtonUI === "function") {
                 injectCaseButtonUI();
             }
@@ -940,6 +1068,7 @@ async function getConfigForFirmware() {
                     initWalkieTalkieModeIfSupported();
                     initLongPowerModeIfSupported();
                     initAntiLeakageIfSupported();
+                    initFlatEqIfSupported();
                     if (typeof injectCaseButtonUI === "function") {
                         injectCaseButtonUI();
                     }
@@ -1298,6 +1427,10 @@ function initSpatialAudioIfSupported() {
     if (!(modelSpecs && modelSpecs.spatialAudio)) {
         return;
     }
+    if (modelSpecs.useAudiodoSpatial) {
+        //AudioDo Spatial audio require external SDK that can't be used 
+        return;
+    }
     if (typeof injectSpatialAudioUI === "function") {
         injectSpatialAudioUI();
     }
@@ -1331,6 +1464,27 @@ function readSpatialAudio(hexArray) {
     if (typeof renderSpatialAudioUI === "function") {
         renderSpatialAudioUI();
     }
+}
+
+
+const AUDIODO_SPATIAL_STATUS_NAMES = { 1: "On", 2: "Head Tracked" };
+const AUDIODO_SPATIAL_SCENE_NAMES = {
+    1: "Standard",      // pop
+    2: "Club",          // edm
+    3: "Concert Hall",  // classical
+    4: "Live House",    // rock
+    5: "Studio B",      // surround
+};
+
+function readAudiodoSpatialPush(hexArray) {
+    if (!(modelSpecs && modelSpecs.useAudiodoSpatial) || hexArray.length < 10) {
+        return;
+    }
+    let status = hexArray[8];
+    let mode = hexArray[9];
+    let statusName = AUDIODO_SPATIAL_STATUS_NAMES[status] || "Off";
+    let scene = statusName !== "Off" ? (AUDIODO_SPATIAL_SCENE_NAMES[mode] || "unknown scene") : null;
+    console.log(`readAudiodoSpatialPush: status=${status}, mode=${mode} (${statusName}${scene ? ", " + scene : ""})`);
 }
 
 function setSpatialAudio_BT(index) {

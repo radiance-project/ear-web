@@ -12757,5 +12757,429 @@
         }
       }
     ]
+  },
+  {
+    "id": "B192",
+    "projectID": "25221",
+    "brand": 1,
+    "style": 3,
+    "single": 1,
+    "configs": [
+      {
+        "earDetection": 1,
+        "dualConnection": 1,
+        "privateCode": 255,
+        "dualConnectionReboot": 0,
+        "ancLevel": 63,
+        "supportStudio": 1,
+        "supportAuracast": 1,
+        "findDevice": 1,
+        "bgDisAudiodo": 1,
+        "advancedEq": 1,
+        "transparencyModeCalibrationTimeout": 30,
+        "minFwForTripleTapDevelopJump": "1.0.1.20",
+        "supportMiddleEq": 1,
+        "otaProtocol": 2,
+        "otaPacketType": 3,
+        "deviceType": 6,
+        "eq": 95,
+        "spatialAudio": 7,
+        "useAudiodoSpatial": 1,
+        "supportExplore": 1,
+        "audiodoSpatialModel": 31,
+        "notUsePhoneSpatial": 1,
+        "highQualityAudio": 4,
+        "keepLive": 0,
+        "otaDualConnectionCheck": 1,
+        "defaultControl": "0306010716060A010B060A0701",
+        "isUseCloudGuide": true,
+        "guideTitle": "headphone_guide_title",
+        "connectionGuide": {
+          "connectionGuideTitle": "hold_button_to_pair_1",
+          "connectionGuideDesc": "introduce_msg_headphone",
+          "connectionGuideLottie": "connect_guide_246",
+          "connectionGuideUseDeviceInfoMedia": 1
+        },
+        "guideInfos": [
+          {
+            "lottieFile": "control/headphone_roll",
+            "imgUrl": "elekid_guesture_guide_1",
+            "descKey": [
+              "control_volume_control",
+              "gesture_guide_roll"
+            ]
+          },
+          {
+            "lottieFile": "control/headphone_single_press",
+            "imgUrl": "elekid_guesture_guide_1",
+            "descKey": [
+              "control_play_pause",
+              "gesture_guide_single_press"
+            ]
+          },
+          {
+            "lottieFile": "control/headphone_hold_press",
+            "imgUrl": "elekid_guesture_guide_1",
+            "descKey": [
+              "active_noise_cancellation",
+              "gesture_guide_press_hold_roller"
+            ]
+          },
+          {
+            "lottieFile": "control/headphone_push_paddle",
+            "imgUrl": "elekid_guesture_guide_1",
+            "descKey": [
+              "previous_next_track",
+              "gesture_guide_push_paddle_left_right"
+            ]
+          },
+          {
+            "lottieFile": "control/headphone_push_hold_paddle",
+            "imgUrl": "elekid_guesture_guide_1",
+            "descKey": [
+              "fast_forward",
+              "gesture_guide_push_hold_paddle_left_right"
+            ]
+          },
+          {
+            "lottieFile": "control/headphone_flat_eq",
+            "imgUrl": "elekid_guesture_guide_1",
+            "descKey": [
+              "eq_toggle",
+              "eq_switch_desc"
+            ]
+          },
+          {
+            "lottieFile": "control/headphone_button_single_press",
+            "imgUrl": "elekid_guesture_guide_2",
+            "descKey": [
+              "voice_assistant",
+              "gesture_guide_long_press"
+            ]
+          }
+        ],
+        "audiodo": 1,
+        "earInWarehouse": 0,
+        "audiodoModelID": "3207",
+        "customEQ": {
+          "freqLow": 140,
+          "qLow": 0.8,
+          "freqPeak": 980,
+          "qPeak": 0.7,
+          "freqHigh": 3500,
+          "qHigh": 1
+        },
+        "supportCTKD": 1,
+        "isUseGattOverBREDR": 1,
+        "otaBattery": 30,
+        "controls": {
+          "imageType": 1,
+          "controlRoute": "route_headphone1",
+          "isSupportEssentialSpace": true,
+          "earGestureGroups": [
+            {
+              "groupName": "control_button",
+              "gestures": [
+                {
+                  "isCustom": true,
+                  "deviceType": 6,
+                  "button": 10,
+                  "gesture": 1,
+                  "gestureImg": 2,
+                  "gestureImgKey": "headphone_single_press",
+                  "lottieFile": "control/headphone_button_single_press",
+                  "gestureNameKey": "single_press",
+                  "defaultOperation": {
+                    "default": 11
+                  },
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": 11,
+                          "isCustom": true,
+                          "childType": 1,
+                          "operationDescKey": [
+                            "control_voice_assistant"
+                          ]
+                        },
+                        {
+                          "operation": 31,
+                          "isCustom": true,
+                          "supportPlatform": 1,
+                          "operationDescKey": [
+                            "news_description"
+                          ]
+                        },
+                        {
+                          "operation": 10,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "anc_noise_control"
+                          ]
+                        },
+                        {
+                          "operation": 29,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "control_mic_mute"
+                          ]
+                        },
+                        {
+                          "operation": 24,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "camera_shutter"
+                          ]
+                        },
+                        {
+                          "operation": 1,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "control_no_action"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "isCustom": true,
+                  "deviceType": 6,
+                  "button": 10,
+                  "gesture": 7,
+                  "gestureImg": 2,
+                  "gestureImgKey": "headphone_hold_press",
+                  "lottieFile": "control/headphone_long_press",
+                  "gestureNameKey": "press_hold",
+                  "defaultOperation": {
+                    "default": 1
+                  },
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": 11,
+                          "isCustom": true,
+                          "childType": 1,
+                          "operationDescKey": [
+                            "control_voice_assistant"
+                          ]
+                        },
+                        {
+                          "operation": 10,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "anc_noise_control"
+                          ]
+                        },
+                        {
+                          "operation": 29,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "control_mic_mute"
+                          ]
+                        },
+                        {
+                          "operation": 1,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "control_no_action"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "groupName": "scroll_wheel",
+              "gestures": [
+                {
+                  "isCustom": false,
+                  "deviceType": 6,
+                  "button": 1,
+                  "gesture": 1,
+                  "haSubPage": true,
+                  "gestureImgKey": "headphone_single_press",
+                  "gestureNameKey": "single_press",
+                  "gestureImg": 1,
+                  "lottieFile": "control/headphone_single_press",
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": 2,
+                          "isCustom": false,
+                          "operationDescKey": [
+                            "control_play_pause"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "isCustom": true,
+                  "deviceType": 6,
+                  "button": 1,
+                  "gesture": 7,
+                  "gestureNameKey": "press_hold",
+                  "gestureImgKey": "headphone_hold_press",
+                  "lottieFile": "control/headphone_hold_press",
+                  "gestureImg": 1,
+                  "defaultOperation": {
+                    "default": 22
+                  },
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": 10,
+                          "isCustom": true,
+                          "childType": 0,
+                          "operationDescKey": [
+                            "anc_noise_control"
+                          ]
+                        },
+                        {
+                          "operation": 1,
+                          "isCustom": true,
+                          "operationDescKey": [
+                            "control_no_action"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "isCustom": false,
+                  "deviceType": 6,
+                  "button": 1,
+                  "gesture": -4,
+                  "haSubPage": true,
+                  "lottieFile": "control/headphone_roll",
+                  "gestureImgKey": "control_rollIv",
+                  "gestureNameKey": "roll",
+                  "gestureImg": 1,
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": -4,
+                          "isCustom": false,
+                          "operationDescKey": [
+                            "control_volume_control"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "groupName": "paddle",
+              "gestures": [
+                {
+                  "isCustom": false,
+                  "deviceType": 6,
+                  "button": 1,
+                  "gesture": -5,
+                  "haSubPage": true,
+                  "gestureImgKey": "control_ic_paddle_tap",
+                  "gestureImg": 1,
+                  "lottieFile": "control/headphone_push_paddle",
+                  "gestureNameKey": "paddle_r_l",
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": -1,
+                          "isCustom": false,
+                          "operationDescKey": [
+                            "control_skip_forward_back",
+                            "control_answer_hang_up"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "isCustom": false,
+                  "deviceType": 6,
+                  "button": 1,
+                  "gesture": -6,
+                  "haSubPage": true,
+                  "gestureImgKey": "control_ic_paddle_tap_hold",
+                  "gestureImg": 1,
+                  "lottieFile": "control/headphone_push_hold_paddle",
+                  "gestureNameKey": "paddle_hold_r_l",
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": -2,
+                          "isCustom": false,
+                          "operationDescKey": [
+                            "fast_forward"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "groupName": "eq_toggle",
+              "gestures": [
+                {
+                  "isCustom": false,
+                  "deviceType": 6,
+                  "button": 1,
+                  "gesture": -7,
+                  "haSubPage": true,
+                  "gestureImgKey": "control_flat_eq",
+                  "gestureImg": 1,
+                  "lottieFile": "control/headphone_flat_eq",
+                  "gestureNameKey": "toggle_left_right",
+                  "operationGroups": [
+                    {
+                      "groupName": "",
+                      "operations": [
+                        {
+                          "operation": -7,
+                          "isCustom": false,
+                          "operationDescKey": [
+                            "eq_switch_on"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "voiceConfig": {
+          "deviceType": 6,
+          "button": 10,
+          "gesture": 7,
+          "operation": 11
+        }
+      }
+    ]
   }
 ]

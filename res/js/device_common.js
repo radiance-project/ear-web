@@ -481,6 +481,28 @@ function injectSharedStaticUI() {
     }
 }
 
+function applyFlatEqUI() {
+    let on = typeof isFlatEqBlocking === "function" && isFlatEqBlocking();
+    document.querySelectorAll('[onclick="setANC(1)"], #desc_two').forEach(function (el) {
+        el.style.opacity = on ? "0.3" : "";
+    });
+    let eqPanel = document.getElementById("pages_container_two");
+    if (!eqPanel) {
+        return;
+    }
+    let overlay = document.getElementById("flat_eq_overlay");
+    if (on && !overlay) {
+        eqPanel.style.position = "relative";
+        eqPanel.insertAdjacentHTML("beforeend", `
+            <div id="flat_eq_overlay" onclick="showFlatEqBlockedPopup()"
+                 style="position: absolute; inset: 0; z-index: 50; cursor: pointer; border-radius: inherit; background: rgba(27, 29, 31, 0.6); display: flex; align-items: center; justify-content: center;">
+                <div class="text-sm" style="padding: 6px 14px; border-radius: 9999px; background: #000; color: #fff;">Flat EQ is on</div>
+            </div>`);
+    } else if (!on && overlay) {
+        overlay.remove();
+    }
+}
+
 function hideDeviceLoadingOverlay() {
     let overlay = document.getElementById("device_loading_overlay");
     if (overlay) overlay.style.display = "none";
@@ -593,6 +615,10 @@ function setAncStrengthAdaptive() {
 
 // default implementation; overridden in: corsola, donphan, one, sticks
 function setANC(typeANC) {
+    if (typeANC == 1 && typeof isFlatEqBlocking === "function" && isFlatEqBlocking()) {
+        showFlatEqBlockedPopup();
+        return;
+    }
     if (typeANC == 0) {
         setAncToNC();
     } else if (typeANC == 1) {

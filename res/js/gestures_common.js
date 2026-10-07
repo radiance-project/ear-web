@@ -193,6 +193,11 @@ function checkboxCheckGeneric(evt, slotKey, topology, slots) {
     } else {
         event.target.checked = event.target.checked;
         var index = Array.prototype.indexOf.call(checkboxes, evt.target);
+        if (index === 0 && evt.target.checked && typeof isFlatEqBlocking === "function" && isFlatEqBlocking()) {
+            evt.target.checked = false;
+            showFlatEqBlockedPopup();
+            return;
+        }
         var selector = window[slot.ancToggle.selectorName];
         selector[index] = selector[index] == 1 ? 0 : 1;
         for (var s = 0; s < topology.sides.length; s++) {

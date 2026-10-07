@@ -73,6 +73,10 @@ function selectSpatialAudioMode(index) {
     if (index === currentSpatialAudioMode) {
         return;
     }
+    if (index !== 0 && typeof isFlatEqBlocking === "function" && isFlatEqBlocking()) {
+        showFlatEqBlockedPopup();
+        return;
+    }
     if (index !== 0 && isSpatialAudioEqExclusive() && (bassEnhanceEnabled || advancedEQEnabled)) {
         showMutuallyExclusiveWarning("Spatial Audio", advancedEQEnabled ? "Advanced EQ" : "Bass Enhance");
         return;

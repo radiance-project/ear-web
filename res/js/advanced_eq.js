@@ -6,6 +6,12 @@
 // #popup_container mechanism but sized to fill most of the app's design canvas instead
 // of the small centered card used by other popups.
 // Protocol: SET/GET_ADVANCE_CUSTOM_EQ_VALUE (see bluetooth_socket.js).
+//
+// Models with "supportMiddleEq" (B192, Headphone (1) Pro) get the layout of Nothing X
+// 3.9.0's new EQ page instead: a "Main" set of 1-8 bands anywhere in 20Hz-20kHz (3 by
+// default, at 50/250/4000Hz) plus a "Precision driver" set of 1-4 bands in 5-15kHz (one at
+// 8kHz by default), switched with tabs, with bands added/removed by the user. Both sets are
+// sent together (setAdvancedAndThirdDriverEQ_BT). Everything else keeps the fixed 8 bands.
 
 const ADVANCED_EQ_GAIN_MIN = -6;
 const ADVANCED_EQ_GAIN_MAX = 6;
@@ -16,6 +22,63 @@ const ADVANCED_EQ_SEND_DEBOUNCE_MS = 300;
 let selectedAdvancedEQBandIndex = 0;
 let advancedEQWorkingBands = null;
 
+// Flexible (B192) layout
+const ADVANCED_EQ_FLEX_MAIN_MAX_BANDS = 8;
+const ADVANCED_EQ_FLEX_DRIVER_MAX_BANDS = 4;
+const ADVANCED_EQ_FLEX_MAIN_DEFAULT_FREQUENCIES = [50, 250, 4000];
+const ADVANCED_EQ_FLEX_DRIVER_DEFAULT_FREQUENCIES = [8000];
+const ADVANCED_EQ_FLEX_MAIN_FREQ_MIN = 20;
+const ADVANCED_EQ_FLEX_MAIN_FREQ_MAX = 20000;
+const ADVANCED_EQ_DRIVER_CURVE_COLOR = "#f59e0b";
+let thirdDriverWorkingBands = null;
+let advancedEQActiveSet = "main"; // "main" | "driver"
+
+function advancedEQIsFlexible() {
+    return typeof supportsThirdDriverEQ === "function" && supportsThirdDriverEQ();
+}
+
+function advancedEQActiveBands() {
+    return advancedEQActiveSet === "driver" ? thirdDriverWorkingBands : advancedEQWorkingBands;
+}
+
+function advancedEQActiveMaxBands() {
+    return advancedEQActiveSet === "driver" ? ADVANCED_EQ_FLEX_DRIVER_MAX_BANDS : ADVANCED_EQ_FLEX_MAIN_MAX_BANDS;
+}
+
+// [min, max] Hz for band i of the active set.
+function advancedEQFrequencyLimits(i) {
+    if (!advancedEQIsFlexible()) {
+        let range = ADVANCED_EQ_BAND_RANGES[i];
+        return [range.min, range.max];
+    }
+    if (advancedEQActiveSet === "driver") {
+        return [THIRD_DRIVER_EQ_FREQ_MIN, THIRD_DRIVER_EQ_FREQ_MAX];
+    }
+    return [ADVANCED_EQ_FLEX_MAIN_FREQ_MIN, ADVANCED_EQ_FLEX_MAIN_FREQ_MAX];
+}
+
+function defaultFlexBands(frequencies) {
+    return frequencies.map(frequency => ({ filterType: 1, gain: 0, frequency: frequency, quality: 1.0 }));
+}
+
+function currentThirdDriverEQBandsOrDefault() {
+    if (currentThirdDriverEQBands && currentThirdDriverEQBands.length >= 1
+        && currentThirdDriverEQBands.length <= ADVANCED_EQ_FLEX_DRIVER_MAX_BANDS) {
+        return currentThirdDriverEQBands;
+    }
+    return defaultFlexBands(ADVANCED_EQ_FLEX_DRIVER_DEFAULT_FREQUENCIES);
+}
+
+const ADVANCED_EQ_LOG_SLIDER_STEPS = 1000;
+
+function frequencyToLogSlider(frequency, min, max) {
+    return Math.round(Math.log(frequency / min) / Math.log(max / min) * ADVANCED_EQ_LOG_SLIDER_STEPS);
+}
+
+function logSliderToFrequency(value, min, max) {
+    return Math.round(min * Math.pow(max / min, value / ADVANCED_EQ_LOG_SLIDER_STEPS));
+}
+
 function formatAdvancedEQFrequencyLabel(frequency) {
     if (frequency >= 1000) {
         let khz = frequency / 1000;
@@ -25,6 +88,13 @@ function formatAdvancedEQFrequencyLabel(frequency) {
 }
 
 function currentAdvancedEQBandsOrDefault() {
+    if (advancedEQIsFlexible()) {
+        if (currentAdvancedEQBands && currentAdvancedEQBands.length >= 1
+            && currentAdvancedEQBands.length <= ADVANCED_EQ_FLEX_MAIN_MAX_BANDS) {
+            return currentAdvancedEQBands;
+        }
+        return defaultFlexBands(ADVANCED_EQ_FLEX_MAIN_DEFAULT_FREQUENCIES);
+    }
     if (currentAdvancedEQBands && currentAdvancedEQBands.length === ADVANCED_EQ_BAND_RANGES.length) {
         return currentAdvancedEQBands;
     }
@@ -40,18 +110,114 @@ function openAdvancedEQPanel() {
     popupContent.style.maxWidth = "95%";
     popupContent.innerHTML = `
         <div class="w-fit flex m-auto text-md mb-4 mt-2">Advanced EQ</div>
+        <div id="advanced_eq_set_tabs" style="display: none; justify-content: center; gap: 8px; margin-bottom: 10px;"></div>
         <div style="width: 100%; height: 110px;">
             <canvas id="advancedEQChart"></canvas>
         </div>
         <div id="advanced_eq_gain_row" style="display: flex; justify-content: center; align-items: flex-end; margin-top: 10px;"></div>
+        <div id="advanced_eq_band_toolbar" style="display: none; justify-content: center; gap: 8px; margin-top: 10px;"></div>
         <div id="advanced_eq_band_editor" style="width: 320px; margin: 20px auto 0;"></div>
         <div class="flex justify-center mt-4">
             <button class="p-2 pl-6 pr-6 bg-black border-none border-[1px] text-white rounded-full hover:bg-[#1B1D1F] ease-in-out duration-300" onclick="closeAdvancedEQPanel()">Close</button>
         </div>`;
     advancedEQWorkingBands = currentAdvancedEQBandsOrDefault().map(band => ({ ...band }));
+    thirdDriverWorkingBands = advancedEQIsFlexible() ? currentThirdDriverEQBandsOrDefault().map(band => ({ ...band })) : null;
+    advancedEQActiveSet = "main";
+    selectedAdvancedEQBandIndex = 0;
+    renderAdvancedEQSetTabs();
     renderAdvancedEQGainRow();
+    renderAdvancedEQBandToolbar();
     renderAdvancedEQBandEditor();
     renderAdvancedEQChart();
+}
+
+function renderAdvancedEQSetTabs() {
+    let container = document.getElementById("advanced_eq_set_tabs");
+    if (!container) {
+        return;
+    }
+    if (!advancedEQIsFlexible()) {
+        container.style.display = "none";
+        return;
+    }
+    container.style.display = "flex";
+    let tab = (set, label) => {
+        let active = advancedEQActiveSet === set;
+        return `<button class="p-1 pl-4 pr-4 rounded-full text-sm ease-in-out duration-300" onclick="selectAdvancedEQSet('${set}')"
+                        style="border: none; background-color: ${active ? "#ffffff" : "#000000"}; color: ${active ? "#000000" : "#ffffff"};">${label}</button>`;
+    };
+    container.innerHTML = tab("main", "Main") + tab("driver", "Precision driver");
+}
+
+function selectAdvancedEQSet(set) {
+    if (set === advancedEQActiveSet) {
+        return;
+    }
+    advancedEQActiveSet = set;
+    selectedAdvancedEQBandIndex = 0;
+    renderAdvancedEQSetTabs();
+    renderAdvancedEQGainRow();
+    renderAdvancedEQBandToolbar();
+    renderAdvancedEQBandEditor();
+    renderAdvancedEQChart();
+}
+
+function renderAdvancedEQBandToolbar() {
+    let container = document.getElementById("advanced_eq_band_toolbar");
+    if (!container) {
+        return;
+    }
+    if (!advancedEQIsFlexible()) {
+        container.style.display = "none";
+        return;
+    }
+    let bands = advancedEQActiveBands();
+    let canAdd = bands.length < advancedEQActiveMaxBands();
+    let canRemove = bands.length > 1;
+    let button = (label, enabled, onclick) => `
+        <button class="p-1 pl-4 pr-4 bg-black border-none rounded-full text-sm text-white ease-in-out duration-300"
+                ${enabled ? `onclick="${onclick}"` : "disabled"} style="opacity: ${enabled ? "1" : "0.35"}; cursor: ${enabled ? "pointer" : "default"};">${label}</button>`;
+    container.style.display = "flex";
+    container.innerHTML = button("+ Add band", canAdd, "addAdvancedEQBand()")
+        + button("Remove band", canRemove, "removeSelectedAdvancedEQBand()");
+}
+
+function addAdvancedEQBand() {
+    let bands = advancedEQActiveBands();
+    if (bands.length >= advancedEQActiveMaxBands()) {
+        return;
+    }
+    let [min, max] = advancedEQFrequencyLimits(0);
+    let edges = [min, ...bands.map(b => b.frequency).sort((a, b) => a - b), max];
+    let best = { ratio: 0, frequency: Math.sqrt(min * max) };
+    for (let i = 0; i < edges.length - 1; i++) {
+        let ratio = edges[i + 1] / edges[i];
+        if (ratio > best.ratio) {
+            best = { ratio: ratio, frequency: Math.round(Math.sqrt(edges[i] * edges[i + 1])) };
+        }
+    }
+    bands.push({ filterType: 1, gain: 0, frequency: best.frequency, quality: 1.0 });
+    bands.sort((a, b) => a.frequency - b.frequency);
+    selectedAdvancedEQBandIndex = bands.findIndex(b => b.frequency === best.frequency);
+    renderAdvancedEQGainRow();
+    renderAdvancedEQBandToolbar();
+    renderAdvancedEQBandEditor();
+    renderAdvancedEQChart();
+    scheduleAdvancedEQSend();
+}
+
+function removeSelectedAdvancedEQBand() {
+    let bands = advancedEQActiveBands();
+    if (bands.length <= 1) {
+        return;
+    }
+    bands.splice(selectedAdvancedEQBandIndex, 1);
+    selectedAdvancedEQBandIndex = Math.min(selectedAdvancedEQBandIndex, bands.length - 1);
+    renderAdvancedEQGainRow();
+    renderAdvancedEQBandToolbar();
+    renderAdvancedEQBandEditor();
+    renderAdvancedEQChart();
+    scheduleAdvancedEQSend();
 }
 
 function closeAdvancedEQPanel() {
@@ -75,11 +241,12 @@ const ADVANCED_EQ_CURVE_SAMPLE_RATE = 48000;
 const ADVANCED_EQ_CURVE_POINT_COUNT = 120;
 
 function advancedEQChartPointColors() {
-    return advancedEQWorkingBands.map((band, i) => i === selectedAdvancedEQBandIndex ? ADVANCED_EQ_CHART_ACTIVE_COLOR : "#ffffff");
+    let idle = advancedEQActiveSet === "driver" ? ADVANCED_EQ_DRIVER_CURVE_COLOR : "#ffffff";
+    return advancedEQActiveBands().map((band, i) => i === selectedAdvancedEQBandIndex ? ADVANCED_EQ_CHART_ACTIVE_COLOR : idle);
 }
 
 function advancedEQChartPointRadii() {
-    return advancedEQWorkingBands.map((band, i) => i === selectedAdvancedEQBandIndex ? 5 : 3);
+    return advancedEQActiveBands().map((band, i) => i === selectedAdvancedEQBandIndex ? 5 : 3);
 }
 
 // Standard RBJ Audio EQ Cookbook peaking-filter magnitude response, in dB, for a single
@@ -143,16 +310,18 @@ function renderAdvancedEQChart() {
         return;
     }
     let curvePoints = computeAdvancedEQResponseCurve(advancedEQWorkingBands);
+    let driverCurvePoints = thirdDriverWorkingBands ? computeAdvancedEQResponseCurve(thirdDriverWorkingBands) : [];
     // {x,y} band markers on the same numeric (logarithmic) frequency axis, so dragging a
     // band's frequency slider actually slides its dot horizontally instead of just
     // relabeling a fixed category slot.
-    let bandPoints = advancedEQWorkingBands.map(band => ({ x: band.frequency, y: band.gain }));
+    let bandPoints = advancedEQActiveBands().map(band => ({ x: band.frequency, y: band.gain }));
     let colors = advancedEQChartPointColors();
     let radii = advancedEQChartPointRadii();
 
     if (advancedEQChartInstance) {
-        let [curveDataset, bandDataset] = advancedEQChartInstance.data.datasets;
+        let [curveDataset, bandDataset, driverDataset] = advancedEQChartInstance.data.datasets;
         curveDataset.data = curvePoints;
+        driverDataset.data = driverCurvePoints;
         bandDataset.data = bandPoints;
         bandDataset.pointBackgroundColor = colors;
         bandDataset.pointBorderColor = colors;
@@ -189,6 +358,18 @@ function renderAdvancedEQChart() {
                     pointRadius: radii,
                     pointBackgroundColor: colors,
                     pointBorderColor: colors,
+                },
+                {
+                    // Precision driver response (empty unless the model has one)
+                    data: driverCurvePoints,
+                    borderColor: ADVANCED_EQ_DRIVER_CURVE_COLOR,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    fill: false,
+                    tension: 0,
+                    borderWidth: 2,
+                    borderDash: [4, 3],
+                    pointRadius: 0,
+                    showLine: true,
                 },
             ],
         },
@@ -230,7 +411,7 @@ function renderAdvancedEQGainRow() {
     if (!container) {
         return;
     }
-    container.innerHTML = advancedEQWorkingBands.map((band, i) => `
+    container.innerHTML = advancedEQActiveBands().map((band, i) => `
         <div style="display: inline-flex; flex-direction: column; align-items: center; width: 34px; margin: 0 3px;">
             <input type="range" min="${ADVANCED_EQ_GAIN_MIN}" max="${ADVANCED_EQ_GAIN_MAX}" step="0.5" value="${band.gain}"
                    id="advanced_eq_gain_${i}" oninput="onAdvancedEQGainInput(${i})"
@@ -250,7 +431,7 @@ function bandLabelStyle(i) {
 
 function selectAdvancedEQBand(index) {
     selectedAdvancedEQBandIndex = index;
-    for (let i = 0; i < advancedEQWorkingBands.length; i++) {
+    for (let i = 0; i < advancedEQActiveBands().length; i++) {
         let label = document.getElementById("advanced_eq_band_label_" + i);
         if (label) {
             label.style.backgroundColor = i === selectedAdvancedEQBandIndex ? "#ffffff" : "";
@@ -273,13 +454,18 @@ function renderAdvancedEQBandEditor() {
         return;
     }
     let i = selectedAdvancedEQBandIndex;
-    let band = advancedEQWorkingBands[i];
-    let range = ADVANCED_EQ_BAND_RANGES[i];
+    let band = advancedEQActiveBands()[i];
+    let [min, max] = advancedEQFrequencyLimits(i);
+    // Flexible layout: log-scale slider position; fixed layout: plain Hz.
+    let freqSlider = advancedEQIsFlexible()
+        ? `min="0" max="${ADVANCED_EQ_LOG_SLIDER_STEPS}" step="1" value="${frequencyToLogSlider(band.frequency, min, max)}"`
+        : `min="${min}" max="${max}" step="1" value="${band.frequency}"`;
+    let title = advancedEQActiveSet === "driver" ? `Precision driver band ${i + 1}` : `Band ${i + 1}`;
     container.innerHTML = `
-        <div class="text-white text-sm" style="margin-bottom: 10px; text-align: center;">Band ${i + 1}</div>
+        <div class="text-white text-sm" style="margin-bottom: 10px; text-align: center;">${title}</div>
         <div style="display: flex; align-items: center; margin-bottom: 8px;">
             <div class="text-gray-500 text-xs" style="width: 90px;">Frequency <span id="advanced_eq_freq_label">${formatAdvancedEQFrequencyLabel(band.frequency)}</span></div>
-            <input type="range" min="${range.min}" max="${range.max}" step="1" value="${band.frequency}"
+            <input type="range" ${freqSlider}
                    id="advanced_eq_freq_input" oninput="onAdvancedEQFreqOrQInput()" style="flex: 1; accent-color: #ffffff;" />
         </div>
         <div style="display: flex; align-items: center;">
@@ -296,14 +482,19 @@ function scheduleAdvancedEQSend() {
         clearTimeout(advancedEQSendTimer);
     }
     advancedEQSendTimer = setTimeout(() => {
-        setAdvancedEQValue_BT(advancedEQWorkingBands.map(band => ({ gain: band.gain, frequency: band.frequency, quality: band.quality })));
+        let plain = bands => bands.map(band => ({ gain: band.gain, frequency: band.frequency, quality: band.quality }));
+        if (advancedEQIsFlexible()) {
+            setAdvancedAndThirdDriverEQ_BT(plain(advancedEQWorkingBands), plain(thirdDriverWorkingBands));
+        } else {
+            setAdvancedEQValue_BT(plain(advancedEQWorkingBands));
+        }
     }, ADVANCED_EQ_SEND_DEBOUNCE_MS);
 }
 
 function onAdvancedEQGainInput(index) {
     let input = document.getElementById("advanced_eq_gain_" + index);
     if (input) {
-        advancedEQWorkingBands[index].gain = parseFloat(input.value);
+        advancedEQActiveBands()[index].gain = parseFloat(input.value);
     }
     if (index !== selectedAdvancedEQBandIndex) {
         selectAdvancedEQBand(index);
@@ -314,19 +505,23 @@ function onAdvancedEQGainInput(index) {
 
 function onAdvancedEQFreqOrQInput() {
     let i = selectedAdvancedEQBandIndex;
+    let bands = advancedEQActiveBands();
     let freqInput = document.getElementById("advanced_eq_freq_input");
     let qInput = document.getElementById("advanced_eq_q_input");
     if (freqInput) {
-        advancedEQWorkingBands[i].frequency = parseFloat(freqInput.value);
-        document.getElementById("advanced_eq_freq_label").innerText = formatAdvancedEQFrequencyLabel(advancedEQWorkingBands[i].frequency);
+        let [min, max] = advancedEQFrequencyLimits(i);
+        bands[i].frequency = advancedEQIsFlexible()
+            ? logSliderToFrequency(parseFloat(freqInput.value), min, max)
+            : parseFloat(freqInput.value);
+        document.getElementById("advanced_eq_freq_label").innerText = formatAdvancedEQFrequencyLabel(bands[i].frequency);
         let bandLabel = document.getElementById("advanced_eq_band_label_" + i);
         if (bandLabel) {
-            bandLabel.innerText = formatAdvancedEQFrequencyLabel(advancedEQWorkingBands[i].frequency);
+            bandLabel.innerText = formatAdvancedEQFrequencyLabel(bands[i].frequency);
         }
     }
     if (qInput) {
-        advancedEQWorkingBands[i].quality = parseFloat(qInput.value);
-        document.getElementById("advanced_eq_q_label").innerText = advancedEQWorkingBands[i].quality.toFixed(1);
+        bands[i].quality = parseFloat(qInput.value);
+        document.getElementById("advanced_eq_q_label").innerText = bands[i].quality.toFixed(1);
     }
     renderAdvancedEQChart();
     scheduleAdvancedEQSend();
@@ -339,7 +534,12 @@ function renderAdvancedEQUI() {
         return;
     }
     advancedEQWorkingBands = currentAdvancedEQBandsOrDefault().map(band => ({ ...band }));
+    if (advancedEQIsFlexible()) {
+        thirdDriverWorkingBands = currentThirdDriverEQBandsOrDefault().map(band => ({ ...band }));
+    }
+    selectedAdvancedEQBandIndex = Math.min(selectedAdvancedEQBandIndex, advancedEQActiveBands().length - 1);
     renderAdvancedEQGainRow();
+    renderAdvancedEQBandToolbar();
     renderAdvancedEQBandEditor();
     renderAdvancedEQChart();
 }

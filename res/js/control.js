@@ -1,3 +1,11 @@
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch((err) => {
+            console.error("Service worker registration failed:", err);
+        });
+    });
+}
+
 var FASTPAIR_MODELS = {
     "31D53D": {
         "name": "Nothing ear (1)",
@@ -516,6 +524,22 @@ var FASTPAIR_MODELS = {
         "caseImg": "../assets/b189_black_case.webp",
         "rightImg": "../assets/b189_black_right.webp",
         "duoImg": "../assets/b189_black_duo.webp"
+    },
+    "CDFDEC": {
+        "name": "Nothing Headphone (1) Pro",
+        "base": "B192",
+        "leftImg": "../assets/b192_black_left.webp",
+        "caseImg": "../assets/b192_black_case.webp",
+        "rightImg": "../assets/b192_black_right.webp",
+        "duoImg": "../assets/b192_black_duo.webp"
+    },
+    "086485": {
+        "name": "Nothing Headphone (1) Pro",
+        "base": "B192",
+        "leftImg": "../assets/b192_silver_left.webp",
+        "caseImg": "../assets/b192_silver_case.webp",
+        "rightImg": "../assets/b192_silver_right.webp",
+        "duoImg": "../assets/b192_silver_duo.webp"
     }
 };
 
