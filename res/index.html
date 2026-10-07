@@ -114,6 +114,36 @@
                 .faq-container a:hover {
                     text-decoration: underline;
                 }
+        #kofi_container {
+            text-align: center;
+            margin: 30px auto 0;
+            padding-bottom: 30px;
+        }
+
+        #kofi_button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background-color: #333;
+            color: white;
+            font-size: 0.85rem;
+            text-decoration: none;
+            border: 2px solid transparent;
+            transition: transform 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+
+            #kofi_button:hover {
+                transform: scale(1.05);
+                border-color: #e82525;
+            }
+
+            #kofi_button svg {
+                width: 18px;
+                height: 18px;
+                fill: #e82525;
+            }
     </style>
 </head>
 
@@ -132,6 +162,7 @@
     <div id="scan_button" onclick="scanNewDevicesFastpair()">
         <div id="scan_button-c">Connect</div>
     </div>
+
 
     <div class="faq-container">
         <p>If you face any issues, please check the following:<br>
@@ -169,6 +200,13 @@
             </p>
         </details>
     </div>
+
+    <footer id="kofi_container">
+        <a id="kofi_button" href="https://ko-fi.com/rapidzapper" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8h15v6a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V8zm15 1h1.5a2.5 2.5 0 0 1 0 5H17v-2h1.5a.5.5 0 0 0 0-1H17V9zM9.5 10.2c-.9-.9-2.6-.4-2.6 1 0 1.2 1.4 2.3 2.6 3.3 1.2-1 2.6-2.1 2.6-3.3 0-1.4-1.7-1.9-2.6-1z"/></svg>
+            Support ear (web) on Ko-fi
+        </a>
+    </footer>
 
     <script>
         async function forgetAllDevices() {

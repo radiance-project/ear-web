@@ -250,6 +250,30 @@ var FASTPAIR_MODELS = {
         "rightImg": "../assets/b179_orange_right.webp",
         "duoImg": "../assets/b179_orange_duo.webp"
     },
+    "3B1320": {
+        "name": "CMF Buds 2",
+        "base": "B197",
+        "leftImg": "../assets/b179_black_left.webp",
+        "caseImg": "../assets/b179_black_case.webp",
+        "rightImg": "../assets/b179_black_right.webp",
+        "duoImg": "../assets/b179_black_duo.webp"
+    },
+    "359A7D": {
+        "name": "CMF Buds 2",
+        "base": "B197",
+        "leftImg": "../assets/b179_green_left.webp",
+        "caseImg": "../assets/b179_green_case.webp",
+        "rightImg": "../assets/b179_green_right.webp",
+        "duoImg": "../assets/b179_green_duo.webp"
+    },
+    "00FDED": {
+        "name": "CMF Buds 2",
+        "base": "B197",
+        "leftImg": "../assets/b179_orange_left.webp",
+        "caseImg": "../assets/b179_orange_case.webp",
+        "rightImg": "../assets/b179_orange_right.webp",
+        "duoImg": "../assets/b179_orange_duo.webp"
+    },
     "5C587F": {
         "name": "CMF Buds 2 Plus",
         "base": "B184",
@@ -325,6 +349,54 @@ var FASTPAIR_MODELS = {
         "caseImg": "../assets/b187_blue_case.webp",
         "rightImg": "../assets/b187_blue_right.webp",
         "duoImg": "../assets/b187_blue_duo.webp"
+    },
+    "F51D3D": {
+        "name": "CMF Buds Pro 2",
+        "base": "B195",
+        "leftImg": "../assets/b187_black_left.webp",
+        "caseImg": "../assets/b187_black_case.webp",
+        "rightImg": "../assets/b187_black_right.webp",
+        "duoImg": "../assets/b187_black_duo.webp"
+    },
+    "A544CE": {
+        "name": "CMF Buds Pro 2",
+        "base": "B195",
+        "leftImg": "../assets/b187_white_left.webp",
+        "caseImg": "../assets/b187_white_case.webp",
+        "rightImg": "../assets/b187_white_right.webp",
+        "duoImg": "../assets/b187_white_duo.webp"
+    },
+    "9EAC04": {
+        "name": "CMF Buds Pro 2",
+        "base": "B195",
+        "leftImg": "../assets/b187_orange_left.webp",
+        "caseImg": "../assets/b187_orange_case.webp",
+        "rightImg": "../assets/b187_orange_right.webp",
+        "duoImg": "../assets/b187_orange_duo.webp"
+    },
+    "1D07D4": {
+        "name": "CMF Buds Pro 2",
+        "base": "B195",
+        "leftImg": "../assets/b187_blue_left.webp",
+        "caseImg": "../assets/b187_blue_case.webp",
+        "rightImg": "../assets/b187_blue_right.webp",
+        "duoImg": "../assets/b187_blue_duo.webp"
+    },
+    "53BFE6": {
+        "name": "CMF Buds Pro 2",
+        "base": "B195",
+        "leftImg": "../assets/b187_green_left.webp",
+        "caseImg": "../assets/b187_green_case.webp",
+        "rightImg": "../assets/b187_green_right.webp",
+        "duoImg": "../assets/b187_green_duo.webp"
+    },
+    "072714": {
+        "name": "CMF Buds Pro 2",
+        "base": "B195",
+        "leftImg": "../assets/b187_pink_left.webp",
+        "caseImg": "../assets/b187_pink_case.webp",
+        "rightImg": "../assets/b187_pink_right.webp",
+        "duoImg": "../assets/b187_pink_duo.webp"
     },
     "C19ECD": {
         "name": "Nothing Headphone (1)",

@@ -9,3 +9,5 @@ electron/out
 *.spec 
 /.htaccess
 .claude/settings.local.json
+react-app/
+tools/*

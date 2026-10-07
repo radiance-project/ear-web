@@ -16,7 +16,7 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_corsola";
     } else if (model.base == "B171") {
         window.location.href = "MainControl_twos";
-    } else if (model.base == "B172") {
+    } else if (model.base == "B172" || model.base == "B195") {
         window.location.href = "MainControl_espeon";
     } else if (model.base == "B168") {
         window.location.href = "MainControl_donphan";
@@ -26,7 +26,7 @@ async function switchViewFromModelID(model, sku) {
         window.location.href = "MainControl_cleffa";
     } else if (model.base == "B184") {
         window.location.href = "MainControl_gligar";
-    } else if (model.base == "B179") {
+    } else if (model.base == "B179" || model.base == "B197") {
         window.location.href = "MainControl_girafarig";
     } else if (model.base == "B185") {
         window.location.href = "MainControl_hoothoot";

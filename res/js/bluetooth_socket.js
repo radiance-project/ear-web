@@ -436,13 +436,13 @@ function read_advanced_eq_status(hexString)
 }
 
 function getEQ() {
-    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
+    if (modelBase !== "B172" && modelBase !== "B195" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B197" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
         send(49183, [], "readEQ");
     }
 }
 
 function getListeningMode() {
-    if (modelBase === "B172" || modelBase === "B168" || modelBase === "B179" || modelBase === "B184" || modelBase === "B185" || modelBase === "B175" || modelBase === "B189") {
+    if (modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B179" || modelBase === "B197" || modelBase === "B184" || modelBase === "B185" || modelBase === "B175" || modelBase === "B189") {
         send(49232, [], "readListeningMode");
     }
 }
@@ -462,7 +462,7 @@ function setEQ(level) {
 }
 
 function setListeningMode(level) {
-    if (modelBase !== "B172" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
+    if (modelBase !== "B172" && modelBase !== "B195" && modelBase !== "B168" && modelBase !== "B179" && modelBase !== "B197" && modelBase !== "B184" && modelBase !== "B185" && modelBase !== "B175" && modelBase !== "B189") {
         return;
     }
     let byteArray = [0x00, 0x00];
@@ -526,12 +526,12 @@ function showFlatEqBlockedPopup() {
 const BASS_LEVEL_WIRE_B189 = [0, 5, 10]; // UI position -> wire byte
 
 function usesThreeStageBass() {
-    return modelBase === "B189" || modelBase === "B186";
+    return modelBase === "B189" || modelBase === "B186" || modelBase === "B195" || modelBase === "B197";
 }
 
 function set_enhanced_bass(enabled, level) {
     console.log("set_enhanced_bass called with enabled: " + enabled + " and level: " + level);
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B170" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         bassEnhanceEnabled = !!enabled;
         level = usesThreeStageBass() ? (BASS_LEVEL_WIRE_B189[level] ?? 0) : level * 2;
         let byteArray = [0x00, 0x00];
@@ -544,13 +544,13 @@ function set_enhanced_bass(enabled, level) {
 }
 
 function get_enhanced_bass() {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         send(49230, [], "readEnhancedBass");
     }
 }
 
 function read_enhanced_bass(hexString) {
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
         let enabled = hexArray[8];
         let level = hexArray[9];
@@ -1101,7 +1101,7 @@ async function getConfigForFirmware() {
 
 
 function launchEarFitTest() {
-    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B173") {
+    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B173") {
         send(61460, [0x01]);
     }
 }

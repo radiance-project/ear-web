@@ -391,6 +391,77 @@ const BASS_PANEL_HTML = `
                                         </div>`;
 
 
+const BASS_PANEL_THREE_STAGE_HTML = `
+                                        <div class="w-fit flex m-auto text-md mb-5 mt-2">
+                                            %%BASS_TITLE%%
+                                        </div>
+                                        <div id="selector_bass"
+                                             class="w-20 p-2 bg-white rounded-full h-[38px] -mb-[59px] ml-[65px] z-1 relative ease-in-out duration-200">
+                                        </div>
+                                        <div class="w-fit grid grid-cols-2 grid-rows-1 bg-black gap-4 m-auto mt-5 rounded-full ml">
+                                            <div id="one"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setBassEnhance(1, 1)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="bass_on" style="width: 23px; stroke: black !important; fill:black !important;">
+                                                    <use xlink:href="../assets/ear_bass_enhance_on.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                            <div id="two"
+                                                 class="p-2 text-center w-20 ease-in-out duration-150 z-[10] relative text-white cursor-pointer"
+                                                 onclick="setBassEnhance(0, 1)">
+                                                <svg class="h-[23px] mt-[1px] ml-[20px] relative" id="bass_off" style="width: 23px; fill: white !important;">
+                                                    <use xlink:href="../assets/ear_bass_enhance_off.svg#load"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="w-fit grid grid-cols-2 grid-rows-1 gap-4 m-auto text-[10px] mt-2">
+                                            <div id="desc_one" class=" text-center w-20">ON</div>
+                                            <div id="desc_two" class=" text-center w-20">Off</div>
+                                        </div>
+                                        <div id="bass_strength_selector" class="ease-in-out duration-300 mt-[30px] m-auto mt-2 w-fit ">
+                                            <div id="bass_strength_length_selector" class="h-[12px] rounded-xl ml-[5px] ease-in-out duration-200 bg-white -mb-[16px] relative" style="width: 12px;"></div>
+                                            <div class="grid ease-out duration-200 grid-cols-3 grid-rows-1 bg-black rounded-full opacity-100 pl-[10px] pr-[10px]" style="gap: 2rem; width: 190px;">
+                                                <div id="stage_one"
+                                                     class="p-2 flex items-center justify-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(0, 1)">
+                                                    <div id="stage_one_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full"></div>
+                                                </div>
+                                                <div id="stage_two"
+                                                     class="p-2 flex items-center justify-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(1, 1)">
+                                                    <div id="stage_two_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full "></div>
+                                                </div>
+                                                <div id="stage_three"
+                                                     class="p-2 flex items-center justify-center ease-in-out duration-150 z-[10] relative cursor-pointer"
+                                                     onclick="setBassLevel(2, 1)">
+                                                    <div id="stage_three_button_bass"
+                                                         class="w-1 h-1 bg-white ease-in-out duration-200 rounded-full "></div>
+                                                </div>
+                                            </div>
+                                            <div class="m-auto w-full text-[13px] text-center mt-2 opacity-100" id="bass_level_label">
+                                                Level 0
+                                            </div>
+                                        </div>`;
+
+// B195/B197 are Bluetrum-chip revisions of CMF Buds Pro 2 (B187) / Buds 2 (B179) and reuse
+// their pages, but their configs have "ultraBassType": 3 - the 3-level 0/5/10 wire scheme
+// (BASS_LEVEL_WIRE_B189 in bluetooth_socket.js) instead of the shared 5-level one. Read from
+// localStorage rather than modelBase: injectSharedStaticUI() runs while this file loads,
+// before bluetooth_socket.js has set modelBase.
+const SHARED_PAGE_THREE_STAGE_BASS_MODELS = ["B195", "B197"];
+
+function sharedPageUsesThreeStageBass() {
+    try {
+        let model = JSON.parse(localStorage.getItem("model") || "{}");
+        return SHARED_PAGE_THREE_STAGE_BASS_MODELS.includes(model && model.base);
+    } catch (e) {
+        return false;
+    }
+}
+
+
 // default implementation (no per-model overrides)
 const HEADER_EARBUD_HTML = `                        <div id="image-container"
                              class='justify-center items-center flex relative ease-in-out duration-300'>
@@ -472,7 +543,8 @@ function injectSharedStaticUI() {
     let bass = document.getElementById("bass_enhance_container");
     if (bass) {
         let title = bass.dataset.bassVariant === "ultra" ? "ULTRA BASS" : "BASS ENHANCE";
-        bass.innerHTML = BASS_PANEL_HTML.replace("%%BASS_TITLE%%", title);
+        let panel = sharedPageUsesThreeStageBass() ? BASS_PANEL_THREE_STAGE_HTML : BASS_PANEL_HTML;
+        bass.innerHTML = panel.replace("%%BASS_TITLE%%", title);
     }
 
     let header = document.getElementById("header_images_placeholder");
@@ -714,7 +786,54 @@ function setBassEnhance(state, is_send=false) {
 }
 
 // default implementation (no per-model overrides)
+function threeStageBassSelectorWidth(level) {
+    let track = document.querySelector("#bass_strength_selector .grid");
+    let bar = document.getElementById("bass_strength_length_selector");
+    let dotIds = ["stage_one_button_bass", "stage_two_button_bass", "stage_three_button_bass"];
+    if (!track || !bar) {
+        return "12px";
+    }
+    let container = document.getElementById("container_one");
+    let match = container ? /scale\(([^)]+)\)/.exec(container.style.transform || "") : null;
+    let scale = match ? parseFloat(match[1]) : 1;
+    if (!(scale > 0 && isFinite(scale))) {
+        scale = 1;
+    }
+    let barLeft = bar.getBoundingClientRect().left;
+    let targetRight;
+    if (level >= dotIds.length - 1) {
+        targetRight = track.getBoundingClientRect().right;
+    } else {
+        let dot = document.getElementById(dotIds[level]);
+        if (!dot) {
+            return "12px";
+        }
+        targetRight = dot.getBoundingClientRect().right;
+    }
+    return (Math.max(0, targetRight - barLeft) / scale) + "px";
+}
+
+// 3-level version of setBassLevel for sharedPageUsesThreeStageBass() models (UI positions
+// 0/1/2). Picking Level 0 turns Ultra Bass off, as on B189 (igglybuff.js) - only on a real
+// click, so a passive read keeps the device's own enabled bit.
+function setBassLevelThreeStage(new_level, is_send) {
+    if (new_level !== undefined && new_level >= 0 && new_level <= 2) level = new_level
+    bass_enhance[1] = level
+    console.log("setBassLevel", level)
+    if (level >= 0 && level <= 2) {
+        document.getElementById("bass_strength_length_selector").style.width = threeStageBassSelectorWidth(level)
+        document.getElementById("bass_level_label").innerHTML = "Level " + level
+    }
+    if (is_send) {
+        setBassEnhance(level === 0 ? 0 : 1, false)
+        set_enhanced_bass(bass_enhance[0], bass_enhance[1]);
+    }
+}
+
 function setBassLevel(new_level, is_send=false) {
+    if (sharedPageUsesThreeStageBass()) {
+        return setBassLevelThreeStage(new_level, is_send);
+    }
     if (new_level) level = new_level
     bass_enhance[1] = level
     console.log("setBassLevel", level)
