@@ -417,13 +417,29 @@ var FASTPAIR_MODELS = {
     "7D46E5": {
         "name": "Nothing Ear (3)",
         "base": "B173",
-        "altBase": "B201",
         "leftImg": "../assets/b173_black_left.webp",
         "caseImg": "../assets/b173_black_case.webp",
         "rightImg": "../assets/b173_black_right.webp",
         "duoImg": "../assets/b173_black_duo.webp"
     },
     "C1EBFD": {
+        "name": "Nothing Ear (3)",
+        "base": "B173",
+        "leftImg": "../assets/b173_white_left.webp",
+        "caseImg": "../assets/b173_white_case.webp",
+        "rightImg": "../assets/b173_white_right.webp",
+        "duoImg": "../assets/b173_white_duo.webp"
+    },
+    "056133": {
+        "name": "Nothing Ear (3)",
+        "base": "B173",
+        "altBase": "B201",
+        "leftImg": "../assets/b173_black_left.webp",
+        "caseImg": "../assets/b173_black_case.webp",
+        "rightImg": "../assets/b173_black_right.webp",
+        "duoImg": "../assets/b173_black_duo.webp"
+    },
+    "77FDD8": {
         "name": "Nothing Ear (3)",
         "base": "B173",
         "altBase": "B201",
