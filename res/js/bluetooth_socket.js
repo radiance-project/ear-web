@@ -5,6 +5,7 @@ let writeQueue = Promise.resolve();
 
 let modelSpecs = {};
 let modelBase = "";
+let modelConfigID = "";
 
 let firmwareVersion = "";
 let firmwareConfig = {};
@@ -104,8 +105,9 @@ async function initDevice() {
 function setModelBase() {
     modelSpecs = localStorage.getItem("model");
     //modelBase is a json string, so we need to parse it
-    modelBase = JSON.parse(modelSpecs);
-    modelBase = modelBase.base;
+    let model = JSON.parse(modelSpecs);
+    modelBase = model.base;
+    modelConfigID = model.altBase || model.base;
 }
 
 const REBOOT_RECONNECT_MAX_RETRIES = 6;
@@ -428,7 +430,7 @@ function read_advanced_eq_status(hexString)
     let advancedStatus = hexArray[8];
     console.log("advancedEQ " + advancedStatus);
     advancedEQEnabled = advancedStatus === 1;
-    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170" || modelBase === "B186" || modelBase === "B192") {
+    if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170" || modelBase === "B186" || modelBase === "B192" || modelBase === "B173" || modelBase === "B190") {
         if (advancedStatus === 1) {
             setEQfromRead(6);
         }
@@ -531,7 +533,7 @@ function usesThreeStageBass() {
 
 function set_enhanced_bass(enabled, level) {
     console.log("set_enhanced_bass called with enabled: " + enabled + " and level: " + level);
-    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B170" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
+    if (modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         bassEnhanceEnabled = !!enabled;
         level = usesThreeStageBass() ? (BASS_LEVEL_WIRE_B189[level] ?? 0) : level * 2;
         let byteArray = [0x00, 0x00];
@@ -928,7 +930,7 @@ function ringBuds(isRing, isLeft = false) {
         } else {
             byteArray[0] = 0x00;
         }
-    } else if (modelBase === "B170" || modelBase === "B164" || modelBase === "B186" || modelBase === "B192") {
+    } else if (modelBase === "B170" || modelBase === "B164" || modelBase === "B175" || modelBase === "B186" || modelBase === "B192") {
         byteArray = [0x06, 0x00];
         if (isRing) {
             byteArray[1] = 0x01;
@@ -997,14 +999,20 @@ async function getConfigForFirmware() {
         firmwareConfig = jsonData;
         
         // Find matching model configuration
-        modelSpecs = firmwareConfig.find(config => config.id === modelBase);
+        let configID = modelConfigID || modelBase;
+        modelSpecs = firmwareConfig.find(config => config.id === configID);
+        if (!modelSpecs && configID !== modelBase) {
+            console.warn(`No configuration found for ${configID}, falling back to ${modelBase}`);
+            configID = modelBase;
+            modelSpecs = firmwareConfig.find(config => config.id === configID);
+        }
 
         if (!modelSpecs) {
             console.warn(`No configuration found for model: ${modelBase}`);
             return false;
         }
 
-        console.log(`Found config for modelBase: ${modelBase}`);
+        console.log(`Found config for model: ${configID}`);
         console.log(modelSpecs);
 
         // Handle configuration selection
@@ -1101,7 +1109,7 @@ async function getConfigForFirmware() {
 
 
 function launchEarFitTest() {
-    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B173") {
+    if (modelBase === "B155" || modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B173" || modelBase === "B190") {
         send(61460, [0x01]);
     }
 }
