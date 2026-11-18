@@ -11,7 +11,6 @@ let firmwareVersion = "";
 let firmwareConfig = {};
 
 let operationID = 0;
-let operationList = {};
 
 let debug = new URLSearchParams(window.location.search).get("debug");
 if (!debug) {
@@ -29,37 +28,183 @@ async function sendString(command, payload = "", operation = "") {
     await send(command, payloadBytes, operation);
 }
 
+function bytesToHex(bytes) {
+    let out = "";
+    for (let i = 0; i < bytes.length; i++) {
+        out += (bytes[i] < 16 ? "0" : "") + bytes[i].toString(16);
+    }
+    return out;
+}
+
 async function send(command, payload = [], operation = "") {
     let header = [0x55, 0x60, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00];
-    operationID++;
+    // op id is one byte, wraps 1..255
+    operationID = operationID >= 255 ? 1 : operationID + 1;
     header[7] = operationID;
     let commandBytes = new Uint8Array(new Uint16Array([command]).buffer);
     header[3] = commandBytes[0];
     header[4] = commandBytes[1];
     let payloadLength = payload.length;
-    header[5] = payloadLength;
+    header[5] = payloadLength & 0xFF;
+    header[6] = (payloadLength >> 8) & 0xFF;
     header.push(...payload);
     let byteArray = new Uint8Array(header);
     let crc = crc16(byteArray);
-    byteArray = [...byteArray, crc & 0xFF, crc >> 8];
-    if (operation !== "") {
-        operationList[operationID] = operation;
+    let frame = new Uint8Array(byteArray.length + 2);
+    frame.set(byteArray, 0);
+    frame[byteArray.length] = crc & 0xFF;
+    frame[byteArray.length + 1] = crc >> 8;
+    if (isSetCommand(command)) {
+        setQueue.push({ command, op: operationID, frame });
+        pumpSets();
+    } else {
+        writeFrame(frame);
     }
-    console.log("sending " + byteArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
+}
+
+function stamp() {
+    return "[" + Math.round(performance.now()) + "ms] ";
+}
+
+// 0xF0xx only: 0xFCxx (debug / file transfer) is not a plain request and ack
+function isSetCommand(command) {
+    return (command & 0xFF00) === 0xF000;
+}
+
+// a response has bit 15 clear (a push does not): 0xF041 is acked by 0x7041, 0xC007 by 0x4007
+function isAckFor(received, requested) {
+    return (received & 0x8000) === 0 && (received & 0x7FFF) === (requested & 0x7FFF);
+}
+
+// sets go out one at a time: the next waits for the previous ack (cmd & 0x7FFF, same op id)
+const SET_ACK_TIMEOUT_MS = 2000;
+let setQueue = [];
+let inflightSet = null;
+
+function pumpSets() {
+    if (inflightSet || setQueue.length === 0) {
+        return;
+    }
+    const entry = setQueue.shift();
+    entry.sentAt = performance.now();
+    entry.timer = setTimeout(() => {
+        console.error("No ack for set 0x" + entry.command.toString(16) + " op " + entry.op);
+        inflightSet = null;
+        pumpSets();
+    }, SET_ACK_TIMEOUT_MS);
+    inflightSet = entry;
+    writeFrame(entry.frame);
+}
+
+function onSetAck(command, op) {
+    if (!inflightSet || !isAckFor(command, inflightSet.command) || op !== inflightSet.op) {
+        return;
+    }
+    clearTimeout(inflightSet.timer);
+    if (debug) {
+        console.log(stamp() + "ack 0x" + command.toString(16) + " op " + op + " in " + Math.round(performance.now() - inflightSet.sentAt) + "ms");
+    }
+    inflightSet = null;
+    pumpSets();
+}
+
+function resetSets() {
+    if (inflightSet) {
+        clearTimeout(inflightSet.timer);
+    }
+    inflightSet = null;
+    setQueue = [];
+}
+
+function writeFrame(frame) {
+    if (debug) {
+        console.log(stamp() + "sending " + bytesToHex(frame));
+    }
     writeQueue = writeQueue.then(async () => {
+        if (!SPPsocket || !SPPsocket.writable) {
+            return;
+        }
+        // close() drains and the next getWriter() gets a fresh pipe, so a frame never straddles a buffer wrap
         let writer = null;
         try {
-            writer = await SPPsocket.writable.getWriter();
-            console.log("Writing to SPPsocket: " + byteArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
-            await writer.write(new Uint8Array(byteArray));
+            writer = SPPsocket.writable.getWriter();
+            await writer.write(frame);
         } catch (error) {
             console.error('Write failed:', error);
         } finally {
             if (writer) {
-                await writer.close();
+                try {
+                    await writer.close();
+                } catch (closeError) {
+                    console.error('Writer close failed:', closeError);
+                }
             }
         }
     });
+}
+
+// buffers reads until a whole frame is available (a read can hold several frames or part of one)
+const FRAME_SYNC_BYTE = 0x55;
+const FRAME_HEADER_LENGTH = 8;
+const FRAME_CRC_FLAG_MASK = 0x20; // control bit 5, as in the official parser
+const FRAME_MAX_PAYLOAD = 4096;
+
+function frameCrcMatches(frame) {
+    const end = frame.length - 2;
+    return crc16(frame.subarray(0, end)) === (frame[end] | (frame[end + 1] << 8));
+}
+
+function createFrameReassembler(onFrame) {
+    let buffer = new Uint8Array(0);
+    return {
+        push(chunk) {
+            if (!chunk || chunk.length === 0) {
+                return;
+            }
+            if (buffer.length === 0) {
+                buffer = chunk.slice();
+            } else {
+                const merged = new Uint8Array(buffer.length + chunk.length);
+                merged.set(buffer, 0);
+                merged.set(chunk, buffer.length);
+                buffer = merged;
+            }
+            let offset = 0;
+            while (offset < buffer.length) {
+                if (buffer[offset] !== FRAME_SYNC_BYTE) {
+                    offset++;
+                    continue;
+                }
+                if (buffer.length - offset < FRAME_HEADER_LENGTH) {
+                    break;
+                }
+                const payloadLength = buffer[offset + 5] | (buffer[offset + 6] << 8);
+                if (payloadLength > FRAME_MAX_PAYLOAD) {
+                    // bad length, resync
+                    offset++;
+                    continue;
+                }
+                const crcLength = (buffer[offset + 1] & FRAME_CRC_FLAG_MASK) ? 2 : 0;
+                const total = FRAME_HEADER_LENGTH + payloadLength + crcLength;
+                if (buffer.length - offset < total) {
+                    break;
+                }
+                const frame = buffer.slice(offset, offset + total);
+                if (crcLength && !frameCrcMatches(frame)) {
+                    console.warn("CRC mismatch, frame dropped (command 0x" + (frame[3] | (frame[4] << 8)).toString(16) + ")");
+                    offset++;
+                    continue;
+                }
+                offset += total;
+                try {
+                    onFrame(frame);
+                } catch (frameError) {
+                    console.error("Error handling frame:", frameError);
+                }
+            }
+            buffer = offset === 0 ? buffer : buffer.slice(offset);
+        },
+    };
 }
 
 function crc16(buffer) {
@@ -74,31 +219,45 @@ function crc16(buffer) {
 }
 
 async function initDevice() {
-    sendBattery();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    getEQ();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    getListeningMode();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    getFirmware();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    sendUTCtime();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    sendInEarRead();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    sendLatencyModeRead();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    getPersonalizedANCStatus();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    sendGetGesture();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    sendANCread();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    getAdvancedEQ();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    get_enhanced_bass();
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // abort if the connection changes mid-sequence
+    const socket = SPPsocket;
+    const steps = [
+        sendBattery,
+        getEQ,
+        getListeningMode,
+        getFirmware,
+        sendUTCtime,
+        sendInEarRead,
+        sendLatencyModeRead,
+        getPersonalizedANCStatus,
+        sendGetGesture,
+        sendANCread,
+        getAdvancedEQ,
+        get_enhanced_bass,
+    ];
+    for (const step of steps) {
+        if (SPPsocket !== socket) {
+            return;
+        }
+        step();
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    if (SPPsocket !== socket) {
+        return;
+    }
     hideDeviceLoadingOverlay();
+    ensureFirmware(socket);
+}
+
+// the feature UI is built from the firmware reply, so ask again if it never came
+async function ensureFirmware(socket) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        if (SPPsocket !== socket || firmwareVersion !== "") {
+            return;
+        }
+        getFirmware();
+    }
 }
 
 
@@ -122,7 +281,6 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
         });
     }
     if (sppPort) {
-        console.log('connected to a Bluetooth Serial Port Profile port', sppPort.getInfo());
 
         try {
             await sppPort.open({ baudRate: 9600, bufferSize: 2048 });
@@ -152,6 +310,7 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
         //read from the serial port
         const reader = sppPort.readable.getReader();
         initDevice();
+        const reassembler = createFrameReassembler(handleFrame);
         try {
             while (sppPort.readable) {
                 const { value, done } = await reader.read();
@@ -159,132 +318,13 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
                     // Allow the serial port to be closed later.
                     break;
                 }
-                //console.log(value);
-                //print hex string of the received data
-                var string = "";
-                for (let i = 0; i < value.length; i++) {
-                    //fill the string with leading zero if needed
-                    string += (value[i] < 16 ? "0" : "") + value[i].toString(16);
-                }
-                let rawData = new Uint8Array(value.buffer);
-                //check if first byte is 0x55, else continue
-                if (rawData[0] !== 85 || rawData.length < 8) {
+                if (!value) {
                     continue;
                 }
-                //header is 8 bytes long
-                let header = rawData.slice(0, 6);
-                let command = getCommand(header);
-                console.log(command);
-                try {
-                if (command === 57345 || command===16391) {
-                    readBattery(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
+                if (debug) {
+                    console.log(stamp() + "RX chunk " + bytesToHex(value));
                 }
-                if (command === 57347 || command === 24579) {
-                    readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16452) {
-                    readCustomEQ(rawData);
-                }
-                if (command === 16461) {
-                    readAdvancedEQValue(rawData);
-                }
-                if (command === 16492) {
-                    readThirdDriverEQMode(rawData);
-                }
-                if (command === 16493) {
-                    readThirdDriverEQValue(rawData);
-                }
-                if (command === 16415 || command === 16464) {
-                    readEQ(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16450) {
-                    readFirmware(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 57357) {
-                    readEarFitTestResult(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16416) {
-                    readPersonalizedANC(rawData);
-                }
-                if (command === 16398) {
-                    readInEar(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16449) {
-                    readLatency(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16407) {
-                    readLEDCaseColor(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16408) {
-                    readGesture(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16414) {
-                    readANC(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16460) {
-                    read_advanced_eq_status( rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16462) {
-                    read_enhanced_bass(rawData.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), ''));
-                }
-                if (command === 16423) {
-                    readDualEnable(rawData);
-                }
-                if (command === 16424) {
-                    readDualList(rawData);
-                }
-                if (command === 57358) {
-                    readDualDeviceEvent(rawData);
-                }
-                if (command === 16425) {
-                    readHighQualityAudio(rawData);
-                }
-                if (command === 16463) {
-                    readSpatialAudio(rawData);
-                }
-                if (command === 16418) {
-                    readMimiEnable(rawData);
-                }
-                if (command === 16474) {
-                    readAudiodoProfileOn(rawData);
-                }
-                if (command === 57369 || command === 24601) {
-                    readAudiodoStatusPush(rawData);
-                }
-                if (command === 57385 || command === 24617) {
-                    readAudiodoSpatialPush(rawData);
-                }
-                if (command === 16488 || command === 57372 || command === 24604) {
-                    readFlatEq(rawData);
-                }
-                if (command === 16478) {
-                    readSuperMicEnable(rawData);
-                }
-                if (command === 16479) {
-                    readCallTransparencyEnable(rawData);
-                }
-                if (command === 16480) {
-                    readWalkieTalkieMode(rawData);
-                }
-                if (command === 16484) {
-                    readMicMode(rawData);
-                }
-                if (command === 16487) {
-                    readLongPowerMode(rawData);
-                }
-                if (command === 16497) {
-                    readAntiLeakageMode(rawData);
-                }
-                } catch (packetError) {
-                    console.error("Error handling packet for command " + command + ":", packetError);
-                }
-
-                if (operationID >= 250) {
-                    operationID = 1;
-                    operationList = {};
-                }
-                console.log(string);
-                console.log(value);
+                reassembler.push(value);
             }
         } catch (error) {
             console.error("Serial connection lost:", error);
@@ -294,6 +334,7 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
             } catch (releaseError) {
                 console.error("Failed to release serial reader lock:", releaseError);
             }
+            resetSets();
             try {
                 await sppPort.close();
             } catch (closeError) {
@@ -311,24 +352,98 @@ async function connectSPP(sppPort=null, isRebootRetry=false, retryCount=0) {
     }
 }
 
+// keyed by cmd | 0x8000: responses (0x40xx) and pushes (0x60xx, 0xE0xx) share one handler
+const FRAME_HANDLERS = {
+    0xC002: readFindState,
+    0xC007: readBattery,
+    0xC00E: readInEar,
+    0xC017: readLEDCaseColor,
+    0xC018: readGesture,
+    0xC01E: readANC,
+    0xC01F: readEQ,
+    0xC020: readPersonalizedANC,
+    0xC022: readMimiEnable,
+    0xC027: readDualEnable,
+    0xC028: readDualList,
+    0xC029: readHighQualityAudio,
+    0xC041: readLatency,
+    0xC042: readFirmware,
+    0xC044: readCustomEQ,
+    0xC04C: read_advanced_eq_status,
+    0xC04D: readAdvancedEQValue,
+    0xC04E: read_enhanced_bass,
+    0xC04F: readSpatialAudio,
+    0xC050: readEQ,
+    0xC05A: readAudiodoProfileOn,
+    0xC05E: readSuperMicEnable,
+    0xC05F: readCallTransparencyEnable,
+    0xC060: readWalkieTalkieMode,
+    0xC064: readMicMode,
+    0xC067: readLongPowerMode,
+    0xC068: readFlatEq,
+    0xC06C: readThirdDriverEQMode,
+    0xC06D: readThirdDriverEQValue,
+    0xC071: readAntiLeakageMode,
+    0xE001: readBattery,
+    0xE003: readANC,
+    0xE00D: readEarFitTestResult,
+    0xE00E: readDualDeviceEvent,
+    0xE019: readAudiodoStatusPush,
+    0xE01C: readFlatEq,
+    0xE029: readAudiodoSpatialPush,
+};
+
+const warnedCommands = new Set();
+
+// notifications we skip on purpose: the official app has no handler for most; 0xE002 (device status) is not used yet
+const IGNORED_COMMANDS = new Set([0xE002, 0xE005, 0xE006, 0xE009, 0xE00B, 0xE00F, 0xE010, 0xE011, 0xE016, 0xE018]);
+
+// set acks (0x7xxx) have no handler by design; any other command is reported once per id
+function warnUnhandled(command, payload) {
+    if (IGNORED_COMMANDS.has(command | 0x8000)) {
+        console.log("Ignored notification 0x" + command.toString(16) + ": " + bytesToHex(payload));
+        return;
+    }
+    if ((command & 0xF000) === 0x7000 || warnedCommands.has(command)) {
+        return;
+    }
+    warnedCommands.add(command);
+    const shown = bytesToHex(payload.subarray(0, 32)).replace(/../g, "$& ").trim();
+    console.warn("No handler for command 0x" + command.toString(16) + " (payload " + payload.length + " bytes: " + shown + (payload.length > 32 ? " ..." : "") + ")");
+}
+
+function handleFrame(frame) {
+    const command = frame[3] | (frame[4] << 8);
+    onSetAck(command, frame[7]);
+    const handler = FRAME_HANDLERS[command | 0x8000];
+    const length = frame[5] | (frame[6] << 8);
+    if (!handler) {
+        warnUnhandled(command, frame.subarray(8, 8 + length));
+        return;
+    }
+    try {
+        handler(frame.subarray(8, 8 + length));
+    } catch (packetError) {
+        console.error("Error handling packet for command " + command + ":", packetError);
+    }
+}
+
 function sendBattery() {
     send(49159, [], "readBattery");
 }
-function readBattery(hexString) {
+function readBattery(payload) {
     let connectedDevices = 0;
     let batteryStatus = { "left": "DISCONNECTED", "right": "DISCONNECTED", "case": "DISCONNECTED", "stereo": "DISCONNECTED" };
     let deviceIdToKey = { 0x02: "left", 0x03: "right", 0x04: "case", 0x06: "stereo" };
     let BATTERY_MASK = 127;
     let RECHARGING_MASK = 128;
 
-    let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
-
-    connectedDevices = hexArray[8];
+    connectedDevices = payload[0];
     for (let i = 0; i < connectedDevices; i++) {
-        let deviceId = hexArray[9 + (i * 2)];
+        let deviceId = payload[1 + (i * 2)];
         let key = deviceIdToKey[deviceId] || "DISCONNECTED";
-        let batteryLevel = hexArray[10 + (i * 2)] & BATTERY_MASK;
-        let isCharging = (hexArray[10 + (i * 2)] & RECHARGING_MASK) === RECHARGING_MASK;
+        let batteryLevel = payload[2 + (i * 2)] & BATTERY_MASK;
+        let isCharging = (payload[2 + (i * 2)] & RECHARGING_MASK) === RECHARGING_MASK;
         batteryStatus[key] = {
             "batteryLevel": batteryLevel,
             "isCharging": isCharging
@@ -339,7 +454,6 @@ function readBattery(hexString) {
     let batteryRight = batteryStatus["right"]["batteryLevel"];
     let batteryCase = batteryStatus["case"]["batteryLevel"];
     let batteryStereo = batteryStatus["stereo"]["batteryLevel"];
-    console.log(batteryLeft);
     if (batteryStatus["stereo"] !== "DISCONNECTED") {
         setBattery("s", batteryStereo)
     }
@@ -349,36 +463,49 @@ function readBattery(hexString) {
         setBattery("c", batteryCase)
     }
 }
-function getCommand(header) {
-    console.log("header " + header)
-    let commandBytes = new Uint8Array(header.slice(3, 5));
-    console.log( "commandBytes: " + commandBytes)
-    let commandInt = new Uint16Array(commandBytes.buffer)[0];
-    console.log ("commandInt: " + commandInt);
-    return commandInt;
+let lastAncMode = null;
+let lastAncStrength = 1;
+
+// payload is a list of [type, value, unused] entries: type 1 sets the mode, type 2 only the strength
+// payload is [count] followed by count x [position, ring]; position 2 = left, 3 = right, 6 = single body
+function readFindState(payload) {
+    if (payload.length === 0 || payload.length !== 1 + 2 * payload[0]) {
+        console.warn("Unexpected find-device state layout: " + bytesToHex(payload));
+        return;
+    }
+    const entries = [];
+    for (let i = 1; i + 1 < payload.length; i += 2) {
+        entries.push({ position: payload[i], ringing: payload[i + 1] === 1 });
+    }
+    if (typeof applyRingState === "function") {
+        applyRingState(entries);
+    }
 }
 
-function readANC(hexString) {
-    console.log("readANC called");
-    let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
-    let ancStatus = hexArray[9];
-    let level = 0;
-
-    if (ancStatus === 5) {
-        level = 1;
-    } else if (ancStatus === 7) {
-        level = 2;
-    } else if (ancStatus === 3) {
-        level = 3;
-    } else if (ancStatus === 1) {
-        level = 4;
-    } else if (ancStatus === 2) {
-        level = 5;
-    } else if (ancStatus === 4) {
-        level = 6;
+function readANC(payload) {
+    for (let i = 0; i + 1 < payload.length; i += 3) {
+        const type = payload[i];
+        const value = payload[i + 1];
+        if (type === 0x01) {
+            if (value >= 1 && value <= 4) {
+                lastAncMode = "on";
+                lastAncStrength = value;
+            } else if (value === 0 || value === 5) {
+                lastAncMode = "off";
+            } else if (value === 7 || value === 0xFE) {
+                lastAncMode = "transparency";
+            }
+        } else if (type === 0x02 && value >= 1 && value <= 4) {
+            lastAncStrength = value;
+        }
     }
-    console.log("level " + level);
-    setANCStatus(level);
+    if (lastAncMode === "off") {
+        setANCStatus(1);
+    } else if (lastAncMode === "transparency") {
+        setANCStatus(2);
+    } else if (lastAncMode === "on") {
+        setANCStatus({ 1: 4, 2: 5, 3: 3, 4: 6 }[lastAncStrength]);
+    }
 }
 
 function setANCDisplay(level) {
@@ -419,16 +546,12 @@ function setANC_BT(level) {
     } else if (level === 6) {
         byteArray[1] = 0x04;
     }
-    console.log(byteArray);
     send(61455, byteArray, "setANC");
 }
 
-function read_advanced_eq_status(hexString)
+function read_advanced_eq_status(payload)
 {
-    console.log("read_advanced_eq_status called");
-    let hexArray = hexString.match(/.{2}/g).map(byte => parseInt(byte, 16));
-    let advancedStatus = hexArray[8];
-    console.log("advancedEQ " + advancedStatus);
+    let advancedStatus = payload[0];
     advancedEQEnabled = advancedStatus === 1;
     if (modelBase === "B157" || modelBase === "B155" || modelBase === "B171" || modelBase === "B174" || modelBase === "B170" || modelBase === "B186" || modelBase === "B192" || modelBase === "B173" || modelBase === "B190") {
         if (advancedStatus === 1) {
@@ -449,11 +572,8 @@ function getListeningMode() {
     }
 }
 
-function readEQ(hexString) {
-    console.log("readEQ called");
-    let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
-    let eqMode = hexArray[8];
-    console.log("eqMode " + eqMode);
+function readEQ(payload) {
+    let eqMode = payload[0];
     setEQfromRead(eqMode);
 }
 
@@ -501,12 +621,11 @@ function initFlatEqIfSupported() {
     send(49256, [], "getFlatEq");
 }
 
-function readFlatEq(hexArray) {
+function readFlatEq(payload) {
     if (!(modelSpecs && modelSpecs.supportStudio)) {
         return;
     }
-    flatEqEnabled = hexArray.length > 8 && hexArray[8] === 1;
-    console.log("readFlatEq: " + flatEqEnabled);
+    flatEqEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof applyFlatEqUI === "function") {
         applyFlatEqUI();
     }
@@ -532,7 +651,6 @@ function usesThreeStageBass() {
 }
 
 function set_enhanced_bass(enabled, level) {
-    console.log("set_enhanced_bass called with enabled: " + enabled + " and level: " + level);
     if (modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
         bassEnhanceEnabled = !!enabled;
         level = usesThreeStageBass() ? (BASS_LEVEL_WIRE_B189[level] ?? 0) : level * 2;
@@ -551,11 +669,10 @@ function get_enhanced_bass() {
     }
 }
 
-function read_enhanced_bass(hexString) {
+function read_enhanced_bass(payload) {
     if (modelBase === "B171" || modelBase === "B172" || modelBase === "B195" || modelBase === "B168" || modelBase === "B162" || modelBase === "B184" || modelBase === "B179" || modelBase === "B197" || modelBase === "B170" || modelBase === "B185" || modelBase === "B164" || modelBase === "B173" || modelBase === "B189" || modelBase === "B186") {
-        let hexArray = hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16));
-        let enabled = hexArray[8];
-        let level = hexArray[9];
+        let enabled = payload[0];
+        let level = payload[1];
         bassEnhanceEnabled = enabled === 1;
         setBassEnhance(enabled);
         setBassLevel(usesThreeStageBass() ? BASS_LEVEL_WIRE_B189.indexOf(level) : level / 2);
@@ -602,20 +719,20 @@ function getAdvancedEQValue(profileIndex = 255) {
 
 // Shared by the main Advanced EQ and the Precision driver EQ: both payloads are
 // [profileIndex(1)][bandCount(1)][totalGain(f32)] + per band [filterType(1)][gain][frequency][quality].
-function parseAdvancedEQBandsPayload(hexArray) {
-    let offset = 8;
-    if (hexArray.length < offset + 6) {
+function parseAdvancedEQBandsPayload(payload) {
+    let offset = 0;
+    if (payload.length < offset + 6) {
         return null;
     }
-    let bandCount = hexArray[offset + 1];
+    let bandCount = payload[offset + 1];
     offset += 6; // profileIndex(1) + bandCount(1) + totalGain(4)
     let bands = [];
-    for (let i = 0; i < bandCount && offset + 13 <= hexArray.length; i++) {
+    for (let i = 0; i < bandCount && offset + 13 <= payload.length; i++) {
         bands.push({
-            filterType: hexArray[offset],
-            gain: fromFormatFloatForEQ(hexArray.slice(offset + 1, offset + 5)),
-            frequency: fromFormatFloatForEQ(hexArray.slice(offset + 5, offset + 9)),
-            quality: fromFormatFloatForEQ(hexArray.slice(offset + 9, offset + 13)),
+            filterType: payload[offset],
+            gain: fromFormatFloatForEQ(payload.slice(offset + 1, offset + 5)),
+            frequency: fromFormatFloatForEQ(payload.slice(offset + 5, offset + 9)),
+            quality: fromFormatFloatForEQ(payload.slice(offset + 9, offset + 13)),
         });
         offset += 13;
     }
@@ -641,8 +758,8 @@ function buildAdvancedEQBandsPacket(bands, totalGain) {
     return Array.from(packet);
 }
 
-function readAdvancedEQValue(hexArray) {
-    let bands = parseAdvancedEQBandsPayload(hexArray);
+function readAdvancedEQValue(payload) {
+    let bands = parseAdvancedEQBandsPayload(payload);
     if (!bands) {
         return;
     }
@@ -675,17 +792,16 @@ function getThirdDriverEQ() {
     send(49261, [255], "getThirdDriverEQValue");
 }
 
-function readThirdDriverEQMode(hexArray) {
-    let enabled = hexArray.length > 8 && hexArray[8] === 1;
-    console.log("readThirdDriverEQMode: " + enabled);
+function readThirdDriverEQMode(payload) {
+    let enabled = payload.length > 0 && payload[0] === 1;
     if (!enabled && supportsThirdDriverEQ() && !thirdDriverEQModeEnableSent) {
         thirdDriverEQModeEnableSent = true;
         send(61548, [1], "setThirdDriverEQMode");
     }
 }
 
-function readThirdDriverEQValue(hexArray) {
-    let bands = parseAdvancedEQBandsPayload(hexArray);
+function readThirdDriverEQValue(payload) {
+    let bands = parseAdvancedEQBandsPayload(payload);
     if (!bands) {
         return;
     }
@@ -803,20 +919,7 @@ function createEQPacket(eqBands) {
         packet[offset++] = 0x00;
         packet[offset++] = 0x00;
     }
-    //print all details of the band
-    console.log("EQ Packet Details:");
-    console.log("Number of Bands: " + eqBands.length);
-    console.log("Total Gain: " + totalGain);
-    for (let i = 0; i < eqBands.length; i++) {
-        console.log(`Band ${i + 1}:`);
-        console.log("  Filter Type: " + eqBands[i].filterType);
-        console.log("  Gain: " + eqBands[i].gain);
-        console.log("  Frequency: " + eqBands[i].frequency);
-        console.log("  Quality: " + eqBands[i].quality);
-    }
 
-
-    console.log("EQ Packet: " + Array.from(packet, byte => byte.toString(16).padStart(2, '0')).join(''));
     return packet;
 }
 
@@ -869,18 +972,15 @@ function fromFormatFloatForEQ(array) {
     }
 }
 
-function readLEDCaseColor(hexString) {
+function readLEDCaseColor(payload) {
     if (modelBase === "B181") {
-        console.log("readLEDCaseColor called");
-        const hexArray = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-        const numberOfLed = hexArray[8];
-        console.log(hexArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
+        const numberOfLed = payload[0];
         const ledArray = [];
         for (let i = 0; i < numberOfLed; i++) {
             ledArray.push([
-                hexArray[10 + (i * 4)],
-                hexArray[11 + (i * 4)],
-                hexArray[12 + (i * 4)]
+                payload[2 + (i * 4)],
+                payload[3 + (i * 4)],
+                payload[4 + (i * 4)]
             ]);
         }
         const ledArrayString = ledArray.map(led => `#${led.map(value => value.toString(16).padStart(2, '0')).join('')}`);
@@ -889,8 +989,6 @@ function readLEDCaseColor(hexString) {
 }
 
 function sendLEDCaseColor(colorArray) {
-    console.log("sendLEDCaseColor called");
-    console.log(colorArray);
     if (modelBase === "B181") {
         let bytearray = [0x05, 0x01, 0xff, 0xff, 0xff, 0x02, 0xff, 0xff, 0xff, 0x03, 0xff, 0xff, 0xff, 0x04, 0xff, 0xff, 0xff, 0x05, 0xff, 0xff, 0xff];
         for (let i = 0; i < 5; i++) {
@@ -902,21 +1000,16 @@ function sendLEDCaseColor(colorArray) {
     }
 }
 
-function readCustomEQ(hexString) {
-    console.log("readCustomEQ called");
+function readCustomEQ(payload) {
     if (modelBase !== "B181") {
-        console.log(hexString);
         var level = [];
         for (var i = 0; i < 3; i++) {
             var array = [];
             for (var j = 0; j < 4; j++) {
-                array.push(hexString[14 + (i * 13) + j]);
+                array.push(payload[6 + (i * 13) + j]);
             }
             level.push(fromFormatFloatForEQ(array));
         }
-        level.forEach(function (element) {
-            console.log(element);
-        });
         var formatedArray = [level[2], level[0], level[1]];
         setCustomEQ(formatedArray);
     }
@@ -961,12 +1054,10 @@ function getLEDCaseColor() {
     }
 }
 
-function readFirmware(hexstring) {
+function readFirmware(payload) {
     firmwareVersion = "";
-    let hexArray = new Uint8Array(hexstring.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-    let size = hexArray[5];
-    for (let i = 0; i < size; i++) {
-        firmwareVersion += String.fromCharCode(hexArray[8 + i]);
+    for (let i = 0; i < payload.length; i++) {
+        firmwareVersion += String.fromCharCode(payload[i]);
     }
     setFirmwareText(firmwareVersion);
     getConfigForFirmware();
@@ -979,7 +1070,6 @@ async function getConfigForFirmware() {
         return false;
     }
 
-    console.log(`Getting config for model: ${modelBase}, firmware: ${firmwareVersion}`);
 
     try {
         // Load configuration data
@@ -995,7 +1085,6 @@ async function getConfigForFirmware() {
             throw new Error("Invalid config format: expected array");
         }
         
-        console.log("Config data loaded successfully");
         firmwareConfig = jsonData;
         
         // Find matching model configuration
@@ -1012,8 +1101,6 @@ async function getConfigForFirmware() {
             return false;
         }
 
-        console.log(`Found config for model: ${configID}`);
-        console.log(modelSpecs);
 
         // Handle configuration selection
         const configs = modelSpecs.configs;
@@ -1025,9 +1112,7 @@ async function getConfigForFirmware() {
 
         // If only one config, use it directly
         if (configs.length === 1) {
-            console.log("Single config found, using default configuration");
             modelSpecs = configs[0];
-            console.log(modelSpecs);
             initDualConnectionIfSupported();
             initAudioCodecIfSupported();
             initSpatialAudioIfSupported();
@@ -1063,9 +1148,7 @@ async function getConfigForFirmware() {
                 );
                 
                 if (isCompatible) {
-                    console.log(`Found compatible config for firmware version: ${firmwareVersion}`);
                     modelSpecs = config;
-                    console.log(modelSpecs);
                     configFound = true;
                     initDualConnectionIfSupported();
                     initAudioCodecIfSupported();
@@ -1098,7 +1181,6 @@ async function getConfigForFirmware() {
             return false;
         }
         
-        console.log("Configuration loaded successfully");
         return true;
 
     } catch (error) {
@@ -1114,10 +1196,9 @@ function launchEarFitTest() {
     }
 }
 
-function readEarFitTestResult(hexstring) {
-    hexstring = new Uint8Array(hexstring.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-    let LeftearFitTestResult = hexstring[8];
-    let RightearFitTestResult = hexstring[9];
+function readEarFitTestResult(payload) {
+    let LeftearFitTestResult = payload[0];
+    let RightearFitTestResult = payload[1];
     earTipStateStatus(LeftearFitTestResult, RightearFitTestResult);
 } 
 
@@ -1131,20 +1212,16 @@ function sendLatencyModeRead() {
     send(49217, [], "readLatency");
 }
 
-function readInEar(hexString) {
+function readInEar(payload) {
     if (modelBase === "B164") {
         return;
     }
-    console.log("readInEar called");
-    hexString = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-    inEarStatus = hexString[10];
+    inEarStatus = payload[2];
     setInEarCheckbox(inEarStatus);
 }
 
-function readLatency(hexString) {
-    console.log("readLatency called");
-    hexString = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-    latencyStatus = hexString[8];
+function readLatency(payload) {
+    latencyStatus = payload[0];
     setLatencyModeCheckbox(latencyStatus);
 }
 
@@ -1174,8 +1251,8 @@ function getPersonalizedANCStatus() {
     }
 }
 
-function readPersonalizedANC(hexString) {
-    personalizedANCStatus = hexString[8];
+function readPersonalizedANC(payload) {
+    personalizedANCStatus = payload[0];
     setPersonalAncCheckbox(personalizedANCStatus);
 }
 
@@ -1203,7 +1280,6 @@ function sendUTCtime() {
     byteArray[1] = (secEpoch >> 16) & 0xFF;
     byteArray[2] = (secEpoch >> 8) & 0xFF;
     byteArray[3] = secEpoch & 0xFF;
-    console.log("Sending UTC time: " + byteArray.map(byte => byte.toString(16).padStart(2, '0')).join(''));
     send(61450, byteArray, "setUTCtime");
 }
 
@@ -1211,23 +1287,18 @@ function sendGetGesture() {
     send(49176, [], "getGesture");
 }
 
-function readGesture(hexString) {
-    console.log("readGesture called");
-    hexString = new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-
-    console.log(Array.from(hexString, byte => byte.toString(16)).join(""));
-    var gestureCount = hexString[8];
+function readGesture(payload) {
+    var gestureCount = payload[0];
 
     var gestureArray = [];
     for (var i = 0; i < gestureCount; i++) {
         var gesture = {};
-        gesture["gestureDevice"] = hexString[9 + i * 4];
-        gesture["gestureCommon"] = hexString[10 + i * 4];
-        gesture["gestureType"] = hexString[11 + i * 4];
-        gesture["gestureAction"] = hexString[12 + i * 4];
+        gesture["gestureDevice"] = payload[1 + i * 4];
+        gesture["gestureCommon"] = payload[2 + i * 4];
+        gesture["gestureType"] = payload[3 + i * 4];
+        gesture["gestureAction"] = payload[4 + i * 4];
         gestureArray.push(gesture);
     }
-    console.log(gestureArray);
     updateGesturesFromArray(gestureArray);
 }
 
@@ -1292,9 +1363,8 @@ function getDualEnable() {
     }
 }
 
-function readDualEnable(hexArray) {
-    console.log("readDualEnable called");
-    dualConnectEnabled = hexArray[8] === 1;
+function readDualEnable(payload) {
+    dualConnectEnabled = payload[0] === 1;
     if (typeof setDualEnableCheckbox === "function") {
         setDualEnableCheckbox(dualConnectEnabled);
     }
@@ -1321,25 +1391,24 @@ function requestDualListPage() {
     send(49192, [dualConnectList.length & 0xff], "readDualList");
 }
 
-function readDualList(hexArray) {
-    console.log("readDualList called");
-    if (hexArray.length < 11) {
+function readDualList(payload) {
+    if (payload.length < 3) {
         return;
     }
-    let deviceCount = hexArray[10];
-    let offset = 11;
+    let deviceCount = payload[2];
+    let offset = 3;
     let addedNewDevice = false;
     for (let i = 0; i < deviceCount; i++) {
-        if (offset + 8 > hexArray.length) {
+        if (offset + 8 > payload.length) {
             break;
         }
-        let flags = hexArray[offset];
+        let flags = payload[offset];
         let isSelf = (flags & 0xf0) !== 0;
         let isConnected = (flags & 0x0f) !== 0;
-        let macBytes = hexArray.slice(offset + 1, offset + 7);
+        let macBytes = payload.slice(offset + 1, offset + 7);
         let mac = macStringFromBytes(macBytes);
-        let nameLength = hexArray[offset + 7] & 0x7f;
-        let nameBytes = hexArray.slice(offset + 8, offset + 8 + nameLength);
+        let nameLength = payload[offset + 7] & 0x7f;
+        let nameBytes = payload.slice(offset + 8, offset + 8 + nameLength);
         let name = new TextDecoder("utf-8").decode(new Uint8Array(nameBytes));
         let device = { mac, name, isSelf, isConnected };
         let existingIndex = dualConnectList.findIndex(item => item.mac === mac);
@@ -1359,13 +1428,12 @@ function readDualList(hexArray) {
     }
 }
 
-function readDualDeviceEvent(hexArray) {
-    console.log("readDualDeviceEvent called");
-    if (hexArray.length < 16) {
+function readDualDeviceEvent(payload) {
+    if (payload.length < 8) {
         return;
     }
-    let isConnected = hexArray[8] === 1;
-    let macBytes = hexArray.slice(9, 15);
+    let isConnected = payload[0] === 1;
+    let macBytes = payload.slice(1, 7);
     let mac = macStringFromBytes(macBytes);
     let existingIndex = dualConnectList.findIndex(item => item.mac === mac);
     if (existingIndex >= 0) {
@@ -1401,8 +1469,8 @@ function getHighQualityAudio() {
     }
 }
 
-function readHighQualityAudio(hexArray) {
-    let index = hexArray.length > 8 ? hexArray[8] : 0;
+function readHighQualityAudio(payload) {
+    let index = payload.length > 0 ? payload[0] : 0;
     if (index < 0 || index >= AUDIO_CODEC_NAMES.length) {
         index = 0;
     }
@@ -1463,12 +1531,10 @@ function spatialAudioIndexFromWire(mode, head) {
     return 0;
 }
 
-function readSpatialAudio(hexArray) {
-    let mode = hexArray.length > 8 ? hexArray[8] : 0;
-    let head = hexArray.length > 9 ? hexArray[9] : 0;
-    console.log(`readSpatialAudio: mode=${mode}, head=${head}`);
+function readSpatialAudio(payload) {
+    let mode = payload.length > 0 ? payload[0] : 0;
+    let head = payload.length > 1 ? payload[1] : 0;
     currentSpatialAudioMode = spatialAudioIndexFromWire(mode, head);
-    console.log(`currentSpatialAudioMode index: ${currentSpatialAudioMode}`);
     if (typeof renderSpatialAudioUI === "function") {
         renderSpatialAudioUI();
     }
@@ -1484,21 +1550,19 @@ const AUDIODO_SPATIAL_SCENE_NAMES = {
     5: "Studio B",      // surround
 };
 
-function readAudiodoSpatialPush(hexArray) {
-    if (!(modelSpecs && modelSpecs.useAudiodoSpatial) || hexArray.length < 10) {
+function readAudiodoSpatialPush(payload) {
+    if (!(modelSpecs && modelSpecs.useAudiodoSpatial) || payload.length < 2) {
         return;
     }
-    let status = hexArray[8];
-    let mode = hexArray[9];
+    let status = payload[0];
+    let mode = payload[1];
     let statusName = AUDIODO_SPATIAL_STATUS_NAMES[status] || "Off";
     let scene = statusName !== "Off" ? (AUDIODO_SPATIAL_SCENE_NAMES[mode] || "unknown scene") : null;
-    console.log(`readAudiodoSpatialPush: status=${status}, mode=${mode} (${statusName}${scene ? ", " + scene : ""})`);
 }
 
 function setSpatialAudio_BT(index) {
     currentSpatialAudioMode = index;
     let entry = SPATIAL_AUDIO_MODES[index];
-    console.log(`setSpatialAudio_BT: index=${index}, mode=${entry.mode}, head=${entry.head}`);
     send(61522, [entry.mode, entry.head], "setSpatialAudio");
     if (typeof renderSpatialAudioUI === "function") {
         renderSpatialAudioUI();
@@ -1537,25 +1601,25 @@ function getPersonalSoundProfile() {
     }
 }
 
-function readMimiEnable(hexArray) {
-    personalSoundProfileEnabled = hexArray.length > 8 && hexArray[8] === 1;
+function readMimiEnable(payload) {
+    personalSoundProfileEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof setPersonalSoundProfileCheckbox === "function") {
         setPersonalSoundProfileCheckbox(personalSoundProfileEnabled);
     }
 }
 
-function readAudiodoProfileOn(hexArray) {
-    personalSoundProfileEnabled = hexArray.length > 8 && hexArray[8] === 1;
+function readAudiodoProfileOn(payload) {
+    personalSoundProfileEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof setPersonalSoundProfileCheckbox === "function") {
         setPersonalSoundProfileCheckbox(personalSoundProfileEnabled);
     }
 }
 
-function readAudiodoStatusPush(hexArray) {
+function readAudiodoStatusPush(payload) {
     if (personalSoundProfileBackend() !== "audiodo") {
         return;
     }
-    personalSoundProfileEnabled = hexArray.length > 8 && hexArray[8] === 1;
+    personalSoundProfileEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof setPersonalSoundProfileCheckbox === "function") {
         setPersonalSoundProfileCheckbox(personalSoundProfileEnabled);
     }
@@ -1592,8 +1656,8 @@ function getSuperMicEnable() {
     }
 }
 
-function readSuperMicEnable(hexArray) {
-    superMicEnabled = hexArray.length > 8 && hexArray[8] === 1;
+function readSuperMicEnable(payload) {
+    superMicEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof setSuperMicCheckbox === "function") {
         setSuperMicCheckbox(superMicEnabled);
     }
@@ -1620,8 +1684,8 @@ function getCallTransparencyEnable() {
     }
 }
 
-function readCallTransparencyEnable(hexArray) {
-    callTransparencyEnabled = hexArray.length > 8 && hexArray[8] === 1;
+function readCallTransparencyEnable(payload) {
+    callTransparencyEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof setCallTransparencyCheckbox === "function") {
         setCallTransparencyCheckbox(callTransparencyEnabled);
     }
@@ -1645,8 +1709,8 @@ function getWalkieTalkieMode() {
     }
 }
 
-function readWalkieTalkieMode(hexArray) {
-    walkieTalkieModeEnabled = hexArray.length > 8 && hexArray[8] === 1;
+function readWalkieTalkieMode(payload) {
+    walkieTalkieModeEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof setWalkieTalkieModeCheckbox === "function") {
         setWalkieTalkieModeCheckbox(walkieTalkieModeEnabled);
     }
@@ -1670,8 +1734,8 @@ function getLongPowerMode() {
     }
 }
 
-function readLongPowerMode(hexArray) {
-    longPowerModeEnabled = hexArray.length > 8 && hexArray[8] === 1;
+function readLongPowerMode(payload) {
+    longPowerModeEnabled = payload.length > 0 && payload[0] === 1;
     if (typeof setLongPowerModeCheckbox === "function") {
         setLongPowerModeCheckbox(longPowerModeEnabled);
     }
@@ -1698,9 +1762,9 @@ function getAntiLeakageMode() {
     }
 }
 
-function readAntiLeakageMode(hexArray) {
-    if (hexArray.length > 8) {
-        currentAntiLeakageMode = hexArray[8];
+function readAntiLeakageMode(payload) {
+    if (payload.length > 0) {
+        currentAntiLeakageMode = payload[0];
     }
     if (typeof renderAntiLeakageRow === "function") {
         renderAntiLeakageRow();
@@ -1728,9 +1792,9 @@ function setMicMode_BT(mode) {
     send(61541, [mode], "setMicMode");
 }
 
-function readMicMode(hexArray) {
-    if (hexArray.length > 8 && typeof micModeOptions !== "undefined" && micModeOptions) {
-        currentMicMode = hexArray[8];
+function readMicMode(payload) {
+    if (payload.length > 0 && typeof micModeOptions !== "undefined" && micModeOptions) {
+        currentMicMode = payload[0];
         if (typeof renderMicModeRow === "function") {
             renderMicModeRow();
         }
