@@ -1006,6 +1006,34 @@ function showEarTipTestDialog() {
 
 }
 
+// shows the ring state the device reported, in the same style the click handlers use
+function setRingButtonState(suffix, ringing) {
+    const button = document.getElementById("ring_button-" + suffix);
+    if (!button) {
+        return;
+    }
+    button.classList.toggle(suffix === "c" ? "ringing" : "ringing-" + suffix, ringing);
+    if (suffix === "c") {
+        button.style = ringing ? "background-color: #7f1d1d; color: #ffffff;" : "";
+    } else {
+        button.style.backgroundColor = ringing ? "#7f1d1d" : "";
+        button.style.color = ringing ? "#ffffff" : "";
+    }
+    button.innerText = ringing ? "STOP" : "Ring";
+}
+
+function applyRingState(entries) {
+    for (const { position, ringing } of entries) {
+        if (position === 2) {
+            setRingButtonState("l", ringing);
+        } else if (position === 3) {
+            setRingButtonState("r", ringing);
+        } else if (position === 6) {
+            setRingButtonState(document.getElementById("ring_button-c") ? "c" : "l", ringing);
+        }
+    }
+}
+
 async function ringBudLeft(e) {
     var e = document.getElementById("ring_button-l").classList
     if (e.contains("ringing-l")) {
